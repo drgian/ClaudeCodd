@@ -1,0 +1,416 @@
+<title>PB/Wires Firm Cleanup</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231B3560'%3E%3Crect x='2' y='7' width='20' height='14' rx='2'/%3E%3Cpath d='M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg:      #F0F2F5;
+  --surface: #FFFFFF;
+  --border:  #D0D6E2;
+  --text:    #1A2236;
+  --text-2:  #4E5D7A;
+  --text-3:  #8494B0;
+  --navy:    #1B3560;
+  --yellow:  #EAB308;
+  --amber:   #A16207;
+  --teal:    #0F766E;
+  --violet:  #6D28D9;
+  --mono:    "Consolas","Courier New",monospace;
+
+  --chip-nr-bg:   #FEF9C3; --chip-nr-fg:   #A16207;
+  --chip-ed-bg:   #EDE9FE; --chip-ed-fg:   #4C1D95;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg:#0C1118; --surface:#141B27; --border:#242E42;
+  --text:#E2E8F5; --text-2:#8A9BBB; --text-3:#4E5F7A;
+  --navy:#6B9FE8; --yellow:#EAB308; --amber:#FDE68A; --teal:#2DD4BF; --violet:#A78BFA;
+  --chip-nr-bg:#2B2306; --chip-nr-fg:#FDE68A;
+  --chip-ed-bg:#2D1B69; --chip-ed-fg:#C4B5FD;
+}}
+:root[data-theme="dark"]  {
+  --bg:#0C1118; --surface:#141B27; --border:#242E42;
+  --text:#E2E8F5; --text-2:#8A9BBB; --text-3:#4E5F7A;
+  --navy:#6B9FE8; --yellow:#EAB308; --amber:#FDE68A; --teal:#2DD4BF; --violet:#A78BFA;
+  --chip-nr-bg:#2B2306; --chip-nr-fg:#FDE68A;
+  --chip-ed-bg:#2D1B69; --chip-ed-fg:#C4B5FD;
+}
+:root[data-theme="light"] {
+  --bg:#F0F2F5; --surface:#FFFFFF; --border:#D0D6E2;
+  --text:#1A2236; --text-2:#4E5D7A; --text-3:#8494B0;
+  --navy:#1B3560; --yellow:#EAB308; --amber:#A16207; --teal:#0F766E; --violet:#6D28D9;
+  --chip-nr-bg:#FEF9C3; --chip-nr-fg:#A16207;
+  --chip-ed-bg:#EDE9FE; --chip-ed-fg:#4C1D95;
+}
+
+*,*::before,*::after { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-size: 15px; line-height: 1.45; margin: 0; padding: 22px 20px 48px;
+}
+.wrap { max-width: min(1100px, 100%); margin: 0 auto; }
+
+/* HEADER */
+.hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+.hdr-left { display: flex; align-items: center; gap: 10px; }
+.hdr-icon { color: var(--navy); flex-shrink: 0; }
+.hdr h2 { font-size: 22px; font-weight: 700; color: var(--navy); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.hdr .meta { font-size: 13px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+
+/* SCOPE */
+.scope { display: inline-flex; padding: 3px; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; margin-bottom: 16px; }
+.scope button { font-family: inherit; font-size: 13px; font-weight: 600; padding: 6px 18px; border: none; border-radius: 6px; background: none; color: var(--text-3); cursor: pointer; }
+.scope button:hover { color: var(--text-2); }
+.scope button:focus-visible { outline: 2px solid var(--navy); outline-offset: 1px; }
+.scope button[aria-pressed="true"] { background: var(--navy); color: var(--surface); }
+
+/* TABS */
+.tabs { display: flex; gap: 2px; margin-bottom: 16px; border-bottom: 2px solid var(--border); }
+.tab { padding: 8px 20px; font-size: 14px; font-weight: 600; color: var(--text-3); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -2px; font-family: inherit; }
+.tab:hover { color: var(--text-2); }
+.tab:focus-visible { outline: 2px solid var(--navy); outline-offset: -2px; border-radius: 3px 3px 0 0; }
+.tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+.pane { display: none; }
+.pane.active { display: block; }
+
+/* STAT GRIDS */
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+@media (max-width: 720px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 400px) { .grid-4, .grid-2 { grid-template-columns: 1fr; } }
+.cell { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 13px 16px 12px; }
+.cell-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 5px; }
+.cell-value { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 3px; letter-spacing: -0.02em; }
+.cell-sub { font-size: 12.5px; color: var(--text-2); }
+.c-total .cell-value { color: var(--navy); }
+.c-agree .cell-value { color: var(--teal); }
+.c-nr    .cell-value { color: var(--yellow); }
+.c-muted .cell-value { color: var(--text-3); }
+
+/* TABLE */
+.tbl-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+.scroll-x { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); padding: 8px 14px; background: var(--bg); border-bottom: 1px solid var(--border); white-space: nowrap; }
+tbody tr + tr { border-top: 1px solid var(--border); }
+tbody td { padding: 9px 14px; vertical-align: middle; }
+.dn { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-2); white-space: nowrap; font-weight: 600; }
+.dp { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-3); white-space: nowrap; width: 60px; }
+.d-bar { width: 130px; min-width: 130px; padding: 0 10px; }
+.bar-track { height: 7px; border-radius: 4px; background: var(--bg); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; }
+.tot-row td { font-weight: 700; color: var(--text); }
+.tot-row { border-top: 2px solid var(--border) !important; }
+.tot-row td { padding-top: 10px; padding-bottom: 10px; }
+
+/* CHIPS */
+.chip { display: inline-block; padding: 2px 9px; border-radius: 11px; font-size: 11.5px; font-weight: 600; white-space: nowrap; margin-right: 4px; font-family: var(--mono); letter-spacing: .02em; }
+.chip-nr   { background: var(--chip-nr-bg); color: var(--chip-nr-fg); }
+.chip-edit { background: var(--chip-ed-bg); color: var(--chip-ed-fg); }
+
+/* SIGNAL CALLOUTS */
+.signals { margin-bottom: 20px; }
+.sig-hdr { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); margin: 0 0 10px; }
+.sig-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 720px) { .sig-grid { grid-template-columns: repeat(2, 1fr); } }
+.sig-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 13px 16px; }
+.sig-n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: var(--navy); line-height: 1; margin-bottom: 5px; }
+.sig-label { font-size: 12.5px; color: var(--text-2); line-height: 1.4; }
+
+/* CONTEXT NOTE */
+.ctx-note { font-size: 13px; color: var(--text-3); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; margin-bottom: 0; }
+.ctx-note strong { color: var(--text-2); }
+
+/* RULES TAB */
+.rule-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; margin-bottom: 12px; }
+.rule-hdr { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.rule-name { font-size: 16px; font-weight: 700; color: var(--text); flex: 1; min-width: 160px; }
+.rule-count { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-3); white-space: nowrap; }
+.rule-desc { font-size: 14px; color: var(--text-2); line-height: 1.55; margin: 0 0 14px; }
+
+.sub-tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 14px; }
+.sub-tbl tr + tr { border-top: 1px solid var(--border); }
+.sub-tbl td { padding: 7px 0; }
+.sub-lbl { color: var(--text-2); }
+.sub-n { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); white-space: nowrap; padding-left: 12px; }
+.sub-pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-3); width: 48px; white-space: nowrap; padding-left: 8px; }
+
+.pub-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pub-label { font-size: 12px; color: var(--text-3); }
+.pub-chip { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; background: var(--bg); border: 1px solid var(--border); color: var(--text-2); font-family: var(--mono); white-space: nowrap; }
+
+.steward-list { font-size: 13.5px; margin-bottom: 12px; }
+.steward-list table { width: 100%; border-collapse: collapse; }
+.steward-list tr + tr { border-top: 1px solid var(--border); }
+.steward-list td { padding: 6px 0; }
+.s-name { color: var(--text); }
+.s-n { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text-2); white-space: nowrap; padding-left: 16px; }
+.s-others { color: var(--text-3); font-style: italic; }
+.rule-note { font-size: 12.5px; color: var(--text-3); margin: 0; }
+
+/* SCOPE CLASSES */
+.s-rel { display: none; }
+</style>
+
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-left">
+      <svg class="hdr-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="7" width="20" height="14" rx="2"/>
+        <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+      </svg>
+      <h2>PB/Wires Firm Cleanup</h2>
+    </div>
+    <span class="meta">215,608 contacts &middot; Aug 2026</span>
+  </div>
+
+  <div class="scope" role="group" aria-label="Population scope">
+    <button id="btn-all" aria-pressed="true" onclick="setScope('all')">All PBW</button>
+    <button id="btn-rel" aria-pressed="false" onclick="setScope('rel')">Relevant</button>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" role="tab" aria-selected="true" onclick="switchTab(0)">Summary</button>
+    <button class="tab" role="tab" aria-selected="false" onclick="switchTab(1)">Rules</button>
+  </div>
+
+  <!-- ============================================================ SUMMARY PANE -->
+  <div class="pane active" id="pane-0">
+
+    <!-- stat tiles: all scope -->
+    <div class="grid-4 s-all">
+      <div class="cell c-total">
+        <div class="cell-label">PBW universe</div>
+        <div class="cell-value">215,608</div>
+        <div class="cell-sub">contacts with CRD</div>
+      </div>
+      <div class="cell c-agree">
+        <div class="cell-label">Firm agrees</div>
+        <div class="cell-value">200,136</div>
+        <div class="cell-sub">92.8% &middot; no action needed</div>
+      </div>
+      <div class="cell c-nr">
+        <div class="cell-label">Firm conflict</div>
+        <div class="cell-value">12,032</div>
+        <div class="cell-sub">5.6% &middot; steward review</div>
+      </div>
+      <div class="cell c-muted">
+        <div class="cell-label">NG firm only</div>
+        <div class="cell-value">3,440</div>
+        <div class="cell-sub">no market data proposal</div>
+      </div>
+    </div>
+
+    <!-- stat tiles: relevant scope -->
+    <div class="grid-2 s-rel">
+      <div class="cell c-total">
+        <div class="cell-label">Relevant universe</div>
+        <div class="cell-value">67,114</div>
+        <div class="cell-sub">contacts with Salesforce activity</div>
+      </div>
+      <div class="cell c-nr">
+        <div class="cell-label">Firm conflict</div>
+        <div class="cell-value">8,992</div>
+        <div class="cell-sub">13.4% of relevant &middot; steward review</div>
+      </div>
+    </div>
+
+    <!-- routing summary table -->
+    <div class="tbl-wrap">
+      <div class="scroll-x">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th class="dn"><span class="s-all">All PBW</span><span class="s-rel">Relevant</span></th>
+              <th class="dp">Share</th>
+              <th class="d-bar"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="chip chip-nr">NR-F1</span>Proposed firm change
+              </td>
+              <td class="dn">
+                <span class="s-all">10,786</span><span class="s-rel">8,010</span>
+              </td>
+              <td class="dp">
+                <span class="s-all">89.6%</span><span class="s-rel">89.1%</span>
+              </td>
+              <td class="d-bar">
+                <div class="bar-track">
+                  <div class="bar-fill" style="width:89.6%;background:var(--yellow)"></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="chip chip-edit">NR-F2</span>Human edit protection
+              </td>
+              <td class="dn">
+                <span class="s-all">1,246</span><span class="s-rel">982</span>
+              </td>
+              <td class="dp">
+                <span class="s-all">10.4%</span><span class="s-rel">10.9%</span>
+              </td>
+              <td class="d-bar">
+                <div class="bar-track">
+                  <div class="bar-fill" style="width:10.4%;background:var(--violet)"></div>
+                </div>
+              </td>
+            </tr>
+            <tr class="tot-row">
+              <td>Total flagged</td>
+              <td class="dn">
+                <span class="s-all">12,032</span><span class="s-rel">8,992</span>
+              </td>
+              <td class="dp">&mdash;</td>
+              <td class="d-bar"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- key signals -->
+    <div class="signals">
+      <p class="sig-hdr">Key signals</p>
+      <div class="sig-grid">
+        <div class="sig-card">
+          <div class="sig-n">97.2%</div>
+          <div class="sig-label">of proposals sourced from FINTRX BD/RIA</div>
+        </div>
+        <div class="sig-card">
+          <div class="sig-n">9,045</div>
+          <div class="sig-label">firm-change rows with FINRA departure confirmed</div>
+        </div>
+        <div class="sig-card">
+          <div class="sig-n">5,093</div>
+          <div class="sig-label">FINRA departure recorded since Jan 2024</div>
+        </div>
+        <div class="sig-card">
+          <div class="sig-n">380</div>
+          <div class="sig-label">flagged contacts with a logged call in 12 months</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="ctx-note">
+      <strong>No auto-override bucket.</strong>
+      All firm conflicts route to steward review &mdash; firm-affiliation changes are high-stakes
+      and require human confirmation before writing back to NextGen.
+      The 3,440 &ldquo;NG firm only&rdquo; contacts have a firm in NextGen that no publisher
+      disputes; they are not in the conflict queue.
+    </p>
+
+  </div><!-- /pane-0 -->
+
+  <!-- ============================================================ RULES PANE -->
+  <div class="pane" id="pane-1">
+
+    <div class="rule-block">
+      <div class="rule-hdr">
+        <span class="chip chip-nr">NR-F1</span>
+        <span class="rule-name">Proposed firm change</span>
+        <span class="rule-count">10,786 rows &middot; 89.6% of conflicts</span>
+      </div>
+      <p class="rule-desc">
+        A market data source has the contact affiliated with a different firm than NextGen&rsquo;s
+        current record, and no steward has explicitly locked the NG value. FINTRX BD/RIA accounts
+        for 97.2% of these proposals. A steward should confirm whether the advisor has moved and
+        update NextGen accordingly.
+      </p>
+      <table class="sub-tbl">
+        <tbody>
+          <tr>
+            <td class="sub-lbl">FINRA departure date confirmed</td>
+            <td class="sub-n">9,045</td>
+            <td class="sub-pct">84%</td>
+          </tr>
+          <tr>
+            <td class="sub-lbl">FINRA departure recorded since Jan 2024</td>
+            <td class="sub-n">5,093</td>
+            <td class="sub-pct">47%</td>
+          </tr>
+          <tr>
+            <td class="sub-lbl">FINRA prior-firm data available</td>
+            <td class="sub-n">9,045</td>
+            <td class="sub-pct">84%</td>
+          </tr>
+          <tr>
+            <td class="sub-lbl">Logged call in last 12 months (warrants extra care)</td>
+            <td class="sub-n">~340</td>
+            <td class="sub-pct">~3%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pub-row">
+        <span class="pub-label">Proposing sources:</span>
+        <span class="pub-chip">FINTRX_BDRIA &nbsp;11,700</span>
+        <span class="pub-chip">SSC &nbsp;215</span>
+        <span class="pub-chip">FINTRX_GFO &nbsp;117</span>
+      </div>
+    </div>
+
+    <div class="rule-block">
+      <div class="rule-hdr">
+        <span class="chip chip-edit">NR-F2</span>
+        <span class="rule-name">Human edit protection</span>
+        <span class="rule-count">1,246 rows &middot; 10.4% of conflicts</span>
+      </div>
+      <p class="rule-desc">
+        A steward explicitly set the NextGen firm name and market data now disagrees with that
+        choice. The edit history is preserved; the original editor should confirm the value is
+        still correct or accept the market data proposal. 966 of these rows have FINRA departure
+        data available to anchor the review.
+      </p>
+      <div class="steward-list">
+        <table>
+          <tbody>
+            <tr><td class="s-name">Connor O&#39;Brien</td><td class="s-n">830</td></tr>
+            <tr><td class="s-name">John Johnson</td><td class="s-n">183</td></tr>
+            <tr><td class="s-name">Jake Weissman</td><td class="s-n">41</td></tr>
+            <tr><td class="s-name">John Lorfink</td><td class="s-n">36</td></tr>
+            <tr><td class="s-name">Rudy DiGiorgio</td><td class="s-n">30</td></tr>
+            <tr><td class="s-name">Christopher Jansen</td><td class="s-n">29</td></tr>
+            <tr><td class="s-name s-others">Others</td><td class="s-n">97</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="rule-note">
+        The edit date is recorded in <code>FIRM_LAST_CHG_DATE</code>; 6,274 rows across all
+        differ rows have a change date on file. NR-F2 rows were the last human touch; NR-F1
+        rows were last written by Semarchy Integration User or an earlier steward whose edit
+        is no longer the most recent.
+      </p>
+    </div>
+
+  </div><!-- /pane-1 -->
+
+</div><!-- /wrap -->
+
+<script>
+var scope = 'all';
+
+function setScope(s) {
+  scope = s;
+  document.getElementById('btn-all').setAttribute('aria-pressed', s === 'all' ? 'true' : 'false');
+  document.getElementById('btn-rel').setAttribute('aria-pressed', s === 'rel' ? 'true' : 'false');
+  var all = document.querySelectorAll('.s-all');
+  var rel = document.querySelectorAll('.s-rel');
+  for (var i = 0; i < all.length; i++) { all[i].style.display = s === 'all' ? '' : 'none'; }
+  for (var i = 0; i < rel.length; i++) { rel[i].style.display = s === 'rel' ? '' : 'none'; }
+}
+
+function switchTab(idx) {
+  var tabs = document.querySelectorAll('.tab');
+  var panes = document.querySelectorAll('.pane');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', i === idx);
+    tabs[i].setAttribute('aria-selected', i === idx ? 'true' : 'false');
+  }
+  for (var i = 0; i < panes.length; i++) {
+    panes[i].classList.toggle('active', i === idx);
+  }
+}
+</script>
