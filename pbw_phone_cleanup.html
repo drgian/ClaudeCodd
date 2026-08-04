@@ -295,6 +295,7 @@
   <div class="hdr">
     <h2>PB/Wires Phone Cleanup</h2>
     <span class="meta" id="meta"></span>
+    <button class="back dl" onclick="downloadWorkbook()">Download Workbook (.xls)</button>
   </div>
 
   <div class="scope" role="group" aria-label="Population">
@@ -761,6 +762,51 @@ function dlNote(msg, bad) {
   var el = document.getElementById("samp-note");
   el.textContent = msg || "";
   el.className = "dlnote" + (bad ? " bad" : "");
+}
+
+function xlEsc(v) {
+  return String(v == null ? "" : v)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function buildSheet(name, sheetRows) {
+  var hdr = EXPORT_COLS.map(function(c) {
+    return '<Cell ss:StyleID="h"><Data ss:Type="String">' + xlEsc(c[1]) + '</Data></Cell>';
+  }).join("");
+  var body = sheetRows.map(function(r) {
+    var cells = EXPORT_COLS.map(function(c) {
+      return '<Cell><Data ss:Type="String">' + xlEsc(r[c[0]]) + '</Data></Cell>';
+    }).join("");
+    return "<Row>" + cells + "</Row>";
+  }).join("");
+  return '<Worksheet ss:Name="' + xlEsc(name) + '"><Table><Row>' + hdr + "</Row>" + body + "</Table></Worksheet>";
+}
+
+function downloadWorkbook() {
+  var ao = [], keep = [], nr = [];
+  ROWS.forEach(function(r) {
+    var rt = r["rt"] || "";
+    if (rt === "ao" || rt === "fill") { ao.push(r); }
+    else if (rt === "keep") { keep.push(r); }
+    else if (rt === "nr")   { nr.push(r); }
+  });
+  var xml = '<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>\n' +
+    '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"' +
+    ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n' +
+    '<Styles><Style ss:ID="h"><Font ss:Bold="1"/></Style></Styles>\n' +
+    buildSheet("Override", ao) + "\n" +
+    buildSheet("Keep", keep) + "\n" +
+    buildSheet("Needs Review", nr) + "\n" +
+    "</Workbook>";
+  var blob = new Blob([xml], { type: "application/vnd.ms-excel" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "pbw_phone_cleanup.xls";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function buildTsv() {
