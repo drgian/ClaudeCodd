@@ -334,6 +334,45 @@ function downloadXLSX() {
   }
 }
 
+/* ---- minimal real-XLSX generator (STORE zip, no external library) ---- */
+var _crcT=(function(){var t=[];for(var i=0;i<256;i++){var c=i;for(var j=0;j<8;j++)c=(c&1)?0xEDB88320^(c>>>1):c>>>1;t[i]=c;}return t;})();
+function _crc32(buf){var c=0xFFFFFFFF;for(var i=0;i<buf.length;i++)c=(c>>>8)^_crcT[(c^buf[i])&0xFF];return(c^0xFFFFFFFF)>>>0;}
+function _u16(n){return[n&0xFF,(n>>8)&0xFF];}
+function _u32(n){return[n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>>24)&0xFF];}
+function _utf8(s){var b=[];for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);if(c<128)b.push(c);else if(c<2048){b.push(0xC0|(c>>6));b.push(0x80|(c&0x3F));}else{b.push(0xE0|(c>>12));b.push(0x80|((c>>6)&0x3F));b.push(0x80|(c&0x3F));}}return b;}
+function _buildXlsx(sheetName,headers,rows){
+  function ex(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  var ws='<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row>';
+  headers.forEach(function(h){ws+='<c t="inlineStr"><is><t>'+ex(h)+'</t></is></c>';});
+  ws+='</row>';
+  rows.forEach(function(r){ws+='<row>';headers.forEach(function(h){ws+='<c t="inlineStr"><is><t>'+ex(r[h]||"")+'</t></is></c>';});ws+='</row>';});
+  ws+='</sheetData></worksheet>';
+  var FM={};
+  FM["[Content_Types].xml"]='<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>';
+  FM["_rels/.rels"]='<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  FM["xl/workbook.xml"]='<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+ex(sheetName)+'" sheetId="1" r:id="rId1"/></sheets></workbook>';
+  FM["xl/_rels/workbook.xml.rels"]='<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>';
+  FM["xl/worksheets/sheet1.xml"]=ws;
+  var names=Object.keys(FM),ld=[],cd=[],off=0;
+  names.forEach(function(name){
+    var nb=_utf8(name),db=_utf8(FM[name]),crc=_crc32(db);
+    var lh=[0x50,0x4B,0x03,0x04].concat(_u16(20),_u16(0),_u16(0),_u16(0),_u16(0),_u32(crc),_u32(db.length),_u32(db.length),_u16(nb.length),_u16(0));
+    var ce=[0x50,0x4B,0x01,0x02].concat(_u16(20),_u16(20),_u16(0),_u16(0),_u16(0),_u16(0),_u32(crc),_u32(db.length),_u32(db.length),_u16(nb.length),_u16(0),_u16(0),_u16(0),_u16(0),_u32(0),_u32(off));
+    ld.push(lh,nb,db); cd.push(ce,nb);
+    off+=lh.length+nb.length+db.length;
+  });
+  var cdSz=0; cd.forEach(function(b){cdSz+=b.length;});
+  var n=names.length;
+  var eocd=[0x50,0x4B,0x05,0x06].concat(_u16(0),_u16(0),_u16(n),_u16(n),_u32(cdSz),_u32(off),_u16(0));
+  var parts=ld.concat(cd,[eocd]),tot=0;
+  parts.forEach(function(b){tot+=b.length;});
+  var zip=new Uint8Array(tot),pos=0;
+  parts.forEach(function(b){for(var i=0;i<b.length;i++)zip[pos++]=b[i];});
+  var bin=""; for(var i=0;i<zip.length;i++) bin+=String.fromCharCode(zip[i]);
+  return btoa(bin);
+}
+/* ---- end XLSX generator ---- */
+
 function downloadCatXLSX() {
   var SAMP = getSamples();
   var pop  = SAMP[currentScope] || SAMP["all"];
@@ -359,8 +398,16 @@ function downloadCatXLSX() {
       }
     });
   });
-  doDownload([{name:"Contact Updates", cols:hdrCols, rows:allRows}],
-             "email_contact_updates_" + scope, ".xlsx");
+  try {
+    var b64 = _buildXlsx("Contact Updates", hdrCols, allRows);
+    var a = document.createElement("a");
+    a.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + b64;
+    a.download = "email_contact_updates_" + scope + ".xlsx";
+    document.body.appendChild(a); a.click();
+    setTimeout(function() { document.body.removeChild(a); }, 200);
+  } catch(e) {
+    alert("Download error: " + e.message);
+  }
 }
 
 function v(x) { return x || ""; }
