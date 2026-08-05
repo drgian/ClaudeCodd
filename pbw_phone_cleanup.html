@@ -298,7 +298,6 @@
   <div class="hdr">
     <h2>PB/Wires Phone Cleanup</h2>
     <span class="meta" id="meta"></span>
-    <button class="back dl" onclick="downloadWorkbook()">Download Workbook (.xls)</button>
   </div>
 
   <div class="scope" role="group" aria-label="Population">
@@ -828,8 +827,20 @@ function xlWorkbook(sheets) {
 }
 
 // Downloads the currently open drilldown bucket as a named, formatted .xls file.
+// Mirrors openSamples() logic: CAT: keys expand across all rules in that category.
 function downloadDrilldown() {
-  var set = (SAMPLES[scope] && SAMPLES[scope][openKey]) || [];
+  var set;
+  if (openKey && openKey.indexOf("CAT:") === 0) {
+    var ck = openKey.slice(4);
+    var cat = CATS.filter(function(c) { return c[0] === ck; })[0];
+    var combined = [];
+    if (cat && SAMPLES[scope]) {
+      cat[3].forEach(function(rc) { combined = combined.concat(SAMPLES[scope]["R:"+rc] || []); });
+    }
+    set = combined;
+  } else {
+    set = (SAMPLES[scope] && SAMPLES[scope][openKey]) || [];
+  }
   if (!set.length) { return; }
   var sheetRows = set.map(function(i) { return ROWS[i]; });
   var label = openLabel || openKey || "Export";
