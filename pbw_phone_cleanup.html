@@ -32,14 +32,13 @@
   .hdr h2 { font-size:22px; font-weight:700; color:var(--navy); margin:0; text-wrap:balance; letter-spacing:-0.01em; }
   .hdr .meta { font-size:13px; color:var(--text-3); font-variant-numeric:tabular-nums; }
 
-  /* Scope switch  -  which population the whole page describes. Sits above the pane tabs
-     because it reframes every number on either tab, rather than changing the view. */
-  .scope { display:inline-flex; padding:3px; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:9px; margin-bottom:16px; }
-  .scope button { font-family:inherit; font-size:13px; font-weight:600; padding:6px 18px; border:none; border-radius:6px; background:none; color:var(--text-3); cursor:pointer; }
-  .scope button:hover { color:var(--text-2); }
-  .scope button:focus-visible { outline:2px solid var(--navy); outline-offset:1px; }
-  /* --surface tracks the theme, so the pressed label stays legible on --navy in both. */
-  .scope button[aria-pressed="true"] { background:var(--navy); color:var(--surface); }
+  /* Toggle controls — scope (population) and phone-type filter. Both sit above the pane tabs. */
+  .controls-bar { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+  .toggle-group { display:inline-flex; padding:3px; gap:2px; background:var(--surface); border:1px solid var(--border); border-radius:9px; }
+  .toggle-group button { font-family:inherit; font-size:13px; font-weight:600; padding:6px 18px; border:none; border-radius:6px; background:none; color:var(--text-3); cursor:pointer; transition:background 0.12s,color 0.12s; }
+  .toggle-group button:hover { color:var(--text-2); }
+  .toggle-group button:focus-visible { outline:2px solid var(--navy); outline-offset:1px; }
+  .toggle-group button[aria-pressed="true"] { background:var(--navy); color:var(--surface); }
 
   .tabs { display:flex; gap:2px; margin-bottom:16px; border-bottom:2px solid var(--border); }
   .tab { padding:8px 20px; font-size:14px; font-weight:600; color:var(--text-3); cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; margin-bottom:-2px; font-family:inherit; }
@@ -300,15 +299,21 @@
     <span class="meta" id="meta"></span>
   </div>
 
-  <div class="scope" role="group" aria-label="Population">
-    <button id="sc-all" aria-pressed="true" onclick="setScope('all')">All PB/Wires</button>
-    <button id="sc-active" aria-pressed="false" onclick="setScope('active')">Active 12mo</button>
+  <div class="controls-bar">
+    <div class="toggle-group" role="group" aria-label="Population">
+      <button id="sc-all" aria-pressed="true" onclick="setScope('all')">All PB/Wires</button>
+      <button id="sc-active" aria-pressed="false" onclick="setScope('active')">Active 12mo</button>
+    </div>
+    <div class="toggle-group" role="group" aria-label="Phone type">
+      <button id="pf-all" aria-pressed="true" onclick="setPhoneFilter('all')">All</button>
+      <button id="pf-pri" aria-pressed="false" onclick="setPhoneFilter('pri')">Primary</button>
+      <button id="pf-mob" aria-pressed="false" onclick="setPhoneFilter('mob')">Mobile</button>
+    </div>
   </div>
 
   <div class="tabs">
     <button class="tab active" id="tb-summary" onclick="setTab('summary')">Summary</button>
     <button class="tab" id="tb-rules" onclick="setTab('rules')">Rules</button>
-    <button class="tab" id="tb-samples" onclick="setTab('samples')">Examples</button>
   </div>
 
   <div class="pane active" id="summary">
@@ -946,6 +951,12 @@ function downloadDrilldown() {
   } else {
     set = (SAMPLES[scope] && SAMPLES[scope][openKey]) || [];
   }
+  if (phoneFilter !== "all") {
+    var isMobFilter = phoneFilter === "mob";
+    set = set.filter(function(idx) {
+      return ((ROWS[idx][F.pfield] || "").indexOf("cell") === 0) === isMobFilter;
+    });
+  }
   if (!set.length) { return; }
   var sheetRows = set.map(function(i) { return ROWS[i]; });
   var label = openLabel || openKey || "Export";
@@ -1019,68 +1030,129 @@ function openSamples(key, label) {
   } else {
     set = (SAMPLES[scope] && SAMPLES[scope][key]) || [];
   }
+  // Apply phone-type filter to sampled indices.
+  if (phoneFilter !== "all") {
+    var isMobFilter = phoneFilter === "mob";
+    set = set.filter(function(idx) {
+      return ((ROWS[idx][F.pfield] || "").indexOf("cell") === 0) === isMobFilter;
+    });
+  }
   // The route is stated on every card's VERDICT chip, so the title stays as the rule text alone.
   document.getElementById("samp-title").textContent = openLabel;
   var shown = Math.min(set.length, N_SHOWN);
+  var filterLabel = phoneFilter === "pri" ? " | primary phones" :
+                    phoneFilter === "mob" ? " | mobile phones" : "";
   document.getElementById("samp-count").textContent = set.length
     ? "showing " + shown + " of " + set.length +
-      (scope === "active" ? " | active 12mo" : " | all PB/Wires") : "";
+      (scope === "active" ? " | active 12mo" : " | all PB/Wires") + filterLabel : "";
   var body = document.getElementById("samp-body");
   if (!set.length) {
     body.innerHTML = '<div class="empty">No rows fall under this rule in the selected population.</div>';
   } else {
-    // Only N_SHOWN are painted. A hundred full record cards is unreadable on screen and slow to
-    // render; the rest of the bucket goes out through the download instead.
     body.innerHTML = set.slice(0, N_SHOWN).map(function (i) { return recordCard(ROWS[i]); }).join("");
   }
   var dl = document.getElementById("samp-dl");
   dl.style.display = set.length ? "" : "none";
-  dl.textContent = "Download all (.xls)";
+  dl.textContent = "Download all (.xlsx)";
   setTab("samples");
 }
 
 var CELL_ROUTE = {"c-fill":"fill","c-auto":"ao","c-nr":"nr","c-keep":"keep","c-total":"total"};
 
+// ── Phone-type filter ────────────────────────────────────────────────────────
+var phoneFilter = "all"; // "all" | "pri" | "mob"
+
+// Returns index into [all_pri, all_mob, act_pri, act_mob], or null when filter is "all".
+function pfIdx() {
+  if (phoneFilter === "all") return null;
+  return scope === "all" ? (phoneFilter === "pri" ? 0 : 1) : (phoneFilter === "pri" ? 2 : 3);
+}
+
+// Returns the filtered count from DATA_PHF, or null if filter is "all" / data missing.
+function pfCount(type, key) {
+  var pi = pfIdx();
+  if (pi === null) return null;
+  var d = DATA_PHF && DATA_PHF[type];
+  if (!d) return null;
+  var p = d[key];
+  return p != null ? p[pi] : null;
+}
+
+// Returns a copy of category-table row data with counts replaced by filtered values.
+function filteredCatData(data, routeCode) {
+  if (phoneFilter === "all") return data;
+  var rtN = pfCount("route", routeCode);
+  return data.map(function(r) {
+    var ck = catKey(r[0]);
+    var n = ck ? pfCount("cat", ck) : null;
+    if (n === null) return r;
+    var pct = rtN > 0 ? n / rtN * 100 : 0;
+    return [r[0], n, pct];
+  });
+}
+
+function setPhoneFilter(f) {
+  phoneFilter = f;
+  ["all", "pri", "mob"].forEach(function(v) {
+    document.getElementById("pf-" + v).setAttribute("aria-pressed", String(v === f));
+  });
+  render();
+  if (tab === "samples" && openKey) { openSamples(openKey); }
+}
+
 function render() {
   var d = DATA[scope];
   document.getElementById("meta").textContent = d.meta;
+
+  // Stat tiles: replace count with filtered value when phone filter is active.
   document.getElementById("cells").innerHTML = d.cells.map(function (c) {
-    var pm = phfFor("route", CELL_ROUTE[c[0]]);
+    var rt = CELL_ROUTE[c[0]];
+    var filtered = pfCount("route", rt);
+    var displayCount = filtered !== null ? fmt(filtered) : c[2];
+    var pm = phoneFilter === "all" ? phfFor("route", rt) : null;
     var phfHtml = pm ? '<div class="cell-phf">&#9742;&thinsp;' + fmt(pm[0]) + ' &nbsp; &#128241;&thinsp;' + fmt(pm[1]) + '</div>' : '';
     return '<div class="cell ' + c[0] + '"><div class="cell-label">' + c[1] + '</div>' +
-      '<div class="cell-value">' + c[2] + '</div>' + phfHtml + '<div class="cell-sub">' + c[3] + '</div></div>';
+      '<div class="cell-value">' + displayCount + '</div>' + phfHtml + '<div class="cell-sub">' + c[3] + '</div></div>';
   }).join("");
-  rows(document.getElementById("t-ov"), d.ov, "green");
-  rows(document.getElementById("t-nr"), d.nr, "yellow");
-  rows(document.getElementById("t-kp"), d.kp, "teal");
+
+  // Category table: filter by phone type when active.
+  rows(document.getElementById("t-ov"), filteredCatData(d.ov, "ao"), "green");
+  rows(document.getElementById("t-nr"), filteredCatData(d.nr, "nr"), "yellow");
+  rows(document.getElementById("t-kp"), filteredCatData(d.kp, "keep"), "teal");
 
   var i = scope === "all" ? 3 : 4;
-  // Build a lookup: rule code -> rule row
   var ruleMap = {};
   RULES.forEach(function(r) { ruleMap[r[0]] = r; });
-  // Compute route totals for % in category headers
+  // Route totals for % in category headers — use filtered counts when active.
   var routeTotals = {};
-  RULES.forEach(function(r) { routeTotals[r[1]] = (routeTotals[r[1]] || 0) + r[i]; });
+  RULES.forEach(function(r) {
+    var n = pfCount("rule", r[0]); if (n === null) n = r[i];
+    routeTotals[r[1]] = (routeTotals[r[1]] || 0) + n;
+  });
   var rulesHtml = "";
   CATS.forEach(function(cat) {
     var catRules = cat[3].map(function(rc) { return ruleMap[rc]; }).filter(Boolean);
     if (!catRules.length) return;
-    var catTotal = catRules.reduce(function(s, r) { return s + r[i]; }, 0);
+    var catTotal = catRules.reduce(function(s, r) {
+      var n = pfCount("rule", r[0]); return s + (n !== null ? n : r[i]);
+    }, 0);
     var pct = routeTotals[cat[2]] > 0 ? (catTotal / routeTotals[cat[2]] * 100).toFixed(1) + "%" : "";
     rulesHtml += '<tr class="cat-hdr"><td colspan="2">' + esc(cat[1]) +
       '<span class="cat-pct">' + fmt(catTotal) + ' rows, ' + pct + ' of ' + ROUTE_LABEL[cat[2]] + '</span></td>' +
       '<td></td><td></td><td></td></tr>';
     catRules.forEach(function(r) {
-      var n = r[i], z = n === 0 ? " zero" : "";
+      var n = pfCount("rule", r[0]); if (n === null) n = r[i];
+      var z = n === 0 ? " zero" : "";
       var key = "R:" + r[0];
       var has = n > 0 && SAMPLES[scope] && SAMPLES[scope][key] && SAMPLES[scope][key].length;
+      var rulePhfHtml = phoneFilter === "all" ? phfSub(phfFor("rule", r[0])) : "";
       rulesHtml += '<tr' + (has ? ' class="clickable" tabindex="0" role="button"' +
           ' data-key="' + esc(key) + '" data-label="' + esc(r[0] + " " + r[2]) + '"' +
           ' onclick="openSamples(this.dataset.key, this.dataset.label)"' +
           ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click();}"' : '') +
         '><td class="r-id r-' + r[1] + '">' + r[0] + '</td><td>' + esc(r[2]) + '</td>' +
         '<td><span class="chip chip-' + r[1] + '">' + ROUTE_LABEL[r[1]] + '</span></td>' +
-        '<td class="dn' + z + '">' + fmt(n) + phfSub(phfFor("rule", r[0])) + '</td><td>' + esc(r[5]) + '</td></tr>';
+        '<td class="dn' + z + '">' + fmt(n) + rulePhfHtml + '</td><td>' + esc(r[5]) + '</td></tr>';
     });
   });
   document.getElementById("t-rules").innerHTML = rulesHtml;
@@ -1107,10 +1179,12 @@ function setScope(s) {
 function setTab(t) {
   if (t !== "samples") { lastTab = t; }
   tab = t;
-  ["summary", "rules", "samples"].forEach(function (id) {
+  ["summary", "rules"].forEach(function (id) {
     document.getElementById(id).classList.toggle("active", id === t);
     document.getElementById("tb-" + id).classList.toggle("active", id === t);
   });
+  // samples pane has no tab button — toggle directly.
+  document.getElementById("samples").classList.toggle("active", t === "samples");
   if (t === "samples" && !document.getElementById("samp-body").innerHTML) {
     document.getElementById("samp-body").innerHTML =
       '<div class="empty">Pick a row on the Summary or Rules tab to see examples of it.</div>';
