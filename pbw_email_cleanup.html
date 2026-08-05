@@ -189,7 +189,7 @@
     <div class="tbl-wrap"><table id="tbl-ao"><thead><tr><th>Auto Override &#x2014; by reason</th><th class="d-bar"></th><th class="dn">Rows</th><th class="dp">% of AO</th></tr></thead><tbody></tbody></table></div>
     <div class="tbl-wrap"><table id="tbl-nr"><thead><tr><th>Needs Review &#x2014; why we protect</th><th class="d-bar"></th><th class="dn">Rows</th><th class="dp">%</th></tr></thead><tbody></tbody></table></div>
     <div style="margin-top:10px;">
-      <button class="back" onclick="downloadCatXLSX()">&#8615; Download all AO categories for processing</button>
+      <button class="back" onclick="downloadCatXLSX()">&#8615; Download contact updates for processing</button>
     </div>
   </div>
 
@@ -292,12 +292,13 @@ function buildXlsXml(sheets) {
   return xml;
 }
 
-function doDownload(sheets, fname) {
+function doDownload(sheets, fname, ext) {
   try {
     var xml = buildXlsXml(sheets);
+    var finalName = fname.replace(/\.[a-z]+$/i, "") + (ext || ".xml");
     var a = document.createElement("a");
     a.href = "data:application/vnd.ms-excel;charset=utf-8," + encodeURIComponent(xml);
-    a.download = fname.replace(/\.xlsx?$/i, ".xml");
+    a.download = finalName;
     document.body.appendChild(a);
     a.click();
     setTimeout(function() { document.body.removeChild(a); }, 200);
@@ -337,16 +338,29 @@ function downloadCatXLSX() {
   var SAMP = getSamples();
   var pop  = SAMP[currentScope] || SAMP["all"];
   var scope = currentScope === "active" ? "active12mo" : "all";
-  var slimCols = ["NEXTGEN_ID","CRD","NG_EMAIL","PROPOSED_EMAIL","XDM_CONTACT_ID","CONTACT_OWNER"];
-  var sheets = [];
+  var colMap = [
+    {key:"NEXTGEN_ID",    hdr:"NextGen ID"},
+    {key:"CRD",           hdr:"CRD"},
+    {key:"CONTACT_OWNER", hdr:"Contact Name"},
+    {key:"NG_FIRM_NAME",  hdr:"Organization"},
+    {key:"NG_EMAIL",      hdr:"Current Email"},
+    {key:"PROPOSED_EMAIL",hdr:"Proposed Email"}
+  ];
+  var hdrCols = colMap.map(function(m) { return m.hdr; });
+  var allRows = [];
   DATA[currentScope].aoCatRows.forEach(function(cat) {
-    var allRows = [];
     cat.ruleKeys.forEach(function(rk) {
-      if (pop[rk] && pop[rk].rows.length) allRows = allRows.concat(pop[rk].rows);
+      if (pop[rk] && pop[rk].rows.length) {
+        pop[rk].rows.forEach(function(r) {
+          var out = {};
+          colMap.forEach(function(m) { out[m.hdr] = r[m.key] !== undefined ? r[m.key] : ""; });
+          allRows.push(out);
+        });
+      }
     });
-    sheets.push({name: cat.cat.substring(0,31), cols: slimCols, rows: allRows});
   });
-  doDownload(sheets, "email_cleanup_AO_for_processing_" + scope + ".xls");
+  doDownload([{name:"Contact Updates", cols:hdrCols, rows:allRows}],
+             "email_contact_updates_" + scope, ".xlsx");
 }
 
 function v(x) { return x || ""; }
