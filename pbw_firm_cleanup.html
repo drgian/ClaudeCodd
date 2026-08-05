@@ -6,22 +6,24 @@
   --text:#1A2236;--text-2:#4E5D7A;--text-3:#8494B0;
   --navy:#1B3560;--yellow:#EAB308;--amber:#A16207;
   --teal:#0F766E;--violet:#6D28D9;--green:#16A34A;--red:#DC2626;
+  --magenta:#9D174D;
   --mono:"Consolas","Courier New",monospace;
-  --chip-acc-bg:#DCFCE7;--chip-acc-fg:#15803D;
+  --chip-upd-bg:#FCE7F3;--chip-upd-fg:#831843;
   --chip-nr-bg:#FEF9C3;--chip-nr-fg:#A16207;
-  --chip-ed-bg:#EDE9FE;--chip-ed-fg:#4C1D95;
+  --chip-kp-bg:#DBEAFE;--chip-kp-fg:#1E40AF;
   --chip-ok-bg:#E0F2FE;--chip-ok-fg:#0369A1;
   --chip-muted-bg:#F1F5F9;--chip-muted-fg:#64748B;
 }
 @media(prefers-color-scheme:dark){:root{
   --bg:#0C1118;--surface:#141B27;--border:#242E42;--text:#E2E8F5;--text-2:#8A9BBB;--text-3:#4E5F7A;
   --navy:#6B9FE8;--yellow:#EAB308;--amber:#FDE68A;--teal:#2DD4BF;--violet:#A78BFA;--green:#4ADE80;--red:#F87171;
-  --chip-acc-bg:#052E16;--chip-acc-fg:#4ADE80;--chip-nr-bg:#2B2306;--chip-nr-fg:#FDE68A;
-  --chip-ed-bg:#2D1B69;--chip-ed-fg:#C4B5FD;--chip-ok-bg:#082F49;--chip-ok-fg:#38BDF8;
+  --magenta:#F472B6;
+  --chip-upd-bg:#4A0828;--chip-upd-fg:#F9A8D4;--chip-nr-bg:#2B2306;--chip-nr-fg:#FDE68A;
+  --chip-kp-bg:#1E3A5F;--chip-kp-fg:#93C5FD;--chip-ok-bg:#082F49;--chip-ok-fg:#38BDF8;
   --chip-muted-bg:#1E293B;--chip-muted-fg:#94A3B8;
 }}
-:root[data-theme="dark"]{--bg:#0C1118;--surface:#141B27;--border:#242E42;--text:#E2E8F5;--text-2:#8A9BBB;--text-3:#4E5F7A;--navy:#6B9FE8;--yellow:#EAB308;--amber:#FDE68A;--teal:#2DD4BF;--violet:#A78BFA;--green:#4ADE80;--red:#F87171;--chip-acc-bg:#052E16;--chip-acc-fg:#4ADE80;--chip-nr-bg:#2B2306;--chip-nr-fg:#FDE68A;--chip-ed-bg:#2D1B69;--chip-ed-fg:#C4B5FD;--chip-ok-bg:#082F49;--chip-ok-fg:#38BDF8;--chip-muted-bg:#1E293B;--chip-muted-fg:#94A3B8;}
-:root[data-theme="light"]{--bg:#F0F2F5;--surface:#FFFFFF;--border:#D0D6E2;--text:#1A2236;--text-2:#4E5D7A;--text-3:#8494B0;--navy:#1B3560;--yellow:#EAB308;--amber:#A16207;--teal:#0F766E;--violet:#6D28D9;--green:#16A34A;--red:#DC2626;--chip-acc-bg:#DCFCE7;--chip-acc-fg:#15803D;--chip-nr-bg:#FEF9C3;--chip-nr-fg:#A16207;--chip-ed-bg:#EDE9FE;--chip-ed-fg:#4C1D95;--chip-ok-bg:#E0F2FE;--chip-ok-fg:#0369A1;--chip-muted-bg:#F1F5F9;--chip-muted-fg:#64748B;}
+:root[data-theme="dark"]{--bg:#0C1118;--surface:#141B27;--border:#242E42;--text:#E2E8F5;--text-2:#8A9BBB;--text-3:#4E5F7A;--navy:#6B9FE8;--yellow:#EAB308;--amber:#FDE68A;--teal:#2DD4BF;--violet:#A78BFA;--green:#4ADE80;--red:#F87171;--magenta:#F472B6;--chip-upd-bg:#4A0828;--chip-upd-fg:#F9A8D4;--chip-nr-bg:#2B2306;--chip-nr-fg:#FDE68A;--chip-kp-bg:#1E3A5F;--chip-kp-fg:#93C5FD;--chip-ok-bg:#082F49;--chip-ok-fg:#38BDF8;--chip-muted-bg:#1E293B;--chip-muted-fg:#94A3B8;}
+:root[data-theme="light"]{--bg:#F0F2F5;--surface:#FFFFFF;--border:#D0D6E2;--text:#1A2236;--text-2:#4E5D7A;--text-3:#8494B0;--navy:#1B3560;--yellow:#EAB308;--amber:#A16207;--teal:#0F766E;--violet:#6D28D9;--green:#16A34A;--red:#DC2626;--magenta:#9D174D;--chip-upd-bg:#FCE7F3;--chip-upd-fg:#831843;--chip-nr-bg:#FEF9C3;--chip-nr-fg:#A16207;--chip-kp-bg:#DBEAFE;--chip-kp-fg:#1E40AF;--chip-ok-bg:#E0F2FE;--chip-ok-fg:#0369A1;--chip-muted-bg:#F1F5F9;--chip-muted-fg:#64748B;}
 *,*::before,*::after{box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.45;margin:0;padding:22px 20px 48px;}
 .wrap{max-width:min(1100px,100%);margin:0 auto;}
@@ -29,7 +31,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .hdr-left{display:flex;align-items:center;gap:10px;}
 .hdr h2{font-size:22px;font-weight:700;color:var(--navy);margin:0;}
 .hdr .meta{font-size:13px;color:var(--text-3);}
-.ctrl-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;}
+.ctrl-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:16px;}
 .scope{display:inline-flex;padding:3px;gap:3px;background:var(--surface);border:1px solid var(--border);border-radius:9px;}
 .scope button{font-family:inherit;font-size:13px;font-weight:600;padding:6px 16px;border:none;border-radius:6px;background:none;color:var(--text-3);cursor:pointer;white-space:nowrap;}
 .scope button:hover{color:var(--text-2);}
@@ -37,7 +39,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .seg-wrap{display:inline-flex;flex-direction:column;gap:4px;}
 .seg-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);padding-left:2px;}
 #analysis-toggle{position:relative;display:inline-flex;padding:3px;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:9px;}
-#seg-track{position:absolute;top:3px;height:calc(100% - 6px);background:var(--teal);border-radius:6px;transition:left .2s ease,width .2s ease;pointer-events:none;}
+#seg-track{position:absolute;top:3px;height:calc(100% - 6px);background:var(--magenta);border-radius:6px;transition:left .2s ease,width .2s ease;pointer-events:none;}
 #analysis-toggle button{position:relative;z-index:1;font-family:inherit;font-size:13px;font-weight:600;padding:6px 16px;border:none;border-radius:6px;background:none;color:var(--text-3);cursor:pointer;white-space:nowrap;transition:color .15s;}
 #analysis-toggle button.seg-active{color:#fff;}
 :root[data-theme="dark"] #analysis-toggle button.seg-active{color:#0C1118;}
@@ -79,9 +81,9 @@ tbody tr.clickable:hover{background:rgba(27,53,96,.06);}
 :root[data-theme="dark"] tbody tr.clickable:hover{background:rgba(107,159,232,.10);}
 @media(prefers-color-scheme:dark){tbody tr.clickable:hover{background:rgba(107,159,232,.10);}}
 .chip{display:inline-block;padding:2px 9px;border-radius:11px;font-size:11.5px;font-weight:600;white-space:nowrap;margin-right:4px;font-family:var(--mono);letter-spacing:.02em;}
-.chip-acc{background:var(--chip-acc-bg);color:var(--chip-acc-fg);}
+.chip-upd{background:var(--chip-upd-bg);color:var(--chip-upd-fg);}
 .chip-nr{background:var(--chip-nr-bg);color:var(--chip-nr-fg);}
-.chip-edit{background:var(--chip-ed-bg);color:var(--chip-ed-fg);}
+.chip-kp{background:var(--chip-kp-bg);color:var(--chip-kp-fg);}
 .chip-ok{background:var(--chip-ok-bg);color:var(--chip-ok-fg);}
 .chip-muted{background:var(--chip-muted-bg);color:var(--chip-muted-fg);}
 .signals{margin-bottom:16px;}
@@ -112,7 +114,7 @@ tbody tr.clickable:hover{background:rgba(27,53,96,.06);}
 .who a::after{content:"^";font-size:9px;padding-left:2px;vertical-align:super;opacity:.65;}
 .bdg{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;border:1px solid var(--border);}
 .bdg-rel{background:var(--chip-ok-bg);color:var(--chip-ok-fg);}
-.bdg-act{background:var(--chip-acc-bg);color:var(--chip-acc-fg);}
+.bdg-act{background:var(--chip-upd-bg);color:var(--chip-upd-fg);}
 .verdict{margin-left:auto;white-space:nowrap;display:flex;align-items:center;gap:6px;}
 .vlabel{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);}
 .brief{background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--navy);border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:14px;}
@@ -157,9 +159,12 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
     <span class="meta">215,608 contacts &middot; Aug 2026 &middot; exact CRD match only</span>
   </div>
   <div class="ctrl-row">
-    <div class="scope" role="group" aria-label="Population">
-      <button id="btn-all" aria-pressed="true"  onclick="setScope('all')">All PBW</button>
-      <button id="btn-act" aria-pressed="false" onclick="setScope('act')">Active 12mo</button>
+    <div class="seg-wrap">
+      <span class="seg-label">Population</span>
+      <div class="scope" role="group" aria-label="Population">
+        <button id="btn-all" aria-pressed="true"  onclick="setScope('all')">All PBW</button>
+        <button id="btn-act" aria-pressed="false" onclick="setScope('act')">Active 12mo</button>
+      </div>
     </div>
     <div class="seg-wrap">
       <span class="seg-label">NG firm basis</span>
@@ -207,20 +212,20 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
         <thead><tr><th>Routing</th><th class="dn">Count</th><th class="dp">Share</th><th class="d-bar"></th></tr></thead>
         <tbody>
           <tr class="sec-row"><td colspan="4">CRD conflicts (both sides have a CRD and they differ)</td></tr>
-          <tr class="clickable" tabindex="0" onclick="drillTo('accept','FINRA-confirmed accept')" onkeydown="if(event.key==='Enter')this.click()">
-            <td><span class="chip chip-acc">Accept</span>Waterfall &amp; FINRA name both confirm</td>
+          <tr class="clickable" tabindex="0" onclick="drillTo('accept','Update ? FINRA confirms, NG firm should be updated')" onkeydown="if(event.key==='Enter')this.click()">
+            <td><span class="chip chip-upd">Update</span>Waterfall &amp; FINRA name both confirm &mdash; update NG</td>
             <td class="dn" data-cnt="accept">0</td><td class="dp" id="pct-accept">0%</td>
-            <td class="d-bar"><div class="bar-track"><div id="bar-accept" class="bar-fill" style="width:0%;background:var(--green)"></div></div></td>
+            <td class="d-bar"><div class="bar-track"><div id="bar-accept" class="bar-fill" style="width:0%;background:var(--magenta)"></div></div></td>
           </tr>
-          <tr class="clickable" tabindex="0" onclick="drillTo('nrf1','NR-F1: CRD differs, FINRA not confirmed')" onkeydown="if(event.key==='Enter')this.click()">
-            <td><span class="chip chip-nr">NR-F1</span>CRD differs &mdash; FINRA not confirmed</td>
+          <tr class="clickable" tabindex="0" onclick="drillTo('nrf1','Needs Review ? CRD conflict, FINRA not confirmed')" onkeydown="if(event.key==='Enter')this.click()">
+            <td><span class="chip chip-nr">Needs Review</span>CRD conflict &mdash; FINRA has not confirmed direction</td>
             <td class="dn" data-cnt="nrf1">0</td><td class="dp" id="pct-nrf1">0%</td>
             <td class="d-bar"><div class="bar-track"><div id="bar-nrf1" class="bar-fill" style="width:0%;background:var(--yellow)"></div></div></td>
           </tr>
-          <tr class="clickable" tabindex="0" onclick="drillTo('nrf2','Human edit protection')" onkeydown="if(event.key==='Enter')this.click()">
-            <td><span class="chip chip-edit">NR-F2</span>Human edit protection</td>
+          <tr class="clickable" tabindex="0" onclick="drillTo('nrf2','Keep ? steward set this firm, do not overwrite')" onkeydown="if(event.key==='Enter')this.click()">
+            <td><span class="chip chip-kp">Keep</span>Steward-set firm &mdash; do not overwrite</td>
             <td class="dn" data-cnt="nrf2">0</td><td class="dp" id="pct-nrf2">0%</td>
-            <td class="d-bar"><div class="bar-track"><div id="bar-nrf2" class="bar-fill" style="width:0%;background:var(--violet)"></div></div></td>
+            <td class="d-bar"><div class="bar-track"><div id="bar-nrf2" class="bar-fill" style="width:0%;background:#1D4ED8"></div></div></td>
           </tr>
           <tr class="tot-row">
             <td>Total CRD conflicts</td><td class="dn" id="tot-diff">0</td><td class="dp">&mdash;</td><td class="d-bar"></td>
@@ -232,15 +237,15 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
         <div class="sig-grid">
           <div class="sig-card" tabindex="0" onclick="drillTo('finra-conf','FINRA transition signal set')" onkeydown="if(event.key==='Enter')this.click()">
             <div class="sig-n" data-cnt="finra-conf">0</div>
-            <div class="sig-label">FINRA transition signal set (NR-F1)</div>
+            <div class="sig-label">FINRA transition signal set (Needs Review)</div>
           </div>
           <div class="sig-card" tabindex="0" onclick="drillTo('finra-recent','FINRA departure since Jan 2024')" onkeydown="if(event.key==='Enter')this.click()">
             <div class="sig-n" data-cnt="finra-recent">0</div>
             <div class="sig-label">FINRA departure recorded since Jan 2024</div>
           </div>
-          <div class="sig-card" tabindex="0" onclick="drillTo('accept','FINRA-confirmed accept')" onkeydown="if(event.key==='Enter')this.click()">
+          <div class="sig-card" tabindex="0" onclick="drillTo('accept','Update ? FINRA confirms, NG firm should be updated')" onkeydown="if(event.key==='Enter')this.click()">
             <div class="sig-n" data-cnt="accept">0</div>
-            <div class="sig-label">FINRA name confirms waterfall &mdash; ready to accept</div>
+            <div class="sig-label">FINRA name confirms waterfall &mdash; ready to update</div>
           </div>
           <div class="sig-card" tabindex="0" onclick="drillTo('logged-call','Logged call in last 12 months')" onkeydown="if(event.key==='Enter')this.click()">
             <div class="sig-n" data-cnt="logged-call">0</div>
@@ -265,17 +270,17 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
     <div class="pane" id="pane-1">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px;margin-bottom:12px;">
         <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="chip chip-acc">Accept</span>
-          <span style="font-size:16px;font-weight:700;flex:1">FINRA name confirms waterfall CRD</span>
+          <span class="chip chip-upd">Update</span>
+          <span style="font-size:16px;font-weight:700;flex:1">FINRA name confirms waterfall CRD &mdash; update NG</span>
           <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('accept','FINRA-confirmed accept')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="accept">0</span> rows &rarr;</span>
         </div>
         <p style="font-size:14px;color:var(--text-2);margin:0 0 12px">Both the waterfall source and FINRA register the same firm name for this rep. The CRD on record in NG is different, but two independent sources agree on where the rep is now.</p>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px;margin-bottom:12px;">
         <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="chip chip-nr">NR-F1</span>
+          <span class="chip chip-nr">Needs Review</span>
           <span style="font-size:16px;font-weight:700;flex:1">CRD conflict &mdash; FINRA not confirmed</span>
-          <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('nrf1','NR-F1: CRD differs, FINRA not confirmed')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="nrf1">0</span> rows &rarr;</span>
+          <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('nrf1','Needs Review ? CRD conflict, FINRA not confirmed')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="nrf1">0</span> rows &rarr;</span>
         </div>
         <p style="font-size:14px;color:var(--text-2);margin:0 0 12px">Waterfall and NG have different firm CRDs and FINRA doesn&rsquo;t corroborate either direction. Steward review needed. FINRA signals and logged calls help prioritize.</p>
         <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
@@ -286,9 +291,9 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px;margin-bottom:12px;">
         <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="chip chip-edit">NR-F2</span>
-          <span style="font-size:16px;font-weight:700;flex:1">Human edit protection</span>
-          <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('nrf2','Human edit protection')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="nrf2">0</span> rows &rarr;</span>
+          <span class="chip chip-kp">Keep</span>
+          <span style="font-size:16px;font-weight:700;flex:1">Steward-set firm &mdash; do not overwrite</span>
+          <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('nrf2','Keep ? steward set this firm, do not overwrite')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="nrf2">0</span> rows &rarr;</span>
         </div>
         <p style="font-size:14px;color:var(--text-2);margin:0 0 12px">A steward explicitly set the NG firm and the waterfall CRD now disagrees. The original editor should confirm or accept the change.</p>
       </div>
@@ -404,8 +409,8 @@ function whyBox(ri){
   var cmpRes = isRaw ? fv(ri,'compare_raw') : fv(ri,'compare_resolved');
   if(cmpRes==='Match' || cmpRes==='no-crd-both') return '';
   var title = cmpRes==='Differ' ? (
-    routing==='accept' ? 'Why this is accepted' :
-    routing==='nrf2'   ? 'Human edit protection' : 'Why this needs review'
+    routing==='accept' ? 'Why this should be updated' :
+    routing==='nrf2'   ? 'Why this is kept as-is' : 'Why this needs review'
   ) : 'Inconclusive \u2014 missing CRD';
   var briefCls = cmpRes==='Differ' ? 'brief' : 'brief';
   var bullets=[];
@@ -445,8 +450,8 @@ function buildCard(ri){
   var cmpRes  = isRaw ? fv(ri,'compare_raw') : fv(ri,'compare_resolved');
   var chipCls='chip-muted', chipLbl=cmpRes;
   if(cmpRes==='Differ'){
-    chipCls = routing==='nrf2'?'chip-edit':routing==='accept'?'chip-acc':'chip-nr';
-    chipLbl = routing==='nrf2'?'NR-F2':routing==='accept'?'Accept':'NR-F1';
+    chipCls = routing==='nrf2'?'chip-kp':routing==='accept'?'chip-upd':'chip-nr';
+    chipLbl = routing==='nrf2'?'Keep':routing==='accept'?'Update':'Needs Review';
   } else if(cmpRes.indexOf('no-crd')===0){ chipCls='chip-muted'; chipLbl='No CRD'; }
 
   var idParts=[];
@@ -572,11 +577,22 @@ function backToMain(noRetab){
     document.querySelectorAll('.pane').forEach(function(p,i){p.classList.toggle('active',i===activeTab);});
   }
 }
+var DOWNLOAD_EXCL=new Set(['routing_raw','compare_raw','ng_crd_used_raw','ng_name_used_raw',
+  'routing_resolved','compare_resolved','ng_crd_used_resolved','ng_name_used_resolved','walk_up_occurred',
+  'PROPOSED_PHONE','NG_PHONE','PHONE_COMPARE']);
 function copyTSV(){
   var bk=drillCtx?drillCtx.bk:null; if(!bk) return;
-  var rows=rowsFor(bk);
-  var tsv=[F.join('\t')].concat(rows.map(function(ri){
-    return ROWS[ri].map(function(v){return String(v||'').replace(/\t/g,' ');}).join('\t');
+  var allRows=rowsFor(bk);
+  /* Exclude Keep (nrf2) rows from download */
+  var rows=allRows.filter(function(ri){
+    var isRaw=activeAnalysis==='raw';
+    var rt=isRaw?ROWS[ri][F.indexOf('routing_raw')]:ROWS[ri][F.indexOf('routing_resolved')];
+    return rt!=='nrf2';
+  });
+  var cols=F.filter(function(c){return !DOWNLOAD_EXCL.has(c);});
+  var idxs=cols.map(function(c){return F.indexOf(c);});
+  var tsv=[cols.join('\t')].concat(rows.map(function(ri){
+    return idxs.map(function(i){return String(ROWS[ri][i]||'').replace(/\t/g,' ');}).join('\t');
   })).join('\n');
   navigator.clipboard.writeText(tsv).then(function(){
     var btn=document.getElementById('copy-btn'),orig=btn.textContent;
