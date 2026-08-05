@@ -2,196 +2,120 @@
 <title>PB/Wires Duplicate Analysis</title>
 <style>
 :root {
-  --bg:        #F0F4FB;
-  --surface:   #FFFFFF;
-  --surface2:  #E8EEF8;
-  --border:    #CBD5E9;
-  --border2:   #DDE4F2;
-  --text:      #0F1F40;
-  --muted:     #5A6A8A;
-  --accent:    #1D54C4;
-  --accent-lt: #EEF3FF;
-  --green:     #15803D;
-  --green-bg:  #DCFCE7;
-  --amber:     #B45309;
-  --amber-bg:  #FEF3C7;
-  --red:       #B91C1C;
-  --red-bg:    #FEE2E2;
-  --sky:       #0369A1;
-  --sky-bg:    #E0F2FE;
-  --chip-r:    3px;
-  --row-alt:   #F5F8FF;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:#070D1C; --surface:#0E1A30; --surface2:#162240; --border:#1F305A; --border2:#253868;
-    --text:#DCE4F5; --muted:#7A90BE; --accent:#4D8EFF; --accent-lt:#0D1E44;
-    --green:#4ADE80; --green-bg:#052E16; --amber:#FCD34D; --amber-bg:#1C1200;
-    --red:#FCA5A5; --red-bg:#2D0A0A;
-    --sky:#38BDF8; --sky-bg:#082030; --row-alt:#0C1628;
-  }
-}
-:root[data-theme="light"] {
   --bg:#F0F4FB; --surface:#FFFFFF; --surface2:#E8EEF8; --border:#CBD5E9; --border2:#DDE4F2;
   --text:#0F1F40; --muted:#5A6A8A; --accent:#1D54C4; --accent-lt:#EEF3FF;
-  --green:#15803D; --green-bg:#DCFCE7; --amber:#B45309; --amber-bg:#FEF3C7;
+  --green:#15803D; --green-bg:#DCFCE7;
+  --amber:#B45309; --amber-bg:#FEF3C7;
+  --sky:#0369A1; --sky-bg:#E0F2FE;
+  --purple:#6D28D9; --purple-bg:#EDE9FE;
+  --teal:#0F766E; --teal-bg:#CCFBF1;
   --red:#B91C1C; --red-bg:#FEE2E2;
-  --sky:#0369A1; --sky-bg:#E0F2FE; --row-alt:#F5F8FF;
+  --row-alt:#F5F8FF;
 }
-:root[data-theme="dark"] {
+@media (prefers-color-scheme:dark){:root{
   --bg:#070D1C; --surface:#0E1A30; --surface2:#162240; --border:#1F305A; --border2:#253868;
   --text:#DCE4F5; --muted:#7A90BE; --accent:#4D8EFF; --accent-lt:#0D1E44;
-  --green:#4ADE80; --green-bg:#052E16; --amber:#FCD34D; --amber-bg:#1C1200;
+  --green:#4ADE80; --green-bg:#052E16;
+  --amber:#FCD34D; --amber-bg:#1C1200;
+  --sky:#38BDF8; --sky-bg:#082030;
+  --purple:#A78BFA; --purple-bg:#1E0A4A;
+  --teal:#2DD4BF; --teal-bg:#012A24;
   --red:#FCA5A5; --red-bg:#2D0A0A;
-  --sky:#38BDF8; --sky-bg:#082030; --row-alt:#0C1628;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  font-size: 13px; line-height: 1.5;
-  background: var(--bg); color: var(--text); min-height: 100vh;
-}
-.site-header {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 14px 24px; display: flex; align-items: baseline; gap: 12px;
-  position: sticky; top: 0; z-index: 100;
-}
-.site-title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
-.site-sub   { font-size: 12px; color: var(--muted); }
-.site-badge {
-  margin-left: auto; font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-  text-transform: uppercase; color: var(--sky); background: var(--sky-bg);
-  border: 1px solid color-mix(in srgb, var(--sky) 30%, transparent);
-  border-radius: 2px; padding: 2px 8px;
-}
-.theme-btn {
-  background: var(--surface2); border: 1px solid var(--border); border-radius: 3px;
-  color: var(--muted); cursor: pointer; font-size: 11px; padding: 3px 8px; margin-left: 8px;
-}
-.theme-btn:hover { color: var(--text); }
+  --row-alt:#0C1628;
+}}
+:root[data-theme="light"]{--bg:#F0F4FB;--surface:#FFFFFF;--surface2:#E8EEF8;--border:#CBD5E9;--border2:#DDE4F2;--text:#0F1F40;--muted:#5A6A8A;--accent:#1D54C4;--accent-lt:#EEF3FF;--green:#15803D;--green-bg:#DCFCE7;--amber:#B45309;--amber-bg:#FEF3C7;--sky:#0369A1;--sky-bg:#E0F2FE;--purple:#6D28D9;--purple-bg:#EDE9FE;--teal:#0F766E;--teal-bg:#CCFBF1;--red:#B91C1C;--red-bg:#FEE2E2;--row-alt:#F5F8FF;}
+:root[data-theme="dark"]{--bg:#070D1C;--surface:#0E1A30;--surface2:#162240;--border:#1F305A;--border2:#253868;--text:#DCE4F5;--muted:#7A90BE;--accent:#4D8EFF;--accent-lt:#0D1E44;--green:#4ADE80;--green-bg:#052E16;--amber:#FCD34D;--amber-bg:#1C1200;--sky:#38BDF8;--sky-bg:#082030;--purple:#A78BFA;--purple-bg:#1E0A4A;--teal:#2DD4BF;--teal-bg:#012A24;--red:#FCA5A5;--red-bg:#2D0A0A;--row-alt:#0C1628;}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:13px;line-height:1.5;background:var(--bg);color:var(--text);min-height:100vh;}
+
+.site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:baseline;gap:12px;position:sticky;top:0;z-index:100;}
+.site-title{font-size:15px;font-weight:700;letter-spacing:-.01em;}
+.site-sub{font-size:12px;color:var(--muted);}
+.site-badge{margin-left:auto;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--sky);background:var(--sky-bg);border:1px solid color-mix(in srgb,var(--sky) 30%,transparent);border-radius:2px;padding:2px 8px;}
+.theme-btn{background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--muted);cursor:pointer;font-size:11px;padding:3px 8px;margin-left:8px;}
+.theme-btn:hover{color:var(--text);}
 
 /* ── Hero ── */
-.hero {
-  background: var(--surface);
-  border-bottom: 2px solid var(--border);
-  padding: 20px 24px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0;
-}
-.hero-bar-col {
-  display: flex; flex-direction: column; gap: 6px; padding-right: 28px;
-  border-right: 1px solid var(--border); min-width: 300px;
-}
-.hero-bar-label {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 2px;
-}
-.hero-bar {
-  height: 20px; background: var(--surface2); border-radius: 2px;
-  overflow: hidden; display: flex;
-}
-.hero-bar .seg-green  { background: var(--green); }
-.hero-bar .seg-amber  { background: var(--amber); opacity: 0.6; }
-.hero-bar .seg-red    { background: var(--red); opacity: 0.4; }
-.hero-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
-.hero-legend span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
-.hero-legend .dot { width: 8px; height: 8px; border-radius: 1px; flex-shrink: 0; }
-.hero-stat-col { padding-left: 28px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
-.hero-headline { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
-.hero-sub { font-size: 12px; color: var(--muted); line-height: 1.6; max-width: 640px; }
-.hero-pills { display: flex; gap: 8px; flex-wrap: wrap; }
-.hpill {
-  font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums;
-  padding: 3px 10px; border-radius: 2px; border: 1px solid;
-}
-.hpill-g { color: var(--green); background: var(--green-bg); border-color: color-mix(in srgb, var(--green) 30%, transparent); }
-.hpill-a { color: var(--amber); background: var(--amber-bg); border-color: color-mix(in srgb, var(--amber) 30%, transparent); }
-.hpill-s { color: var(--sky);   background: var(--sky-bg);   border-color: color-mix(in srgb, var(--sky)   30%, transparent); }
+.hero{background:var(--surface);border-bottom:2px solid var(--border);padding:20px 24px;display:grid;grid-template-columns:300px 1fr;gap:0;}
+.hero-bar-col{display:flex;flex-direction:column;gap:6px;padding-right:28px;border-right:1px solid var(--border);}
+.hero-bar-label{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+.hero-bar{height:20px;background:var(--surface2);border-radius:2px;overflow:hidden;display:flex;}
+.hero-legend{display:flex;flex-direction:column;gap:3px;margin-top:4px;}
+.hero-legend span{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+.hero-legend .dot{width:10px;height:10px;border-radius:1px;flex-shrink:0;}
+.hero-stat-col{padding-left:28px;display:flex;flex-direction:column;gap:8px;justify-content:center;}
+.hero-headline{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;}
+.hero-sub{font-size:12px;color:var(--muted);line-height:1.6;max-width:620px;}
+.hero-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;}
+.hpill{font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;padding:3px 10px;border-radius:2px;border:1px solid;}
+.hp-g{color:var(--green);background:var(--green-bg);border-color:color-mix(in srgb,var(--green) 30%,transparent);}
+.hp-a{color:var(--amber);background:var(--amber-bg);border-color:color-mix(in srgb,var(--amber) 30%,transparent);}
+.hp-p{color:var(--purple);background:var(--purple-bg);border-color:color-mix(in srgb,var(--purple) 30%,transparent);}
+.hp-t{color:var(--teal);background:var(--teal-bg);border-color:color-mix(in srgb,var(--teal) 30%,transparent);}
+.hp-r{color:var(--red);background:var(--red-bg);border-color:color-mix(in srgb,var(--red) 30%,transparent);}
 
-/* ── KPI row ── */
-.kpi-row {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 1px; background: var(--border); border-bottom: 1px solid var(--border);
-}
-.kpi { background: var(--surface); padding: 14px 24px; display: flex; flex-direction: column; gap: 2px; }
-.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
-.kpi-value { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
-.kpi-value.green { color: var(--green); }
-.kpi-value.amber { color: var(--amber); }
-.kpi-value.sky   { color: var(--sky); }
-.kpi-value.red   { color: var(--red); }
-.kpi-note { font-size: 11px; color: var(--muted); }
+/* ── KPI ── */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.kpi{background:var(--surface);padding:12px 18px;display:flex;flex-direction:column;gap:2px;}
+.kpi-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);}
+.kpi-value{font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1;}
+.kpi-note{font-size:11px;color:var(--muted);}
+.c-green{color:var(--green);} .c-amber{color:var(--amber);} .c-sky{color:var(--sky);}
+.c-purple{color:var(--purple);} .c-teal{color:var(--teal);} .c-red{color:var(--red);}
 
-/* ── Tab strip ── */
-.tab-strip {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  display: flex; padding: 0 24px; overflow-x: auto;
-}
-.tab-btn {
-  background: none; border: none; border-bottom: 2px solid transparent;
-  color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 500;
-  letter-spacing: 0.02em; padding: 10px 14px 9px; white-space: nowrap;
-  transition: color .15s, border-color .15s;
-}
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+/* ── Tabs ── */
+.tab-strip{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 24px;overflow-x:auto;}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:500;letter-spacing:.02em;padding:10px 14px 9px;white-space:nowrap;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
 
-/* ── Content ── */
-.tab-pane { display: none; padding: 24px; max-width: 1200px; }
-.tab-pane.active { display: block; }
+.tab-pane{display:none;padding:24px;max-width:1240px;}
+.tab-pane.active{display:block;}
 
-h2 { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 12px; }
-h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 20px 0 8px; }
-p { color: var(--muted); margin-bottom: 10px; max-width: 720px; line-height: 1.6; }
+h2{font-size:14px;font-weight:700;letter-spacing:-.01em;margin-bottom:12px;}
+h3{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:20px 0 8px;}
+p{color:var(--muted);margin-bottom:10px;max-width:720px;line-height:1.6;}
 
-.tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 20px; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
-thead th {
-  background: var(--surface2); border-bottom: 1px solid var(--border);
-  color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
-  padding: 7px 10px; text-align: left; text-transform: uppercase; white-space: nowrap;
-}
-thead th.r { text-align: right; }
-tbody tr { border-bottom: 1px solid var(--border2); }
-tbody tr:last-child { border-bottom: none; }
-tbody tr:nth-child(even) { background: var(--row-alt); }
-tbody td { padding: 7px 10px; vertical-align: top; }
-tbody td.r { text-align: right; }
-tbody td.mono { font-family: "SF Mono","Fira Code",monospace; font-size: 11px; }
-tfoot td { border-top: 2px solid var(--border); font-weight: 700; padding: 8px 10px; }
-tfoot td.r { text-align: right; }
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:4px;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;}
+thead th{background:var(--surface2);border-bottom:1px solid var(--border);color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.06em;padding:7px 10px;text-align:left;text-transform:uppercase;white-space:nowrap;}
+thead th.r{text-align:right;}
+tbody tr{border-bottom:1px solid var(--border2);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:nth-child(even){background:var(--row-alt);}
+tbody td{padding:7px 10px;vertical-align:top;}
+tbody td.r{text-align:right;}
+tbody td.mono{font-family:"SF Mono","Fira Code",monospace;font-size:11px;}
+tfoot td{border-top:2px solid var(--border);font-weight:700;padding:8px 10px;}
+tfoot td.r{text-align:right;}
 
-.cov-bar-wrap { margin-bottom: 20px; }
-.cov-bar-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
-.cov-bar { height: 8px; background: var(--surface2); border-radius: 2px; overflow: hidden; display: flex; }
-.cov-bar .existing { background: var(--green); }
-.cov-bar .below    { background: var(--amber); }
-.cov-bar .new-rule { background: var(--sky); }
+.cov-bar-wrap{margin-bottom:20px;}
+.cov-bar-label{font-size:11px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between;}
+.cov-bar{height:8px;background:var(--surface2);border-radius:2px;overflow:hidden;display:flex;}
 
-.chip { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 6px; border-radius: var(--chip-r); }
-.chip-green  { color: var(--green); background: var(--green-bg); }
-.chip-sky    { color: var(--sky);   background: var(--sky-bg); }
-.chip-amber  { color: var(--amber); background: var(--amber-bg); }
-.chip-red    { color: var(--red);   background: var(--red-bg); }
-.chip-muted  { color: var(--muted); background: var(--surface2); }
-.chip-accent { color: var(--accent); background: var(--accent-lt); }
+.chip{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:3px;}
+.chip-green{color:var(--green);background:var(--green-bg);}
+.chip-amber{color:var(--amber);background:var(--amber-bg);}
+.chip-sky{color:var(--sky);background:var(--sky-bg);}
+.chip-purple{color:var(--purple);background:var(--purple-bg);}
+.chip-teal{color:var(--teal);background:var(--teal-bg);}
+.chip-red{color:var(--red);background:var(--red-bg);}
+.chip-muted{color:var(--muted);background:var(--surface2);}
+.chip-accent{color:var(--accent);background:var(--accent-lt);}
 
-.callout {
-  border-left: 3px solid var(--amber); background: var(--amber-bg); color: var(--amber);
-  font-size: 12px; line-height: 1.6; padding: 10px 14px;
-  border-radius: 0 4px 4px 0; margin-bottom: 16px; max-width: 860px;
-}
-.callout.red { border-color: var(--red); background: var(--red-bg); color: var(--red); }
-.callout strong { display: block; margin-bottom: 2px; }
-.rule-desc { color: var(--muted); font-size: 11px; line-height: 1.5; max-width: 560px; }
-.eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+.callout{border-left:3px solid var(--amber);background:var(--amber-bg);color:var(--amber);font-size:12px;line-height:1.6;padding:10px 14px;border-radius:0 4px 4px 0;margin-bottom:16px;max-width:860px;}
+.callout.red{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.callout.purple{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);}
+.callout strong{display:block;margin-bottom:2px;}
+.rule-desc{color:var(--muted);font-size:11px;line-height:1.5;max-width:560px;}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;}
 </style>
 
 <header class="site-header">
   <div>
     <div class="site-title">PB/Wires Duplicate Analysis</div>
-    <div class="site-sub">3,083 candidate pairs · CM-2121 rule coverage</div>
+    <div class="site-sub">3,083 candidate pairs · CM-2121 rule coverage + proposed rules</div>
   </div>
   <span class="site-badge">CM-2121</span>
   <button class="theme-btn" onclick="toggleTheme()">⏾ Theme</button>
@@ -202,52 +126,63 @@ tfoot td.r { text-align: right; }
   <div class="hero-bar-col">
     <div class="hero-bar-label">Coverage — 3,083 pairs</div>
     <div class="hero-bar">
-      <div class="seg-green"  style="width:25.8%"></div>
-      <div class="seg-amber"  style="width:1.4%"></div>
-      <div class="seg-red"    style="width:72.8%"></div>
+      <div style="width:25.8%;background:var(--green)"></div>
+      <div style="width:1.4%;background:var(--amber)"></div>
+      <div style="width:46.2%;background:var(--purple)"></div>
+      <div style="width:9.9%;background:var(--teal)"></div>
+      <div style="width:16.7%;background:var(--red);opacity:.5"></div>
     </div>
     <div class="hero-legend">
-      <span><span class="dot" style="background:var(--green)"></span>795 covered — existing rules (25.8%)</span>
-      <span><span class="dot" style="background:var(--amber)"></span>44 below threshold (1.4%)</span>
-      <span><span class="dot" style="background:var(--red);opacity:.5"></span>2,244 uncovered (72.8%)</span>
+      <span><span class="dot" style="background:var(--green)"></span>795 — existing PROD rules (25.8%)</span>
+      <span><span class="dot" style="background:var(--amber)"></span>44 — CM-2121 R8 lifts to auto-merge (1.4%)</span>
+      <span><span class="dot" style="background:var(--purple)"></span>1,425 — Proposed Rule A: FuzzyFNExactLNPhone (46.2%)</span>
+      <span><span class="dot" style="background:var(--teal)"></span>305 — Proposed Rule B: FuzzyFNExactLNBizTeam (9.9%)</span>
+      <span><span class="dot" style="background:var(--red);opacity:.6"></span>514 — uncovered (16.7%)</span>
     </div>
   </div>
   <div class="hero-stat-col">
-    <div class="hero-headline">CM-2121 rules close the threshold gap but don't fully cover the Likely bucket</div>
-    <div class="hero-sub">Existing PROD rules catch 795 of 3,083 pairs. R8 in CM-2121 promotes 44 below-threshold pairs to auto-merge. The 1,581 uncovered Likely pairs were found via shared business team — a signal with no corresponding match rule in PROD today.</div>
+    <div class="hero-headline">With two proposed new rules, 83% of identified duplicates are covered</div>
+    <div class="hero-sub">Existing PROD rules catch 795 pairs. CM-2121 R8 adds 44. Two new proposed fuzzy-first-name rules cover another 1,730. The remaining 514 are hard cases — different last names, or biz-team-only with no corroborating signal — that need manual stewardship or a further rule pass.</div>
     <div class="hero-pills">
-      <span class="hpill hpill-g">795 — existing rules</span>
-      <span class="hpill hpill-s">+44 — R8 lifts to auto-merge</span>
-      <span class="hpill hpill-a">2,244 — no rule coverage</span>
+      <span class="hpill hp-g">795 existing</span>
+      <span class="hpill hp-a">+44 R8</span>
+      <span class="hpill hp-p">+1,425 Rule A</span>
+      <span class="hpill hp-t">+305 Rule B</span>
+      <span class="hpill hp-r">514 uncovered</span>
     </div>
   </div>
 </div>
 
-<!-- KPI row -->
+<!-- KPI -->
 <div class="kpi-row">
   <div class="kpi">
-    <span class="kpi-label">Total pairs identified</span>
-    <span class="kpi-value">3,083</span>
-    <span class="kpi-note">Definite + Likely + Name Collision</span>
+    <span class="kpi-label">Existing PROD rules</span>
+    <span class="kpi-value c-green">795</span>
+    <span class="kpi-note">25.8% · auto-merge today</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">Covered — existing rules</span>
-    <span class="kpi-value green">795</span>
-    <span class="kpi-note">25.8% · above auto-merge threshold</span>
+    <span class="kpi-label">CM-2121 R8</span>
+    <span class="kpi-value c-amber">+44</span>
+    <span class="kpi-note">Score 85→92 · lifts to auto-merge</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">Lifted by CM-2121 R8</span>
-    <span class="kpi-value sky">44</span>
-    <span class="kpi-note">Score 85→92 · now auto-merges</span>
+    <span class="kpi-label">Proposed Rule A</span>
+    <span class="kpi-value c-purple">+1,425</span>
+    <span class="kpi-note">FuzzyFN + ExactLN + phone (score 92)</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">No rule coverage</span>
-    <span class="kpi-value red">2,244</span>
-    <span class="kpi-note">72.8% · Likely bucket primary gap</span>
+    <span class="kpi-label">Proposed Rule B</span>
+    <span class="kpi-value c-teal">+305</span>
+    <span class="kpi-note">FuzzyFN + ExactLN + biz team (score 85)</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Still uncovered</span>
+    <span class="kpi-value c-red">514</span>
+    <span class="kpi-note">16.7% · manual stewardship</span>
   </div>
 </div>
 
-<!-- Tab strip -->
+<!-- Tabs -->
 <nav class="tab-strip" role="tablist">
   <button class="tab-btn active" onclick="showTab('summary',this)">Summary</button>
   <button class="tab-btn" onclick="showTab('definite',this)">Definite (1,187)</button>
@@ -261,11 +196,11 @@ tfoot td.r { text-align: right; }
 <div id="tab-summary" class="tab-pane active">
   <div class="eyebrow">Overview</div>
   <h2>Coverage by workbook bucket</h2>
-  <p>Existing PROD rules catch 795 pairs (25.8%). The Likely bucket is the dominant gap: 1,581 of 1,842 Likely pairs have no covering rule because they were found via shared business team membership — a signal that exists in the data but has no corresponding SemQLMatcher rule in PROD.</p>
+  <p>Existing PROD rules catch 795 pairs (26%). Two new fuzzy-first-name rules proposed in CM-2121 add another 1,730, bringing total coverage to 2,569 (83%). The remaining 514 are genuinely hard cases with no clean rule signal.</p>
 
   <div class="callout red">
     <strong>ExactContactBusinessTeam does not exist in PROD</strong>
-    The prior version of this analysis incorrectly credited 2,724 pairs to an ExactContactBusinessTeam rule (score 100). That rule appears in a UAT configuration XML but is not deployed in PROD. All numbers below reflect the actual PROD rule set.
+    An earlier version of this analysis incorrectly attributed 2,724 pairs to ExactContactBusinessTeam. That rule appears in a UAT XML but is not deployed in PROD. All numbers here reflect the actual PROD SemQLMatcher ruleset.
   </div>
 
   <div class="tbl-wrap">
@@ -273,92 +208,47 @@ tfoot td.r { text-align: right; }
       <thead>
         <tr>
           <th>Bucket</th>
-          <th class="r">Total pairs</th>
+          <th class="r">Total</th>
           <th class="r">Existing (&gt;90)</th>
-          <th class="r">Below thresh. (85)</th>
           <th class="r">R8 lifts</th>
+          <th class="r">Rule A</th>
+          <th class="r">Rule B</th>
           <th class="r">Uncovered</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><span class="chip chip-accent">Definite</span></td>
-          <td class="r">1,187</td><td class="r">522</td><td class="r">15</td><td class="r">15</td><td class="r">650</td>
+          <td class="r">1,187</td><td class="r">522</td><td class="r">15</td><td class="r">552</td><td class="r">0</td><td class="r">98</td>
         </tr>
         <tr>
           <td><span class="chip chip-amber">Likely</span></td>
-          <td class="r">1,842</td><td class="r">240</td><td class="r">21</td><td class="r">21</td><td class="r">1,581</td>
+          <td class="r">1,842</td><td class="r">240</td><td class="r">21</td><td class="r">873</td><td class="r">305</td><td class="r">403</td>
         </tr>
         <tr>
           <td><span class="chip chip-muted">Name Collision</span></td>
-          <td class="r">54</td><td class="r">33</td><td class="r">8</td><td class="r">8</td><td class="r">13</td>
+          <td class="r">54</td><td class="r">33</td><td class="r">8</td><td class="r">0</td><td class="r">0</td><td class="r">13</td>
         </tr>
       </tbody>
       <tfoot>
         <tr>
           <td>Total</td>
-          <td class="r">3,083</td><td class="r">795</td><td class="r">44</td><td class="r">44</td><td class="r">2,244</td>
+          <td class="r">3,083</td><td class="r">795</td><td class="r">44</td><td class="r">1,425</td><td class="r">305</td><td class="r">514</td>
         </tr>
       </tfoot>
     </table>
   </div>
 
-  <h3>What CM-2121 actually changes for these pairs</h3>
+  <h3>Uncovered 514 — breakdown</h3>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Change</th><th>Effect</th><th class="r">Pairs affected</th></tr></thead>
+      <thead><tr><th>Segment</th><th class="r">Count</th><th>Why no rule covers them</th></tr></thead>
       <tbody>
-        <tr>
-          <td><strong>R8: ExactFNLNSfxPhone 85 → 92</strong></td>
-          <td>Promotes 44 below-threshold-only pairs to auto-merge. The other 390 pairs this rule fires on are already covered above threshold by other rules.</td>
-          <td class="r"><span class="chip chip-sky">+44</span></td>
-        </tr>
-        <tr>
-          <td><strong>R5: ExactEmail — remove SFDC_NG exclusion</strong></td>
-          <td>Expands existing ExactEmail to fire on SFDC_NG source records. Adds pairs where one or both contacts come from SFDC_NG and share an email. Exact count needs publisher-level data not available in the workbook CSV.</td>
-          <td class="r"><span class="chip chip-muted">Partial</span></td>
-        </tr>
-        <tr>
-          <td><strong>R6: ExactFNLNSfxZip — remove PREQIN-only</strong></td>
-          <td>Expands existing rule (currently PREQIN↔PREQIN only) to all publisher combinations. Adds name+ZIP pairs from non-PREQIN sources. Exact count needs publisher-level data.</td>
-          <td class="r"><span class="chip chip-muted">Partial</span></td>
-        </tr>
-        <tr>
-          <td><strong>R9: ExactFNLNZipPhone (new rule at 92)</strong></td>
-          <td>New rule for contacts without middle name/suffix data. Overlaps heavily with existing ExactFNLNSfxZipPhone (97) — incremental pairs are those missing suffix fields.</td>
-          <td class="r"><span class="chip chip-muted">Partial</span></td>
-        </tr>
-        <tr>
-          <td><strong>Gap: Business team signal</strong></td>
-          <td>1,581 Likely pairs share an xDM business team but have no covering PROD rule. A new ExactContactBusinessTeam rule (if deployed) could close this gap. This is not currently in CM-2121.</td>
-          <td class="r"><span class="chip chip-red">1,581 open</span></td>
-        </tr>
+        <tr><td>Definite — different last names</td><td class="r">98</td><td>Shared phone + JW ≥ 85 but last names differ — needs cross-last-name fuzzy rule or manual review</td></tr>
+        <tr><td>Likely — biz team only, no other signal</td><td class="r">403</td><td>Name similarity + shared team but no phone, ZIP, or address match — too weak for a rule without additional signal</td></tr>
+        <tr><td>Name Collision — correctly uncovered</td><td class="r">13</td><td>Different people at same firm (middle-initial email disambiguation) — should NOT be merged</td></tr>
       </tbody>
-    </table>
-  </div>
-
-  <h3>Key finding</h3>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>#</th><th>Finding</th></tr></thead>
-      <tbody>
-        <tr>
-          <td class="r">1</td>
-          <td><strong>The business team signal needs a rule.</strong> 1,581 Likely pairs were found because they share an xDM business team — same name, same firm, same team. Without an ExactContactBusinessTeam rule in PROD, Semarchy will never auto-merge them. Consider adding this rule to CM-2121 or a follow-on ticket.</td>
-        </tr>
-        <tr>
-          <td class="r">2</td>
-          <td><strong>R8 is the most certain CM-2121 win.</strong> 44 pairs are currently in a suggestion-only state (score 85 below the >90 auto-merge threshold). R8 raises ExactFNLNSfxPhone to 92, converting those 44 to confirmed auto-merges.</td>
-        </tr>
-        <tr>
-          <td class="r">3</td>
-          <td><strong>R5 and R6 add real but unquantified coverage.</strong> Both expand publisher restrictions on existing rules. The exact pairs they add for this workbook can't be determined without publisher-of-record data at the pair level. They are worth deploying regardless.</td>
-        </tr>
-        <tr>
-          <td class="r">4</td>
-          <td><strong>Definite gap (650 uncovered) is also significant.</strong> 650 Definite pairs — strong multi-signal matches — have no covering PROD rule. Many may be resolvable by R5/R6 publisher expansion, but the rest need manual stewardship.</td>
-        </tr>
-      </tbody>
+      <tfoot><tr><td>Total</td><td class="r">514</td><td></td></tr></tfoot>
     </table>
   </div>
 </div>
@@ -367,18 +257,20 @@ tfoot td.r { text-align: right; }
 <div id="tab-definite" class="tab-pane">
   <div class="eyebrow">Bucket</div>
   <h2>Definite — 1,187 pairs</h2>
-  <p>Strong multi-signal matches: shared email with name similarity, shared phone with name, or both. 522 (44%) are covered by existing above-threshold rules. 650 (55%) have no covering PROD rule — many likely need R5/R6 publisher expansion or manual stewardship.</p>
+  <p>Strong multi-signal matches: shared email + name, shared phone + name, or both. With Proposed Rule A, coverage rises from 44% to 91%. The remaining 98 uncovered pairs have shared phone + JW ≥ 85 but different last names — outside any current or proposed rule.</p>
 
   <div class="cov-bar-wrap">
-    <div class="cov-bar-label"><span>Coverage</span><span>537 / 1,187 (45.2%)</span></div>
+    <div class="cov-bar-label"><span>Coverage</span><span>1,089 / 1,187 (91.7%)</span></div>
     <div class="cov-bar">
-      <div class="existing" style="width:44.0%"></div>
-      <div class="below"    style="width:1.3%"></div>
+      <div style="width:44.0%;background:var(--green)"></div>
+      <div style="width:1.3%;background:var(--amber)"></div>
+      <div style="width:46.5%;background:var(--purple)"></div>
     </div>
-    <div style="display:flex; gap:16px; margin-top:6px; font-size:11px; color:var(--muted);">
-      <span style="color:var(--green)">■</span> 522 existing above-threshold &nbsp;
-      <span style="color:var(--amber)">■</span> 15 below-threshold only &nbsp;
-      <span style="color:var(--muted)">■</span> 650 uncovered
+    <div style="display:flex;gap:14px;margin-top:6px;font-size:11px;color:var(--muted);flex-wrap:wrap;">
+      <span><span style="color:var(--green)">■</span> 522 existing</span>
+      <span><span style="color:var(--amber)">■</span> 15 R8</span>
+      <span><span style="color:var(--purple)">■</span> 552 Rule A</span>
+      <span><span style="color:var(--muted)">■</span> 98 uncovered</span>
     </div>
   </div>
 
@@ -387,55 +279,55 @@ tfoot td.r { text-align: right; }
     <table>
       <thead><tr><th>Rule</th><th>Status</th><th class="r">Score</th><th class="r">Pairs</th><th>Note</th></tr></thead>
       <tbody>
-        <tr><td><strong>ExactLastNameEmail</strong></td><td><span class="chip chip-green">Existing</span></td><td class="r">95</td><td class="r">298</td><td>Same last name + shared email · all in Definite</td></tr>
-        <tr><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">Existing</span></td><td class="r">95</td><td class="r">145</td><td>Same name, firm, state</td></tr>
-        <tr><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">Existing</span></td><td class="r">97</td><td class="r">140</td><td>Same name, ZIP, shared phone</td></tr>
-        <tr><td><strong>ExactEmail</strong></td><td><span class="chip chip-green">Existing</span></td><td class="r">95</td><td class="r">432</td><td>Shared email — excludes SFDC_NG currently; R5 removes that restriction</td></tr>
-        <tr><td><strong>ExactPreferredNameAddress</strong></td><td><span class="chip chip-green">Existing</span></td><td class="r">85</td><td class="r">118</td><td>Score 85 — below auto-merge threshold</td></tr>
-        <tr><td><strong>ExactFNLNSfxPhone (score 85)</strong></td><td><span class="chip chip-amber">Below threshold</span></td><td class="r">85</td><td class="r">239</td><td>15 pairs covered only here — R8 lifts to 92</td></tr>
-        <tr style="border-top:2px solid var(--sky)">
-          <td><strong>R5: ExactEmail incl. SFDC_NG</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">~432</td><td>Adds SFDC_NG email pairs not covered by existing ExactEmail</td></tr>
-        <tr><td><strong>R8: ExactFNLNPhone → 92</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">239</td><td>Promotes 15 Definite pairs from suggestion-only to auto-merge</td></tr>
+        <tr><td><strong>ExactEmail</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">432</td><td>SFDC_NG excluded; R5 removes that restriction</td></tr>
+        <tr><td><strong>ExactLastNameEmail</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">298</td><td>Same last name + shared email</td></tr>
+        <tr><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">97</td><td class="r">140</td><td>Exact name + ZIP + phone</td></tr>
+        <tr><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">145</td><td>Exact name + firm + state</td></tr>
+        <tr><td><strong>ExactFNLNSfxPhone (score 85)</strong></td><td><span class="chip chip-amber">Below thresh.</span></td><td class="r">85</td><td class="r">239</td><td>15 Definite covered only here — R8 lifts to 92</td></tr>
+        <tr style="border-top:2px solid var(--purple)">
+          <td><strong>Rule A: FuzzyFNExactLNPhone</strong></td><td><span class="chip chip-purple">Proposed</span></td><td class="r">92</td><td class="r">552</td><td>ExactLN + JW(first) ≥ 0.75 + shared phone — catches Louis/Lou, Neilson/Neil, etc.</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h3>Sample — Definite pairs covered by existing phone rule (R8 promotes to auto-merge)</h3>
+  <h3>Sample — 552 Definite pairs caught by Proposed Rule A</h3>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Contact A</th><th>A Phone</th><th>Contact B</th><th>B Phone</th><th>Firm</th></tr></thead>
+      <thead><tr><th>Contact A</th><th>Contact B</th><th>Firm</th><th>State</th><th>Shared phones</th></tr></thead>
       <tbody>
-        <tr><td>Michael Grinnell</td><td class="mono">(415) 274-6013</td><td>Michael Grinnell</td><td class="mono">(415) 274-6186</td><td>Merrill Lynch PFS</td></tr>
-        <tr><td>Jeffrey Condit</td><td class="mono">(609) 243-6811</td><td>Jeffrey Condit</td><td class="mono">(609) 243-7973</td><td>Merrill Lynch PFS</td></tr>
-        <tr><td>Michael Haggerty</td><td class="mono">(203) 498-3333</td><td>Michael Haggerty</td><td class="mono">(203) 498-3353</td><td>UBS Financial Services</td></tr>
-        <tr><td>John Barnes</td><td class="mono">(214) 696-7070</td><td>John Barnes</td><td class="mono">(203) 499-4947</td><td>Morgan Stanley</td></tr>
+        <tr><td>Louis Nader</td><td>Lou Nader</td><td>Morgan Stanley Smith Barney</td><td>MI</td><td class="r">1</td></tr>
+        <tr><td>Neilson Hullinger</td><td>Neil Hullinger</td><td>Merrill Lynch</td><td>UT</td><td class="r">1</td></tr>
+        <tr><td>Jerry Jr Franklin</td><td>Jerry Franklin</td><td>Morgan Stanley</td><td>TX</td><td class="r">1</td></tr>
+        <tr><td>Austin Tipp</td><td>Justin Tipp</td><td>J.P. Morgan Securities</td><td>CA</td><td class="r">1</td></tr>
       </tbody>
     </table>
   </div>
+
+  <h3>Sample — 98 still uncovered (different last names)</h3>
+  <p>These have shared phone + JW(full name) ≥ 85 but last names differ. No proposed rule covers them — would need a cross-last-name fuzzy rule or manual stewardship.</p>
 </div>
 
 <!-- ══ LIKELY ══ -->
 <div id="tab-likely" class="tab-pane">
   <div class="eyebrow">Bucket</div>
   <h2>Likely — 1,842 pairs</h2>
-  <p>Name similarity clears the Jaro-Winkler threshold with at least one corroborating signal. Only 261 of 1,842 pairs (14%) are covered by existing PROD rules. The other 1,581 (86%) were found because the two contacts share an xDM business team — a signal with no matching rule in PROD.</p>
+  <p>Name similarity ≥ JW threshold + at least one corroborating signal (phone, ZIP, address, or biz team). With both proposed rules, coverage rises from 14% to 78%. The remaining 403 have shared biz team + name similarity but no phone, ZIP, or address match — too weak for a rule.</p>
 
   <div class="cov-bar-wrap">
-    <div class="cov-bar-label"><span>Coverage</span><span>261 / 1,842 (14.2%)</span></div>
+    <div class="cov-bar-label"><span>Coverage</span><span>1,439 / 1,842 (78.1%)</span></div>
     <div class="cov-bar">
-      <div class="existing" style="width:13.0%"></div>
-      <div class="below"    style="width:1.2%"></div>
+      <div style="width:13.0%;background:var(--green)"></div>
+      <div style="width:1.1%;background:var(--amber)"></div>
+      <div style="width:47.4%;background:var(--purple)"></div>
+      <div style="width:16.6%;background:var(--teal)"></div>
     </div>
-    <div style="display:flex; gap:16px; margin-top:6px; font-size:11px; color:var(--muted);">
-      <span style="color:var(--green)">■</span> 240 existing above-threshold &nbsp;
-      <span style="color:var(--amber)">■</span> 21 below-threshold only &nbsp;
-      <span style="color:var(--muted)">■</span> 1,581 uncovered
+    <div style="display:flex;gap:14px;margin-top:6px;font-size:11px;color:var(--muted);flex-wrap:wrap;">
+      <span><span style="color:var(--green)">■</span> 240 existing</span>
+      <span><span style="color:var(--amber)">■</span> 21 R8</span>
+      <span><span style="color:var(--purple)">■</span> 873 Rule A</span>
+      <span><span style="color:var(--teal)">■</span> 305 Rule B</span>
+      <span><span style="color:var(--muted)">■</span> 403 uncovered</span>
     </div>
-  </div>
-
-  <div class="callout red">
-    <strong>1,581 Likely pairs have no covering PROD rule</strong>
-    These pairs were identified because they share an xDM business team. Without an ExactContactBusinessTeam rule in PROD, Semarchy will never propose or auto-merge them regardless of how the thresholds are tuned. This is the largest single gap in the analysis and is not addressed by any current CM-2121 change.
   </div>
 
   <h3>Rules firing on Likely pairs</h3>
@@ -443,28 +335,37 @@ tfoot td.r { text-align: right; }
     <table>
       <thead><tr><th>Rule</th><th>Status</th><th class="r">Score</th><th class="r">Pairs</th></tr></thead>
       <tbody>
-        <tr><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">Existing</span></td><td class="r">95</td><td class="r">188</td></tr>
-        <tr><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">Existing</span></td><td class="r">97</td><td class="r">130</td></tr>
-        <tr><td><strong>ExactPreferredNameAddress</strong></td><td><span class="chip chip-green">Existing</span></td><td class="r">85</td><td class="r">154</td></tr>
-        <tr><td><strong>ExactFNLNSfxPhone (score 85)</strong></td><td><span class="chip chip-amber">Below threshold</span></td><td class="r">85</td><td class="r">166</td></tr>
-        <tr style="border-top:2px solid var(--sky)">
-          <td><strong>R8: ExactFNLNPhone → 92</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">166</td></tr>
-        <tr><td><strong>R6: ExactFNLNZip all pubs</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">208</td></tr>
-        <tr><td><strong>Business team (no PROD rule)</strong></td><td><span class="chip chip-red">No rule</span></td><td class="r">—</td><td class="r">1,581</td></tr>
+        <tr><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">188</td></tr>
+        <tr><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">97</td><td class="r">130</td></tr>
+        <tr><td><strong>ExactFNLNSfxPhone (score 85)</strong></td><td><span class="chip chip-amber">Below thresh.</span></td><td class="r">85</td><td class="r">166</td></tr>
+        <tr style="border-top:2px solid var(--purple)">
+          <td><strong>Rule A: FuzzyFNExactLNPhone</strong></td><td><span class="chip chip-purple">Proposed</span></td><td class="r">92</td><td class="r">873</td></tr>
+        <tr><td><strong>Rule B: FuzzyFNExactLNBizTeam</strong></td><td><span class="chip chip-teal">Proposed</span></td><td class="r">85</td><td class="r">305</td></tr>
+        <tr><td><strong>Biz team only — no signal</strong></td><td><span class="chip chip-red">No rule</span></td><td class="r">—</td><td class="r">403</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h3>Sample — Likely pairs sharing business team (no covering PROD rule)</h3>
-  <p>Same first and last name, same firm, same ZIP, shared phone. These would be auto-merged by ExactContactBusinessTeam at score 100 — but that rule doesn't exist in PROD.</p>
+  <h3>Sample — Likely pairs caught by Rule B (biz team + phone/ZIP)</h3>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Contact A</th><th>Contact B</th><th>Firm</th><th>State</th><th>ZIP</th><th>Shared phones</th></tr></thead>
+      <thead><tr><th>Contact A</th><th>Contact B</th><th>Firm</th><th>State</th><th>Teams</th><th>Phones</th></tr></thead>
       <tbody>
-        <tr><td>James Eagleton</td><td>James Eagleton</td><td>Wells Fargo Advisors FN</td><td>OK</td><td class="mono">74105</td><td class="r">1</td></tr>
-        <tr><td>John Thorsen</td><td>John Thorsen</td><td>Wells Fargo Advisors</td><td>FL</td><td class="mono">32801</td><td class="r">1</td></tr>
-        <tr><td>Thomas Helmig</td><td>Thomas Helmig</td><td>Merrill Lynch PFS</td><td>PA</td><td class="mono">19087</td><td class="r">1</td></tr>
-        <tr><td>Victor Altadonna</td><td>Victor Altadonna</td><td>Merrill Lynch PFS</td><td>PA</td><td class="mono">19004</td><td class="r">1</td></tr>
+        <tr><td>Charles Parry</td><td>Chase Parry</td><td>Wells Fargo Advisors</td><td>UT</td><td class="r">3</td><td class="r">1</td></tr>
+        <tr><td>Josh Nicolaus</td><td>John Nicolaus</td><td>Morgan Stanley</td><td>OR</td><td class="r">1</td><td class="r">1</td></tr>
+        <tr><td>Dale Bradley</td><td>Alec Bradley</td><td>Raymond James Financial Services</td><td>IL</td><td class="r">1</td><td class="r">1</td></tr>
+        <tr><td>Michael Starry</td><td>Michelle Starry</td><td>Raymond James Financial Services</td><td>WA</td><td class="r">1</td><td class="r">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Sample — 403 still uncovered (biz team + name similarity only)</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Contact A</th><th>Contact B</th><th>Firm</th><th>Why uncovered</th></tr></thead>
+      <tbody>
+        <tr><td>Aaron Longenecker</td><td>Robyn Longenecker</td><td>Raymond James</td><td>No shared phone, ZIP, or address — biz team + last name only</td></tr>
+        <tr><td>Alec Vicknair</td><td>Cole Vicknair</td><td>Merrill Lynch</td><td>No shared phone, ZIP, or address — biz team + last name only</td></tr>
       </tbody>
     </table>
   </div>
@@ -474,11 +375,11 @@ tfoot td.r { text-align: right; }
 <div id="tab-namecoll" class="tab-pane">
   <div class="eyebrow">Bucket</div>
   <h2>Name Collision — 54 pairs</h2>
-  <p>Emails share a domain and differ by a middle initial or trailing digit — intentional disambiguation for two employees with the same name. These are different people and should NOT be merged. 33 are incidentally covered by existing rules (primarily ExactFNLNSfxFirmState), but the correct action is to ensure they have an XGRP exclusion, not to merge them.</p>
+  <p>Emails differ only by a middle initial or digit — intentional disambiguation for two employees with the same name at the same firm. These should NOT be merged. 13 are correctly uncovered by all rules. The 41 that are "covered" are at risk — confirm they have XGRP exclusions.</p>
 
-  <div class="callout">
+  <div class="callout red">
     <strong>Coverage here is a risk, not a win</strong>
-    The 33 pairs "covered" by existing rules are at risk of being incorrectly auto-merged. Confirm each pair has an XGRP exclusion or a manual split record in UM_CONTACT to prevent a bad merge.
+    41 Name Collision pairs satisfy at least one PROD rule condition (primarily ExactFNLNSfxFirmState). These are different people and any auto-merge would be incorrect. Ensure each pair has an XGRP exclusion or a UM_CONTACT split record before rules are applied.
   </div>
 
   <h3>Sample — middle-initial email disambiguation</h3>
@@ -498,36 +399,35 @@ tfoot td.r { text-align: right; }
 <!-- ══ ALL RULES ══ -->
 <div id="tab-rules" class="tab-pane">
   <div class="eyebrow">Rule inventory</div>
-  <h2>PROD contact match rules + CM-2121 changes</h2>
-  <p>Rules as confirmed in PROD (SemQLMatcher - Contact screenshot). ExactContactBusinessTeam is NOT in PROD. Counts show how many of the 3,083 pairs each rule fires on.</p>
+  <h2>PROD rules + CM-2121 changes + proposed new rules</h2>
+  <p>Rules confirmed in PROD via SemQLMatcher screenshot, plus CM-2121 changes, plus two new rules proposed in CM-2121 comment (2026-08-05). Proposed rules are written up in CM-2121 and pending implementation.</p>
 
   <div class="tbl-wrap">
     <table>
       <thead>
-        <tr>
-          <th>Rule</th><th>Status</th><th class="r">Score</th>
-          <th class="r">Total fired</th><th class="r">Definite</th><th class="r">Likely</th><th class="r">Name Coll.</th>
-          <th>Notes</th>
-        </tr>
+        <tr><th>Rule</th><th>Status</th><th class="r">Score</th><th class="r">Pairs fired</th><th class="r">Definite</th><th class="r">Likely</th><th class="r">Name Coll.</th><th>Notes</th></tr>
       </thead>
       <tbody>
         <tr><td><strong>ExactCRD</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">100</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td>No shared CRDs in PB/Wires after excluding runaway group</td></tr>
-        <tr><td><strong>JoinOriginatingCluster</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">100</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td>Keeps previously-split records from re-merging; not applicable here</td></tr>
-        <tr><td><strong>ExactEmail</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">432</td><td class="r">432</td><td class="r">0</td><td class="r">0</td><td>SFDC_NG excluded today; R5 removes that restriction</td></tr>
+        <tr><td><strong>JoinOriginatingCluster</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">100</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td>Keeps previously-split records apart; not applicable here</td></tr>
+        <tr><td><strong>ExactEmail</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">432</td><td class="r">432</td><td class="r">0</td><td class="r">0</td><td>Excludes SFDC_NG today; R5 removes restriction</td></tr>
         <tr><td><strong>ExactLastNameEmail</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">298</td><td class="r">298</td><td class="r">0</td><td class="r">0</td><td>Same last name + shared email</td></tr>
-        <tr><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">97</td><td class="r">287</td><td class="r">140</td><td class="r">130</td><td class="r">17</td><td>Highest-scoring name rule; requires ZIP and phone</td></tr>
-        <tr><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">364</td><td class="r">145</td><td class="r">188</td><td class="r">31</td><td>Same name, firm, state</td></tr>
-        <tr><td><strong>ExactFNLNSfxZip</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">378</td><td class="r">144</td><td class="r">208</td><td class="r">26</td><td>PREQIN-only today (exact publisher pair); R6 expands to all</td></tr>
-        <tr><td><strong>ExactFNLNMNZip</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">85</td><td class="r">378</td><td class="r">144</td><td class="r">208</td><td class="r">26</td><td>No suffix variant — score 85, below auto-merge threshold</td></tr>
-        <tr><td><strong>ExactFNLNSfxPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">85</td><td class="r">434</td><td class="r">239</td><td class="r">166</td><td class="r">29</td><td>Score 85 — suggestion-only for confirmed goldens; R8 raises to 92</td></tr>
-        <tr><td><strong>ExactPreferredNameAddress</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">85</td><td class="r">293</td><td class="r">118</td><td class="r">154</td><td class="r">21</td><td>Score 85 — below auto-merge threshold</td></tr>
+        <tr><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">97</td><td class="r">287</td><td class="r">140</td><td class="r">130</td><td class="r">17</td><td>Exact name + ZIP + phone — highest-scoring name rule</td></tr>
+        <tr><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">364</td><td class="r">145</td><td class="r">188</td><td class="r">31</td><td>Exact name + firm + state</td></tr>
+        <tr><td><strong>ExactFNLNSfxZip</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">378</td><td class="r">144</td><td class="r">208</td><td class="r">26</td><td>PREQIN-only today; R6 expands to all publishers</td></tr>
+        <tr><td><strong>ExactFNLNMNZip</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">85</td><td class="r">378</td><td class="r">144</td><td class="r">208</td><td class="r">26</td><td>No suffix variant — below auto-merge threshold</td></tr>
+        <tr><td><strong>ExactFNLNSfxPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">85</td><td class="r">434</td><td class="r">239</td><td class="r">166</td><td class="r">29</td><td>Below threshold — R8 raises to 92</td></tr>
+        <tr><td><strong>ExactPreferredNameAddress</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">85</td><td class="r">293</td><td class="r">118</td><td class="r">154</td><td class="r">21</td><td>Below auto-merge threshold</td></tr>
         <tr style="border-top:2px solid var(--sky)">
-          <td><strong>R5: ExactEmail — remove SFDC_NG exclusion</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">432+</td><td class="r">432+</td><td class="r">0</td><td class="r">0</td><td>Adds SFDC_NG email pairs currently invisible to ExactEmail</td></tr>
-        <tr><td><strong>R6: ExactFNLNZip — remove PREQIN-only</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">378+</td><td class="r">144+</td><td class="r">208+</td><td class="r">26+</td><td>Expands to all publisher pairs with exact name + ZIP</td></tr>
-        <tr><td><strong>R8: ExactFNLNPhone — raise to 92</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">434</td><td class="r">239</td><td class="r">166</td><td class="r">29</td><td>Same condition as existing rule; score change promotes 44 to auto-merge</td></tr>
-        <tr><td><strong>R9: ExactFNLNZipPhone — new at 92</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">287</td><td class="r">140</td><td class="r">130</td><td class="r">17</td><td>New rule for contacts without middle name / suffix</td></tr>
+          <td><strong>R5: ExactEmail — remove SFDC_NG exclusion</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">432+</td><td class="r">432+</td><td class="r">0</td><td class="r">0</td><td>Adds SFDC_NG email pairs currently invisible</td></tr>
+        <tr><td><strong>R6: ExactFNLNZip — all publishers</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">378+</td><td class="r">144+</td><td class="r">208+</td><td class="r">26+</td><td>Expands from PREQIN-only to all publisher pairs</td></tr>
+        <tr><td><strong>R8: ExactFNLNPhone — raise to 92</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">434</td><td class="r">239</td><td class="r">166</td><td class="r">29</td><td>Lifts 44 below-threshold-only pairs to auto-merge</td></tr>
+        <tr><td><strong>R9: ExactFNLNZipPhone (new at 92)</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">287</td><td class="r">140</td><td class="r">130</td><td class="r">17</td><td>New rule for contacts without middle name / suffix</td></tr>
+        <tr style="border-top:2px solid var(--purple)">
+          <td><strong>Rule A: FuzzyFNExactLNPhone (score 92)</strong></td><td><span class="chip chip-purple">Proposed</span></td><td class="r">92</td><td class="r">1,425</td><td class="r">552</td><td class="r">873</td><td class="r">0</td><td>ExactLastName + JW(first) ≥ 0.75 + shared phone. Catches Louis/Lou, Neilson/Neil, Austin/Justin. Auto-merges confirmed goldens.</td></tr>
+        <tr><td><strong>Rule B: FuzzyFNExactLNBizTeam (score 85)</strong></td><td><span class="chip chip-teal">Proposed</span></td><td class="r">85</td><td class="r">305</td><td class="r">0</td><td class="r">305</td><td class="r">0</td><td>ExactLastName + JW(first) ≥ 0.75 + shared biz team + ≥1 of (phone / ZIP / addr). Score 85 creates suggestion for steward review — intentionally below auto-merge given higher ambiguity.</td></tr>
         <tr style="border-top:2px solid var(--red)">
-          <td><strong>ExactContactBusinessTeam</strong></td><td><span class="chip chip-red">Not in PROD</span></td><td class="r">100</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td>In UAT XML but not deployed. Would cover 1,581 uncovered Likely pairs if added.</td></tr>
+          <td><strong>ExactContactBusinessTeam</strong></td><td><span class="chip chip-red">Not in PROD</span></td><td class="r">100</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td>In UAT XML but not deployed to PROD</td></tr>
       </tbody>
     </table>
   </div>
@@ -538,31 +438,38 @@ tfoot td.r { text-align: right; }
   <div class="eyebrow">Methodology</div>
   <h2>How this analysis was built</h2>
 
-  <h3>Correction — ExactContactBusinessTeam</h3>
-  <p>The first version of this analysis attributed coverage to an ExactContactBusinessTeam rule (score 100). That rule was listed in CLAUDE.md, which was extracted from a UAT configuration XML (ClientMaster [2.5] (10).xml, UAT Main branch 2). The PROD SemQLMatcher does not contain this rule. All corrected numbers remove it from the existing-rule coverage calculation.</p>
-
   <h3>Data source</h3>
-  <p>The 3,083 pairs come from the PB/Wires duplicate workbook (Snowflake, run 2026-08-05). Pairs were blocked on shared CRD, shared email, and shared xDM business team, then scored with Jaro-Winkler and classified into Definite / Likely / Name Collision.</p>
+  <p>The 3,083 pairs come from the PB/Wires duplicate workbook (Snowflake, run 2026-08-05). Pairs were generated by blocking on shared CRD, shared email, and shared xDM business team, then scored with Jaro-Winkler and classified by the following bucket rules:</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Bucket</th><th>Classification rule</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip chip-accent">Definite</span></td><td>Shared email + JW(full name) ≥ 80 — OR — shared email + shared phone — OR — shared phone + JW(full name) ≥ 85 + no CRD conflict</td></tr>
+        <tr><td><span class="chip chip-amber">Likely</span></td><td>ExactLastName + JW(full name) ≥ 75 (or ≥ 90 for common last names) + at least one of: shared phone / email / ZIP / address / biz team</td></tr>
+        <tr><td><span class="chip chip-muted">Name Collision</span></td><td>Emails differ only by middle initial or trailing digit — derived post-classification</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-  <h3>Rule simulation</h3>
-  <p>Each PROD rule was approximated using golden-level columns in the CSV: shared phone count, shared email count, shared biz-team count, ZIP match flag, address exact-match flag, name equality, firm equality, state equality. Rules requiring publisher-pair data (ExactEmail SFDC_NG exclusion, ExactFNLNSfxZip PREQIN-only) are modeled as their widest possible condition — so coverage counts for those two rules are upper bounds.</p>
+  <h3>Proposed rules — Jira CM-2121</h3>
+  <p>Rule A and Rule B were proposed in a CM-2121 comment on 2026-08-05. They extend the existing exact-match phone/biz-team rules to allow fuzzy first-name matching (JW ≥ 0.75) while keeping last-name exact. Implementation requires a new SemQLMatcher Contact rule with a <code>matchOnExpression</code> guard using <code>JaroWinklerDistance()</code>.</p>
 
-  <h3>Threshold model</h3>
-  <p>Auto-merge threshold for confirmed goldens is strictly &gt; 90 (mergeThresholdMergingConfirmed = 90). Rules scoring ≤ 90 create suggestion groups but do not auto-merge. "Below threshold" in this analysis means score 85 — these create suggestions but require steward confirmation unless R8 is deployed.</p>
+  <h3>Rule simulation notes</h3>
+  <p>Existing rules are approximated from golden-level CSV columns. ExactEmail and ExactFNLNSfxZip have publisher restrictions (SFDC_NG excluded / PREQIN-only) that cannot be precisely modeled without publisher-of-record data at the pair level — counts for those two rules are upper bounds. All other rules are exact simulations.</p>
 
-  <h3>Business team gap</h3>
-  <p>The 1,581 uncovered Likely pairs share an xDM golden-level business team. In Semarchy, match rules fire on staging/master-level data — the ExactContactBusinessTeam rule (if it existed) would need the business team membership to be populated at the master record level before golden consolidation. Adding such a rule to CM-2121 is a potential next step.</p>
+  <h3>Recall — pairs we may have missed</h3>
+  <p>The 3,083 pairs represent only duplicates detectable via the four blocking strategies used: shared CRD, shared email, shared phone, shared business team. Duplicates that share none of these signals — different phone, no email, not on a team together — are invisible to this analysis. A name-only blocking pass (same last name + similar first name + same firm, no shared contact signal required) would surface additional candidates at the cost of more false positives to review.</p>
 </div>
 
 <script>
-function showTab(id, btn) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
+function showTab(id,btn){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
 }
-function toggleTheme() {
-  const r = document.documentElement;
-  r.setAttribute('data-theme', r.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+function toggleTheme(){
+  const r=document.documentElement;
+  r.setAttribute('data-theme',r.getAttribute('data-theme')==='dark'?'light':'dark');
 }
 </script>
