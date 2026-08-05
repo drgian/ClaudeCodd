@@ -106,7 +106,7 @@ tfoot td.r{text-align:right;}
 <header class="site-header">
   <div>
     <div class="site-title">PB/Wires Duplicate Coverage</div>
-    <div class="site-sub">3,083 candidate pairs · existing PROD rules + CM-2121 proposed rules</div>
+    <div class="site-sub">3,029 duplicate pairs · existing PROD rules + CM-2121 proposed rules</div>
   </div>
   <span class="site-badge">CM-2121</span>
   <button class="theme-btn" onclick="toggleTheme()">⏾ Theme</button>
@@ -115,21 +115,22 @@ tfoot td.r{text-align:right;}
 <!-- Hero -->
 <div class="hero">
   <div class="hero-bar-col">
-    <div class="hero-bar-label">Coverage — 3,083 pairs</div>
+    <div class="hero-bar-label">Coverage — 3,029 duplicate pairs</div>
     <div class="hero-bar">
-      <div style="width:25.8%;background:var(--green)"></div>
-      <div style="width:57.5%;background:var(--sky)"></div>
-      <div style="width:16.7%;background:var(--red);opacity:.5"></div>
+      <div style="width:25.2%;background:var(--green)"></div>
+      <div style="width:58.3%;background:var(--sky)"></div>
+      <div style="width:16.5%;background:var(--red);opacity:.5"></div>
     </div>
     <div class="hero-legend">
-      <span><span class="dot" style="background:var(--green)"></span>795 — existing PROD rules (25.8%)</span>
-      <span><span class="dot" style="background:var(--sky)"></span>1,774 — CM-2121 proposed rules (57.5%)</span>
-      <span><span class="dot" style="background:var(--red);opacity:.6"></span>514 — uncovered (16.7%)</span>
+      <span><span class="dot" style="background:var(--green)"></span>762 — existing PROD rules (25.2%)</span>
+      <span><span class="dot" style="background:var(--sky)"></span>1,766 — CM-2121 proposed rules (58.3%)</span>
+      <span><span class="dot" style="background:var(--red);opacity:.6"></span>501 — uncovered (16.5%)</span>
+      <span style="margin-top:4px;font-size:10px;">54 name-collision pairs excluded — different people, not duplicates</span>
     </div>
   </div>
   <div class="hero-stat-col">
-    <div class="hero-headline">Existing rules cover 795 pairs today. CM-2121 adds 1,774 more — bringing coverage to 83%.</div>
-    <div class="hero-sub">Seven rule changes in CM-2121 (R5–R11) close the majority of identified gaps. The remaining 514 are hard cases — different last names, or biz-team-only with no corroborating signal — that require manual stewardship or a further rule pass.</div>
+    <div class="hero-headline">Existing rules cover 762 pairs today. CM-2121 adds 1,766 more — 83.5% of 3,029 identified duplicates.</div>
+    <div class="hero-sub">Seven rule changes in CM-2121 (R5–R11) close the majority of identified gaps. The remaining 501 are hard cases — different last names, or biz-team-only with no corroborating signal — that require manual stewardship or a further rule pass. 54 name-collision pairs (different people sharing a name at the same firm) are excluded from this count.</div>
   </div>
 </div>
 
@@ -137,18 +138,18 @@ tfoot td.r{text-align:right;}
 <div class="kpi-row">
   <div class="kpi">
     <span class="kpi-label">Existing PROD rules</span>
-    <span class="kpi-value c-green">795</span>
-    <span class="kpi-note">25.8% · auto-merge today</span>
+    <span class="kpi-value c-green">762</span>
+    <span class="kpi-note">25.2% of 3,029 · auto-merge today</span>
   </div>
   <div class="kpi">
     <span class="kpi-label">CM-2121 (R5 – R11)</span>
-    <span class="kpi-value c-sky">1,774</span>
-    <span class="kpi-note">57.5% · net-new pairs covered by proposed rules</span>
+    <span class="kpi-value c-sky">1,766</span>
+    <span class="kpi-note">58.3% · net-new pairs covered by proposed rules</span>
   </div>
   <div class="kpi">
     <span class="kpi-label">Still uncovered</span>
-    <span class="kpi-value c-red">514</span>
-    <span class="kpi-note">16.7% · manual stewardship</span>
+    <span class="kpi-value c-red">501</span>
+    <span class="kpi-note">16.5% · manual stewardship</span>
   </div>
 </div>
 
@@ -157,7 +158,7 @@ tfoot td.r{text-align:right;}
   <button class="tab-btn active" onclick="showTab('summary',this)">Summary</button>
   <button class="tab-btn" onclick="showTab('definite',this)">Definite (1,187)</button>
   <button class="tab-btn" onclick="showTab('likely',this)">Likely (1,842)</button>
-  <button class="tab-btn" onclick="showTab('namecoll',this)">Name Collision (54)</button>
+  <button class="tab-btn" onclick="showTab('namecoll',this)">⚠ False Positives (54)</button>
   <button class="tab-btn" onclick="showTab('rules',this)">All Rules</button>
   <button class="tab-btn" onclick="showTab('method',this)">Methodology</button>
 </nav>
@@ -166,7 +167,7 @@ tfoot td.r{text-align:right;}
 <div id="tab-summary" class="tab-pane active">
   <div class="eyebrow">Overview</div>
   <h2>Coverage by workbook bucket</h2>
-  <p>Existing PROD rules catch 795 pairs (26%). The seven rule changes proposed in CM-2121 — R5 through R11 — add another 1,774, bringing total coverage to 2,569 (83%). The remaining 514 are genuinely hard cases with no clean rule signal.</p>
+  <p>54 name-collision pairs — different people sharing a name at the same firm — are excluded from the analysis. Of the remaining 3,029 true duplicate pairs, existing PROD rules catch 762 (25%). CM-2121 (R5–R11) adds 1,766 more, bringing coverage to 2,528 (83.5%). The remaining 501 are hard cases with no clean rule signal.</p>
 
   <div class="callout red">
     <strong>ExactContactBusinessTeam does not exist in PROD</strong>
@@ -193,30 +194,25 @@ tfoot td.r{text-align:right;}
           <td><span class="chip chip-amber">Likely</span></td>
           <td class="r">1,842</td><td class="r">240</td><td class="r">1,199</td><td class="r">403</td>
         </tr>
-        <tr>
-          <td><span class="chip chip-muted">Name Collision</span></td>
-          <td class="r">54</td><td class="r">33</td><td class="r">8</td><td class="r">13</td>
-        </tr>
       </tbody>
       <tfoot>
         <tr>
           <td>Total</td>
-          <td class="r">3,083</td><td class="r">795</td><td class="r">1,774</td><td class="r">514</td>
+          <td class="r">3,029</td><td class="r">762</td><td class="r">1,766</td><td class="r">501</td>
         </tr>
       </tfoot>
     </table>
   </div>
 
-  <h3>Uncovered 514 — breakdown</h3>
+  <h3>Uncovered 501 — breakdown</h3>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>Segment</th><th class="r">Count</th><th>Why no rule covers them</th></tr></thead>
       <tbody>
         <tr><td>Definite — different last names</td><td class="r">98</td><td>Shared phone + JW ≥ 85 but last names differ — needs cross-last-name fuzzy rule or manual review</td></tr>
         <tr><td>Likely — biz team only, no other signal</td><td class="r">403</td><td>Name similarity + shared team but no phone, ZIP, or address match — too weak for a rule without additional signal</td></tr>
-        <tr><td>Name Collision — correctly uncovered</td><td class="r">13</td><td>Different people at same firm (middle-initial email disambiguation) — should NOT be merged</td></tr>
       </tbody>
-      <tfoot><tr><td>Total</td><td class="r">514</td><td></td></tr></tfoot>
+      <tfoot><tr><td>Total</td><td class="r">501</td><td></td></tr></tfoot>
     </table>
   </div>
 </div>
@@ -331,13 +327,13 @@ tfoot td.r{text-align:right;}
 
 <!-- ══ NAME COLLISION ══ -->
 <div id="tab-namecoll" class="tab-pane">
-  <div class="eyebrow">Bucket</div>
-  <h2>Name Collision — 54 pairs</h2>
-  <p>Emails differ only by a middle initial or digit — intentional disambiguation for two employees with the same name at the same firm. These should NOT be merged. 13 are correctly uncovered by all rules.</p>
+  <div class="eyebrow">False positives — excluded from coverage counts</div>
+  <h2>Name Collision — 54 pairs of different people</h2>
+  <p>These 54 pairs are not duplicates. Emails differ only by a middle initial or digit — intentional disambiguation for two employees with the same name at the same firm. They are excluded from all coverage totals. However, 41 of them satisfy existing PROD rule conditions and are at risk of incorrect auto-merge.</p>
 
   <div class="callout red">
-    <strong>Coverage here is a risk, not a win</strong>
-    41 Name Collision pairs satisfy at least one PROD rule condition (primarily ExactFNLNSfxFirmState). These are different people — any auto-merge would be incorrect. Ensure each pair has an XGRP exclusion or a UM_CONTACT split record.
+    <strong>Action required: 41 pairs are at risk of incorrect merge</strong>
+    ExactFNLNSfxFirmState (score 95) fires on these pairs today. They are different people and any auto-merge would be incorrect. Each pair needs an XGRP exclusion or a UM_CONTACT split record before CM-2121 rules are activated.
   </div>
 
   <h3>Sample — middle-initial email disambiguation</h3>
