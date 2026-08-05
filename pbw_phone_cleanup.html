@@ -781,10 +781,10 @@ var XL_STYLES = '<Styles>' +
     '<Interior ss:Color="#1B3560" ss:Pattern="Solid"/>' +
   '</Style>' +
   '<Style ss:ID="d0">' +
-    '<Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>' +
+    '<Interior ss:Color="#FFF7EE" ss:Pattern="Solid"/>' +
   '</Style>' +
   '<Style ss:ID="d1">' +
-    '<Interior ss:Color="#DBEAFE" ss:Pattern="Solid"/>' +
+    '<Interior ss:Color="#FFDDB8" ss:Pattern="Solid"/>' +
   '</Style>' +
   '</Styles>';
 
@@ -800,12 +800,14 @@ function xlSheet(name, cols, sheetRows) {
     return "<Row>" + cells + "</Row>";
   }).join("");
   var safe = name.replace(/[\\\/\?\*\[\]:]/g, "-").substring(0, 31);
+  var n = cols.length;
   return '<Worksheet ss:Name="' + xlEsc(safe) + '">' +
     '<Table><Row>' + hdr + "</Row>" + body + "</Table>" +
     '<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">' +
       '<FreezePanes/><SplitHorizontal>1</SplitHorizontal>' +
       '<TopRowBottomPane>1</TopRowBottomPane><ActivePane>2</ActivePane>' +
     '</WorksheetOptions>' +
+    '<x:AutoFilter x:Range="R1C1:R1C' + n + '"/>' +
     '</Worksheet>';
 }
 
