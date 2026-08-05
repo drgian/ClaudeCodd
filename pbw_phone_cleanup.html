@@ -777,13 +777,16 @@ function xlEsc(v) {
 }
 
 var XL_STYLES = '<Styles>' +
-  '<Style ss:ID="hdr"><Font ss:Bold="1" ss:Color="#FFFFFF" ss:Size="10" ss:Name="Calibri"/>' +
+  '<Style ss:ID="hdr">' +
+    '<Font ss:Bold="1" ss:Color="#FFFFFF" ss:Size="10" ss:Name="Calibri"/>' +
     '<Interior ss:Color="#1B3560" ss:Pattern="Solid"/>' +
-    '<Alignment ss:Vertical="Center" ss:WrapText="0"/></Style>' +
-  '<Style ss:ID="d0"><Font ss:Size="10" ss:Name="Calibri"/>' +
-    '<Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/></Style>' +
-  '<Style ss:ID="d1"><Font ss:Size="10" ss:Name="Calibri"/>' +
-    '<Interior ss:Color="#DBEAFE" ss:Pattern="Solid"/></Style>' +
+  '</Style>' +
+  '<Style ss:ID="d0">' +
+    '<Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>' +
+  '</Style>' +
+  '<Style ss:ID="d1">' +
+    '<Interior ss:Color="#DBEAFE" ss:Pattern="Solid"/>' +
+  '</Style>' +
   '</Styles>';
 
 function xlSheet(name, cols, sheetRows) {
@@ -800,15 +803,15 @@ function xlSheet(name, cols, sheetRows) {
   var safe = name.replace(/[\\\/\?\*\[\]:]/g, "-").substring(0, 31);
   return '<Worksheet ss:Name="' + xlEsc(safe) + '">' +
     '<Table><Row>' + hdr + "</Row>" + body + "</Table>" +
-    '<AutoFilter x:Range="R1C1:R1C' + cols.length + '" xmlns:x="urn:schemas-microsoft-com:office:excel"/>' +
     '<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">' +
       '<FreezePanes/><SplitHorizontal>1</SplitHorizontal>' +
       '<TopRowBottomPane>1</TopRowBottomPane><ActivePane>2</ActivePane>' +
-    '</WorksheetOptions></Worksheet>';
+    '</WorksheetOptions>' +
+    '</Worksheet>';
 }
 
 function triggerXlDownload(xml, filename) {
-  var blob = new Blob([xml], { type: "application/vnd.ms-excel" });
+  var blob = new Blob([xml], { type: "application/vnd.ms-excel;charset=utf-8" });
   var url = URL.createObjectURL(blob);
   var a = document.createElement("a");
   a.href = url; a.download = filename;
@@ -817,9 +820,10 @@ function triggerXlDownload(xml, filename) {
 }
 
 function xlWorkbook(sheets) {
-  return '<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>\n' +
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n' +
     '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"' +
-    ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n' +
+    ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"' +
+    ' xmlns:x="urn:schemas-microsoft-com:office:excel">\n' +
     XL_STYLES + "\n" + sheets.join("\n") + "\n</Workbook>";
 }
 
