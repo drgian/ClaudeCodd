@@ -192,7 +192,7 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
     </div>
     <div class="pane active" id="pane-0">
       <div class="kpi-grid">
-        <div class="kpi c-conflict" tabindex="0" onclick="drillTo('differ','CRD conflicts ? both sides have a CRD and they differ')" onkeydown="if(event.key==='Enter')this.click()">
+        <div class="kpi c-conflict" tabindex="0" onclick="drillTo('differ','CRD conflicts - both sides have a CRD and they differ')" onkeydown="if(event.key==='Enter')this.click()">
           <div class="kpi-label">CRD conflicts</div>
           <div class="kpi-value" id="kpi-diff">0</div>
           <div class="kpi-sub">both sides have a CRD &amp; they differ</div>
@@ -212,17 +212,17 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
         <thead><tr><th>Routing</th><th class="dn">Count</th><th class="dp">Share</th><th class="d-bar"></th></tr></thead>
         <tbody>
           <tr class="sec-row"><td colspan="4">CRD conflicts (both sides have a CRD and they differ)</td></tr>
-          <tr class="clickable" tabindex="0" onclick="drillTo('accept','Update ? FINRA confirms, NG firm should be updated')" onkeydown="if(event.key==='Enter')this.click()">
+          <tr class="clickable" tabindex="0" onclick="drillTo('accept','Update - FINRA confirms, NG firm should be updated')" onkeydown="if(event.key==='Enter')this.click()">
             <td><span class="chip chip-upd">Update</span>Waterfall &amp; FINRA name both confirm &mdash; update NG</td>
             <td class="dn" data-cnt="accept">0</td><td class="dp" id="pct-accept">0%</td>
             <td class="d-bar"><div class="bar-track"><div id="bar-accept" class="bar-fill" style="width:0%;background:var(--magenta)"></div></div></td>
           </tr>
-          <tr class="clickable" tabindex="0" onclick="drillTo('nrf1','Needs Review ? CRD conflict, FINRA not confirmed')" onkeydown="if(event.key==='Enter')this.click()">
+          <tr class="clickable" tabindex="0" onclick="drillTo('nrf1','Needs Review - CRD conflict, FINRA not confirmed')" onkeydown="if(event.key==='Enter')this.click()">
             <td><span class="chip chip-nr">Needs Review</span>CRD conflict &mdash; FINRA has not confirmed direction</td>
             <td class="dn" data-cnt="nrf1">0</td><td class="dp" id="pct-nrf1">0%</td>
             <td class="d-bar"><div class="bar-track"><div id="bar-nrf1" class="bar-fill" style="width:0%;background:var(--yellow)"></div></div></td>
           </tr>
-          <tr class="clickable" tabindex="0" onclick="drillTo('nrf2','Keep ? steward set this firm, do not overwrite')" onkeydown="if(event.key==='Enter')this.click()">
+          <tr class="clickable" tabindex="0" onclick="drillTo('nrf2','Keep - steward set this firm, do not overwrite')" onkeydown="if(event.key==='Enter')this.click()">
             <td><span class="chip chip-kp">Keep</span>Steward-set firm &mdash; do not overwrite</td>
             <td class="dn" data-cnt="nrf2">0</td><td class="dp" id="pct-nrf2">0%</td>
             <td class="d-bar"><div class="bar-track"><div id="bar-nrf2" class="bar-fill" style="width:0%;background:#1D4ED8"></div></div></td>
@@ -243,7 +243,7 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
             <div class="sig-n" data-cnt="finra-recent">0</div>
             <div class="sig-label">FINRA departure recorded since Jan 2024</div>
           </div>
-          <div class="sig-card" tabindex="0" onclick="drillTo('accept','Update ? FINRA confirms, NG firm should be updated')" onkeydown="if(event.key==='Enter')this.click()">
+          <div class="sig-card" tabindex="0" onclick="drillTo('accept','Update - FINRA confirms, NG firm should be updated')" onkeydown="if(event.key==='Enter')this.click()">
             <div class="sig-n" data-cnt="accept">0</div>
             <div class="sig-label">FINRA name confirms waterfall &mdash; ready to update</div>
           </div>
@@ -280,7 +280,7 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
         <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
           <span class="chip chip-nr">Needs Review</span>
           <span style="font-size:16px;font-weight:700;flex:1">CRD conflict &mdash; FINRA not confirmed</span>
-          <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('nrf1','Needs Review ? CRD conflict, FINRA not confirmed')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="nrf1">0</span> rows &rarr;</span>
+          <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('nrf1','Needs Review - CRD conflict, FINRA not confirmed')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="nrf1">0</span> rows &rarr;</span>
         </div>
         <p style="font-size:14px;color:var(--text-2);margin:0 0 12px">Waterfall and NG have different firm CRDs and FINRA doesn&rsquo;t corroborate either direction. Steward review needed. FINRA signals and logged calls help prioritize.</p>
         <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
@@ -293,7 +293,7 @@ const COMPARABLE={"raw":12145,"resolved":146202};</script>
         <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
           <span class="chip chip-kp">Keep</span>
           <span style="font-size:16px;font-weight:700;flex:1">Steward-set firm &mdash; do not overwrite</span>
-          <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('nrf2','Keep ? steward set this firm, do not overwrite')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="nrf2">0</span> rows &rarr;</span>
+          <span style="font-size:13px;color:var(--text-3);cursor:pointer;text-decoration:underline dotted" tabindex="0" onclick="drillTo('nrf2','Keep - steward set this firm, do not overwrite')" onkeydown="if(event.key==='Enter')this.click()"><span data-cnt="nrf2">0</span> rows &rarr;</span>
         </div>
         <p style="font-size:14px;color:var(--text-2);margin:0 0 12px">A steward explicitly set the NG firm and the waterfall CRD now disagrees. The original editor should confirm or accept the change.</p>
       </div>
