@@ -262,28 +262,27 @@ function xlsxSheet(cols, rows) {
   });
   var ws = XLSX.utils.aoa_to_sheet(aoa);
   var range = XLSX.utils.decode_range(ws["!ref"]);
-  // Column widths — wider for email/name cols
   ws["!cols"] = cols.map(function(c) {
     var w = (c.indexOf("EMAIL") >= 0 || c.indexOf("NAME") >= 0 || c.indexOf("FIRM") >= 0) ? 36 : 20;
     return {wch: w};
   });
-  // Freeze top row + autofilter
   ws["!freeze"] = {xSplit: 0, ySplit: 1};
-  ws["!autofilter"] = {ref: XLSX.utils.encode_range({s:{r:0,c:0},e:{r:0,c:range.e.c}})} ;
-  // Alternating row colors
-  for (var r = 0; r <= range.e.r; r++) {
-    for (var c = 0; c <= range.e.c; c++) {
-      var addr = XLSX.utils.encode_cell({r:r, c:c});
-      if (!ws[addr]) ws[addr] = {v:"", t:"s"};
-      if (r === 0) {
-        ws[addr].s = {font:{bold:true,sz:11}, fill:{patternType:"solid",fgColor:{rgb:"BFDBFE"}}};
-      } else {
-        var rgb = (r % 2 === 1) ? "DBEAFE" : "EFF6FF";
-        ws[addr].s = {font:{sz:11}, fill:{patternType:"solid",fgColor:{rgb:rgb}}};
-      }
-    }
-  }
+  ws["!autofilter"] = {ref: ws["!ref"]};
   return ws;
+}
+
+function doDownload(wb, fname) {
+  try {
+    var b64 = XLSX.write(wb, {bookType:"xlsx", type:"base64"});
+    var a = document.createElement("a");
+    a.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + b64;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { document.body.removeChild(a); }, 200);
+  } catch(e) {
+    alert("Download error: " + e.message);
+  }
 }
 
 function downloadXLSX() {
@@ -293,10 +292,10 @@ function downloadXLSX() {
   var scope = currentScope === "active" ? "active12mo" : "all";
   if (currentRule && pop[currentRule]) {
     var s = pop[currentRule];
-    var label  = (RULE_TO_LABEL[currentRule] || currentRule).substring(0, 31);
-    var fname  = "email_cleanup_" + currentRule.replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").substring(0,40) + "_" + scope + ".xlsx";
+    var label = (RULE_TO_LABEL[currentRule] || currentRule).substring(0, 31);
+    var fname = "email_cleanup_" + currentRule.replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").substring(0,40) + "_" + scope + ".xlsx";
     XLSX.utils.book_append_sheet(wb, xlsxSheet(s.cols, s.rows), label);
-    XLSX.writeFile(wb, fname);
+    doDownload(wb, fname);
   } else if (currentCat) {
     var cats = DATA[currentScope].aoCatRows;
     var catRow = null;
@@ -313,7 +312,7 @@ function downloadXLSX() {
     var sheetName = currentCat.substring(0, 31);
     var fname2 = "email_cleanup_" + currentCat.replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").substring(0,40) + "_" + scope + ".xlsx";
     XLSX.utils.book_append_sheet(wb, xlsxSheet(cols, allRows), sheetName);
-    XLSX.writeFile(wb, fname2);
+    doDownload(wb, fname2);
   }
 }
 
@@ -330,7 +329,7 @@ function downloadCatXLSX() {
     });
     XLSX.utils.book_append_sheet(wb, xlsxSheet(slimCols, allRows), cat.cat.substring(0,31));
   });
-  XLSX.writeFile(wb, "email_cleanup_AO_for_processing_" + scope + ".xlsx");
+  doDownload(wb, "email_cleanup_AO_for_processing_" + scope + ".xlsx");
 }
 
 function v(x) { return x || ""; }
