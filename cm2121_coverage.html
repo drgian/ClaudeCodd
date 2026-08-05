@@ -169,11 +169,6 @@ tfoot td.r{text-align:right;}
   <h2>Coverage by workbook bucket</h2>
   <p>54 name-collision pairs — different people sharing a name at the same firm — are excluded from the analysis. Of the remaining 3,029 true duplicate pairs, existing PROD rules catch 762 (25%). CM-2121 (R5–R11) adds 1,766 more, bringing coverage to 2,528 (83.5%). The remaining 501 are hard cases with no clean rule signal.</p>
 
-  <div class="callout red">
-    <strong>ExactContactBusinessTeam does not exist in PROD</strong>
-    An earlier version of this analysis incorrectly attributed 2,724 pairs to ExactContactBusinessTeam. That rule appears in a UAT XML but has never been deployed to PROD. All numbers here reflect the actual PROD SemQLMatcher ruleset.
-  </div>
-
   <div class="tbl-wrap">
     <table>
       <thead>
