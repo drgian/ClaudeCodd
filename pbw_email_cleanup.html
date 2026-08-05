@@ -566,9 +566,9 @@ function buildCard(row, ruleKey) {
 
   var ownerName = esc(v(row.CONTACT_OWNER));
   var grpContact = '<div class="grp">'
-    + '<div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:5px;border-bottom:1px solid var(--border);margin-bottom:8px;">'
-    + '<h4 style="margin:0;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text);">NextGen Profile</h4>'
-    + '<span style="font-size:13px;font-weight:600;color:var(--text);">' + (ownerName || "&mdash;") + '</span>'
+    + '<div style="display:flex;align-items:baseline;gap:8px;padding-bottom:5px;border-bottom:1px solid var(--border);margin-bottom:8px;">'
+    + '<h4 style="margin:0;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text);white-space:nowrap;">NextGen Profile</h4>'
+    + '<span style="font-size:13px;font-weight:500;color:var(--text-2);">' + (ownerName || "") + '</span>'
     + '</div>'
     + '<div class="kv">'
     + '<div><div class="k">NG Organization</div><div class="v">' + ngOrgDisp                                     + "</div></div>"
