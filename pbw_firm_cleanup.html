@@ -163,11 +163,12 @@ const COUNTS_B={"all":{"differ":3351,"accept":623,"nrf1":2436,"nrf2":292,"no-crd
   <div class="delta-box">
     <span class="delta-num" id="delta-num">&#8212;</span>
     <div class="d-note">
-      Contacts that <strong>gain a comparable firm CRD</strong> when NG offices are walked up to their parent firm.
-      Walk-up enables firm-level CRD comparison for these previously inconclusive contacts.
-      <strong>CRD conflicts &mdash; as-is:</strong> <span id="delta-a">&#8212;</span> &nbsp;
-      <strong>after walk-up:</strong> <span id="delta-b">&#8212;</span>.
-      The walk-up reveals more true conflicts because offices have no CRD; the parent firm does.
+      <strong>These are our primary compare population.</strong>
+      Most contacts in NG are linked to an <em>office</em>, not a firm. Offices are not FINRA-registered and carry no CRD &mdash;
+      so without a walk-up we cannot compare them to the waterfall at all. This number is how many of those contacts
+      gain a firm CRD once we follow the hierarchy up to the parent firm.
+      Of those, <span id="delta-b">&#8212;</span> show a genuine CRD conflict with the waterfall
+      (vs <span id="delta-a">&#8212;</span> conflicts visible without the walk-up, where NG already pointed directly at a firm).
     </div>
   </div>
   <div id="main-content">
@@ -183,9 +184,9 @@ const COUNTS_B={"all":{"differ":3351,"accept":623,"nrf1":2436,"nrf2":292,"no-crd
           <div class="kpi-sub">both sides have a CRD &amp; they differ</div>
         </div>
         <div class="kpi c-muted nc">
-          <div class="kpi-label">No CRD on NG</div>
+          <div class="kpi-label">NG org has no CRD</div>
           <div class="kpi-value"><span data-cnt="no-crd-ng">0</span></div>
-          <div class="kpi-sub">waterfall has CRD, NG doesn&rsquo;t</div>
+          <div class="kpi-sub">NG links to an office (not a firm) &mdash; offices are not FINRA-registered and carry no CRD, so no comparison is possible</div>
         </div>
         <div class="kpi c-muted nc">
           <div class="kpi-label">No CRD in waterfall</div>
@@ -239,10 +240,17 @@ const COUNTS_B={"all":{"differ":3351,"accept":623,"nrf1":2436,"nrf2":292,"no-crd
         </div>
       </div>
       <p id="note-raw" class="ctx-note">
-        <strong>NG CRD as-is</strong> &mdash; compares the waterfall firm CRD directly against the CRD on the NG org the contact is linked to. If that org is an office it usually has no CRD, so those contacts fall into the &ldquo;No CRD on NG&rdquo; bucket rather than showing as a conflict. Only contacts where NG already has a firm CRD appear here as conflicts.
+        <strong>NG CRD as-is</strong> &mdash; takes the CRD on whatever NG org the contact is linked to and compares it directly to the waterfall CRD.
+        The problem: most contacts in NG are linked to an <em>office</em> node. Offices are branches or sub-locations &mdash;
+        they are not FINRA-registered entities and have no CRD of their own.
+        So the vast majority of contacts land in &ldquo;NG org has no CRD&rdquo; and cannot be compared at all.
+        Only the smaller set of contacts already linked directly to a <em>firm</em> (a FINRA-registered entity) appear as conflicts here.
       </p>
       <p id="note-res" class="ctx-note" style="display:none">
-        <strong>NG CRD walked up</strong> &mdash; when the NG org is an office (not a firm), the comparison uses the parent firm&rsquo;s CRD instead. Contacts where NG is already a firm use that firm&rsquo;s CRD unchanged. All comparisons are exact CRD only &mdash; no name matching.
+        <strong>NG CRD walked up</strong> &mdash; for contacts linked to an office, this view follows the NG org hierarchy one level up
+        to the parent firm, then uses that firm&rsquo;s CRD for the comparison.
+        Firms are FINRA-registered and carry a CRD, which means most of the previously incomparable contacts can now be evaluated.
+        Contacts already linked to a firm are unchanged. All comparisons are exact CRD only &mdash; no name matching.
       </p>
     </div>
     <div class="pane" id="pane-1">
