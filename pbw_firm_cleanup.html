@@ -557,8 +557,8 @@ function drillTo(bk,label){
   document.getElementById('main-content').style.display='none';
   document.getElementById('ex-pane').style.display='block';
   document.getElementById('ex-title').textContent=label;
-  document.getElementById('ex-count').textContent='Showing 10 of '+rows.length.toLocaleString()+' loaded ('+total.toLocaleString()+' total'+(scope==='act'?', active 12mo':'')+') ? XLS exports all loaded rows';
-  document.getElementById('copy-btn').textContent='Copy '+rows.length+' rows to clipboard';
+  document.getElementById('ex-count').textContent='Showing 10 of '+rows.length.toLocaleString()+' ('+total.toLocaleString()+' total'+(scope==='act'?', active 12mo':'')+')';
+  document.getElementById('copy-btn').textContent='Download '+rows.length.toLocaleString()+' rows as XLS';
   var container=document.getElementById('ex-cards'); container.innerHTML='';
   if(!rows.length){
     var p=document.createElement('p');p.className='empty';
