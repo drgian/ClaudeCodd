@@ -32,7 +32,7 @@
   .hdr h2 { font-size:22px; font-weight:700; color:var(--navy); margin:0; text-wrap:balance; letter-spacing:-0.01em; }
   .hdr .meta { font-size:13px; color:var(--text-3); font-variant-numeric:tabular-nums; }
 
-  /* Toggle controls — scope (population) and phone-type filter. Both sit above the pane tabs. */
+  /* Toggle controls  -  scope (population) and phone-type filter. Both sit above the pane tabs. */
   .controls-bar { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
   .toggle-group { display:inline-flex; padding:3px; gap:2px; background:var(--surface); border:1px solid var(--border); border-radius:9px; }
   .toggle-group button { font-family:inherit; font-size:13px; font-weight:600; padding:6px 18px; border:none; border-radius:6px; background:none; color:var(--text-3); cursor:pointer; transition:background 0.12s,color 0.12s; }
@@ -103,6 +103,39 @@
   tr.cat-hdr { border-top:2px solid var(--border); }
   tr.cat-hdr td { font-weight:700; font-size:13.5px; color:var(--text); padding-top:14px; padding-bottom:6px; }
   tr.cat-hdr .cat-pct { color:var(--text-3); font-weight:400; font-size:12px; padding-left:6px; }
+
+  /* Research tab */
+  .res-subtabs { display:flex; gap:4px; margin-bottom:16px; }
+  .res-subtab { padding:6px 18px; font-size:13px; font-weight:600; border:1px solid var(--border);
+    border-radius:6px; background:none; color:var(--text-2); cursor:pointer; font-family:inherit; }
+  .res-subtab.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .res-subpane { }
+  .res-h { font-size:15px; font-weight:700; color:var(--text); margin:0 0 10px; }
+  .res-badge { font-size:11px; font-weight:500; background:var(--border); color:var(--text-2);
+    padding:2px 7px; border-radius:10px; margin-left:8px; vertical-align:middle; }
+  .res-intro { color:var(--text-2); font-size:13.5px; margin-bottom:14px; }
+  .res-stat-grid { display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
+  .res-stat { background:var(--surface); border:1px solid var(--border); border-radius:8px;
+    padding:12px 18px; min-width:130px; }
+  .res-stat-match { border-left:3px solid #16A34A; }
+  .res-stat-miss  { border-left:3px solid #DC2626; }
+  .res-stat-n { font-size:22px; font-weight:700; color:var(--text); }
+  .res-stat-lbl { font-size:12px; color:var(--text-2); margin-top:2px; }
+  .res-sh { font-size:13px; font-weight:700; color:var(--text-2); margin:18px 0 8px; text-transform:uppercase; letter-spacing:.05em; }
+  .res-tbl { width:100%; border-collapse:collapse; font-size:13px; }
+  .res-tbl th { text-align:left; padding:6px 10px; border-bottom:2px solid var(--border); color:var(--text-2); font-size:12px; white-space:nowrap; }
+  .res-tbl td { padding:5px 10px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  .res-tbl tr:hover td { background:var(--bg); }
+  .res-match { color:var(--green); font-weight:600; }
+  .res-miss  { color:#DC2626; font-weight:600; }
+  .res-none  { color:var(--text-3); }
+  .res-n  { text-align:right; }
+  .res-pct { text-align:right; white-space:nowrap; }
+  .res-slot { color:var(--text-2); }
+  .res-mono { font-family:var(--mono); font-size:12px; }
+  .res-note { font-size:12.5px; color:var(--text-3); margin-top:12px; }
+  .res-note-lg { font-size:13px; color:var(--text-2); margin-top:16px; }
+  .res-detail td { font-size:12.5px; }
 
   /* Rows that drill through to examples. The affordance has to work in both themes without adding
      a border, so it is a tinted background plus a caret that only shows on the hovered row. */
@@ -314,6 +347,7 @@
   <div class="tabs">
     <button class="tab active" id="tb-summary" onclick="setTab('summary')">Summary</button>
     <button class="tab" id="tb-rules" onclick="setTab('rules')">Rules</button>
+    <button class="tab" id="tb-research" onclick="setTab('research')">Research</button>
   </div>
 
   <div class="pane active" id="summary">
@@ -328,6 +362,346 @@
 
   <div class="pane" id="rules">
     <div class="tbl-wrap scroll-x"><table><thead><tr><th>#</th><th>Rule</th><th>Route</th><th class="dn">Rows</th><th>What it does</th></tr></thead><tbody id="t-rules"></tbody></table></div>
+  </div>
+
+  <div class="pane" id="research">
+<!-- RESEARCH_TAB_DATA_START -->
+<div class="res-subtabs" role="group" aria-label="Research source">
+  <button class="res-subtab active" id="rst-email" onclick="setResearchTab('email')">Email Scrape</button>
+  <button class="res-subtab" id="rst-web" onclick="setResearchTab('web')">Web Scrape</button>
+</div>
+<div class="res-subpane" id="rsp-email">
+<h4 class="res-h">FINTRX vs Email Signatures <span class="res-badge">90-day window</span></h4>
+<div class="res-intro">
+  <p>271 PBW contacts with an email-signature phone in the last 90 days matched to a CRD.
+  260 of those also have a FINTRX primary or mobile phone on record.</p>
+</div>
+<div class="res-stat-grid">
+  <div class="res-stat res-stat-match"><div class="res-stat-n">172</div><div class="res-stat-lbl">Agree (66.2%)</div></div>
+  <div class="res-stat res-stat-miss"><div class="res-stat-n">88</div><div class="res-stat-lbl">Differ (33.8%)</div></div>
+  <div class="res-stat"><div class="res-stat-n">11</div><div class="res-stat-lbl">No FINTRX phone</div></div>
+</div>
+<h4 class="res-sh">Breakdown by comparison type</h4>
+<div class="tbl-wrap scroll-x">
+<table class="res-tbl">
+<thead><tr><th>Verdict</th><th>Comparison slot</th><th class="dn">Count</th><th class="dp">%</th></tr></thead>
+<tbody>
+<tr><td class="res-verdict res-match">Match</td><td class="res-slot">primary to primary</td><td class="res-n">172</td><td class="res-pct">66.2%<span class="res-bar" style="background:#16A34A;width:106px;display:inline-block;height:8px;border-radius:2px;vertical-align:middle;margin-left:6px"></span></td></tr>
+<tr><td class="res-verdict res-miss">Mismatch</td><td class="res-slot">primary vs primary</td><td class="res-n">87</td><td class="res-pct">33.5%<span class="res-bar" style="background:#DC2626;width:54px;display:inline-block;height:8px;border-radius:2px;vertical-align:middle;margin-left:6px"></span></td></tr>
+<tr><td class="res-verdict res-miss">Mismatch</td><td class="res-slot">email matches neither field</td><td class="res-n">1</td><td class="res-pct">0.4%<span class="res-bar" style="background:#DC2626;width:1px;display:inline-block;height:8px;border-radius:2px;vertical-align:middle;margin-left:6px"></span></td></tr>
+</tbody>
+</table>
+</div>
+<h4 class="res-sh">All 260 rows with FINTRX data</h4>
+<p class="res-note">One row per CRD. Where a CRD maps to multiple contacts in the system,
+a representative name is shown. Phone numbers formatted for readability; comparisons use raw 10-digit values.</p>
+<div class="tbl-wrap scroll-x">
+<table class="res-tbl res-detail">
+<thead><tr>
+  <th>CRD</th><th>First</th><th>Last</th><th>Email date</th>
+  <th>Email phone</th><th>FINTRX primary</th><th>FINTRX mobile</th>
+  <th>Source</th><th>Result</th>
+</tr></thead>
+<tbody>
+<tr><td>6754825</td><td>Natalie</td><td>Abraham</td><td>2026-06-04</td><td class="res-mono">(310) 734-2472</td><td class="res-mono">(310) 734-2472</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6666697</td><td>Grant</td><td>Acker</td><td>2026-06-04</td><td class="res-mono">(310) 772-8010</td><td class="res-mono">(310) 772-8010</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5579616</td><td>Seth</td><td>Albeck</td><td>2026-06-02</td><td class="res-mono">(617) 439-8083</td><td class="res-mono">(617) 439-8083</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2314588</td><td>Gregory</td><td>Alford</td><td>2026-06-11</td><td class="res-mono">(334) 260-3880</td><td class="res-mono">(334) 260-3880</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7474531</td><td>Jordyn</td><td>Anderson</td><td>2026-06-25</td><td class="res-mono">(952) 475-4118</td><td class="res-mono">(952) 475-4118</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2208084</td><td>Scott</td><td>Ansel</td><td>2026-06-02</td><td class="res-mono">(303) 267-3008</td><td class="res-mono">(303) 267-3008</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5253064</td><td>Sora</td><td>Araim</td><td>2026-05-29</td><td class="res-mono">(415) 907-6325</td><td class="res-mono">(415) 907-6325</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7340059</td><td>James</td><td>Arca</td><td>2026-05-20</td><td class="res-mono">(914) 225-4641</td><td class="res-mono">(914) 225-4641</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7476055</td><td>Ilan</td><td>Bagel</td><td>2026-06-15</td><td class="res-mono">(310) 772-7090</td><td class="res-mono">(310) 772-7090</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5042367</td><td>Lawrence</td><td>Bahr</td><td>2026-06-12</td><td class="res-mono">(914) 225-4211</td><td class="res-mono">(914) 225-4211</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6757117</td><td>Brooke</td><td>Banning</td><td>2026-06-17</td><td class="res-mono">(813) 227-2850</td><td class="res-mono">(813) 227-2850</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5892652</td><td>Alison</td><td>Barnes</td><td>2026-05-15</td><td class="res-mono">(407) 872-6378</td><td class="res-mono">(407) 872-6378</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>3226748</td><td>Kevin</td><td>Barry</td><td>2026-05-20</td><td class="res-mono">(407) 740-4984</td><td class="res-mono">(407) 740-4984</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5497930</td><td>Jennifer</td><td>Bass</td><td>2026-06-15</td><td class="res-mono">(512) 479-5246</td><td class="res-mono">(512) 479-5246</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1766987</td><td>Carter</td><td>Baumert</td><td>2026-06-01</td><td class="res-mono">(405) 270-1863</td><td class="res-mono">(405) 270-1863</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6019126</td><td>Brian</td><td>Bechelli</td><td>2026-06-11</td><td class="res-mono">(650) 234-5146</td><td class="res-mono">(650) 234-5146</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5389245</td><td>Charlotte</td><td>Berry</td><td>2026-06-16</td><td class="res-mono">(214) 965-6191</td><td class="res-mono">(214) 965-6191</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7775472</td><td>Michael</td><td>Bier</td><td>2026-06-15</td><td class="res-mono">(203) 862-2101</td><td class="res-mono">(203) 862-2101</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5671256</td><td>Evan</td><td>Blake</td><td>2026-05-20</td><td class="res-mono">(561) 416-6919</td><td class="res-mono">(561) 416-6919</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5031349</td><td>Quinn</td><td>Boortz</td><td>2026-05-29</td><td class="res-mono">(480) 239-4526</td><td class="res-mono">(480) 239-4526</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7592710</td><td>Beau</td><td>Branley</td><td>2026-06-10</td><td class="res-mono">(206) 628-8867</td><td class="res-mono">(206) 628-8867</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5200098</td><td>Gabriel</td><td>Brito</td><td>2026-06-12</td><td class="res-mono">(305) 347-2066</td><td class="res-mono">(305) 347-2066</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5412749</td><td>Christopher</td><td>Bruno</td><td>2026-06-03</td><td class="res-mono">(212) 761-9814</td><td class="res-mono">(212) 761-9814</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6451019</td><td>Michael</td><td>Buise</td><td>2026-05-13</td><td class="res-mono">(985) 624-6908</td><td class="res-mono">(985) 624-6908</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6754047</td><td>Ashley</td><td>Butler</td><td>2026-06-24</td><td class="res-mono">(303) 486-5604</td><td class="res-mono">(303) 486-5604</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6503409</td><td>Anthony</td><td>Caliendo</td><td>2026-06-13</td><td class="res-mono">(516) 227-6120</td><td class="res-mono">(516) 227-6120</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1902823</td><td>Elizabeth</td><td>Carpio</td><td>2026-06-18</td><td class="res-mono">(404) 459-3877</td><td class="res-mono">(404) 459-3877</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7578252</td><td>James</td><td>Chang</td><td>2026-06-25</td><td class="res-mono">(504) 561-6870</td><td class="res-mono">(504) 561-6870</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5464487</td><td>Bryan</td><td>Charles</td><td>2026-05-14</td><td class="res-mono">(713) 350-8067</td><td class="res-mono">(713) 350-8067</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7147466</td><td>Jack</td><td>Chiate</td><td>2026-06-02</td><td class="res-mono">(310) 734-2440</td><td class="res-mono">(310) 734-2440</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7091740</td><td>Eric</td><td>Chin</td><td>2026-05-11</td><td class="res-mono">(914) 225-0692</td><td class="res-mono">(914) 225-0692</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7997232</td><td>James</td><td>Corcoran</td><td>2026-05-15</td><td class="res-mono">(910) 509-2169</td><td class="res-mono">(910) 509-2169</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7900390</td><td>Victoria</td><td>Cordovez Lara</td><td>2026-06-23</td><td class="res-mono">(305) 533-5464</td><td class="res-mono">(305) 533-5464</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>8022597</td><td>Cooper</td><td>Cornett</td><td>2026-05-12</td><td class="res-mono">(239) 449-7856</td><td class="res-mono">(239) 449-7856</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6649884</td><td>Isabella</td><td>Cozad</td><td>2026-05-14</td><td class="res-mono">(954) 267-5607</td><td class="res-mono">(954) 267-5607</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7754087</td><td>Mary</td><td>Cusumano</td><td>2026-06-04</td><td class="res-mono">(314) 366-3627</td><td class="res-mono">(314) 366-3627</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7790951</td><td>Alexia</td><td>Dauelsberg</td><td>2026-06-16</td><td class="res-mono">(239) 249-5005</td><td class="res-mono">(239) 249-5005</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7267512</td><td>Nicholas</td><td>Day</td><td>2026-05-12</td><td class="res-mono">(617) 247-6065</td><td class="res-mono">(617) 247-6065</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5662736</td><td>Gabriela</td><td>De Haro</td><td>2026-06-26</td><td class="res-mono">(305) 347-2081</td><td class="res-mono">(305) 347-2081</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1883947</td><td>Kevin</td><td>Delgado</td><td>2026-06-05</td><td class="res-mono">(914) 225-4732</td><td class="res-mono">(914) 225-4732</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1693975</td><td>Mark</td><td>Desalvo</td><td>2026-05-07</td><td class="res-mono">(757) 624-2570</td><td class="res-mono">(757) 624-2570</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6293353</td><td>Brittney</td><td>Dick</td><td>2026-06-02</td><td class="res-mono">(404) 479-6084</td><td class="res-mono">(404) 479-6084</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>8162095</td><td>Jack</td><td>Dolger</td><td>2026-05-27</td><td class="res-mono">(516) 683-3151</td><td class="res-mono">(516) 683-3151</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>8194793</td><td>Matthew</td><td>Doucette</td><td>2026-06-15</td><td class="res-mono">(214) 382-2202</td><td class="res-mono">(214) 382-2202</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7376775</td><td>Philip</td><td>Dusek</td><td>2026-06-18</td><td class="res-mono">(980) 465-7420</td><td class="res-mono">(980) 465-7420</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7724594</td><td>Joshua</td><td>East</td><td>2026-06-15</td><td class="res-mono">(850) 470-8032</td><td class="res-mono">(850) 470-8032</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5899230</td><td>Joseph</td><td>Emmerling</td><td>2026-06-26</td><td class="res-mono">(310) 788-2260</td><td class="res-mono">(310) 788-2260</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5380051</td><td>Delia</td><td>Espinosa</td><td>2026-05-20</td><td class="res-mono">(305) 523-6657</td><td class="res-mono">(305) 523-6657</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5927727</td><td>Thomas</td><td>Fallon</td><td>2026-06-08</td><td class="res-mono">(212) 713-2732</td><td class="res-mono">(212) 713-2732</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1940490</td><td>Katherine</td><td>Farnham</td><td>2026-05-27</td><td class="res-mono">(401) 843-8822</td><td class="res-mono">(401) 843-8822</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6467256</td><td>Trenton</td><td>Fisher</td><td>2026-05-20</td><td class="res-mono">(512) 275-3121</td><td class="res-mono">(512) 275-3121</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>8081384</td><td>Arttu</td><td>Fiva</td><td>2026-05-14</td><td class="res-mono">(713) 350-8052</td><td class="res-mono">(713) 350-8052</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6950545</td><td>Matthew</td><td>Freilino</td><td>2026-06-02</td><td class="res-mono">(617) 478-6586</td><td class="res-mono">(617) 478-6586</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7186297</td><td>Krishna</td><td>Gall</td><td>2026-05-27</td><td class="res-mono">(202) 942-2802</td><td class="res-mono">(202) 942-2802</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6818283</td><td>Laurence</td><td>Gerace</td><td>2026-06-16</td><td class="res-mono">(914) 225-2041</td><td class="res-mono">(914) 225-2041</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7483552</td><td>Lily</td><td>Gilbertson</td><td>2026-06-16</td><td class="res-mono">(312) 525-7166</td><td class="res-mono">(312) 525-7166</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6214295</td><td>Rosario</td><td>Giliberto</td><td>2026-06-01</td><td class="res-mono">(516) 745-8852</td><td class="res-mono">(516) 745-8852</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7693809</td><td>Anna</td><td>Goldberg</td><td>2026-06-10</td><td class="res-mono">(847) 498-7830</td><td class="res-mono">(847) 498-7830</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7367935</td><td>Jose</td><td>Gratereaux</td><td>2026-06-10</td><td class="res-mono">(212) 713-3429</td><td class="res-mono">(212) 713-3429</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5043459</td><td>Richard</td><td>Grimes</td><td>2026-06-01</td><td class="res-mono">(317) 816-1818</td><td class="res-mono">(317) 816-1818</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6524740</td><td>Franklin</td><td>Gutierrez</td><td>2026-06-02</td><td class="res-mono">(415) 963-5204</td><td class="res-mono">(415) 963-5204</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5352850</td><td>Anne</td><td>Guzman</td><td>2026-05-19</td><td class="res-mono">(952) 475-4116</td><td class="res-mono">(952) 475-4116</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2177845</td><td>Sylvia</td><td>Guzman</td><td>2026-06-16</td><td class="res-mono">(713) 654-0230</td><td class="res-mono">(713) 654-0230</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7834343</td><td>Jon</td><td>Hallman</td><td>2026-06-04</td><td class="res-mono">(515) 283-7087</td><td class="res-mono">(515) 283-7087</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6611989</td><td>Anna</td><td>Harrington</td><td>2026-06-17</td><td class="res-mono">(858) 551-9493</td><td class="res-mono">(858) 551-9493</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7808965</td><td>Jack</td><td>Harrington</td><td>2026-05-11</td><td class="res-mono">(415) 576-2034</td><td class="res-mono">(415) 576-2034</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6352985</td><td>Samuel</td><td>Harris</td><td>2026-06-10</td><td class="res-mono">(212) 821-7026</td><td class="res-mono">(212) 821-7026</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4123879</td><td>Christine</td><td>Harsaghy</td><td>2026-06-18</td><td class="res-mono">(203) 861-5753</td><td class="res-mono">(203) 861-5753</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7973394</td><td>Kylie</td><td>Hazen</td><td>2026-06-25</td><td class="res-mono">(561) 367-1825</td><td class="res-mono">(561) 367-1825</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6515328</td><td>Lauren</td><td>Healey</td><td>2026-06-24</td><td class="res-mono">(212) 821-7008</td><td class="res-mono">(212) 821-7008</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6800233</td><td>Samantha</td><td>Hodges</td><td>2026-06-12</td><td class="res-mono">(949) 717-3962</td><td class="res-mono">(949) 717-3962</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6881083</td><td>Gregory</td><td>Hohenstein</td><td>2026-06-15</td><td class="res-mono">(312) 525-4219</td><td class="res-mono">(312) 525-4219</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5905808</td><td>Linda</td><td>Hurd</td><td>2026-06-25</td><td class="res-mono">(212) 713-9492</td><td class="res-mono">(212) 713-9492</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6661211</td><td>Alyssa</td><td>Isacksen</td><td>2026-06-15</td><td class="res-mono">(516) 227-5654</td><td class="res-mono">(516) 227-5654</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6696144</td><td>Matthew</td><td>Jorgensen</td><td>2026-06-26</td><td class="res-mono">(332) 263-9045</td><td class="res-mono">(332) 263-9045</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>8144505</td><td>Charles</td><td>Juckniess</td><td>2026-06-15</td><td class="res-mono">(952) 830-4375</td><td class="res-mono">(952) 830-4375</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2735529</td><td>Kristen</td><td>Kaczmark</td><td>2026-06-12</td><td class="res-mono">(707) 524-1059</td><td class="res-mono">(707) 524-1059</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5075134</td><td>Brian</td><td>Kadlec</td><td>2026-05-22</td><td class="res-mono">(312) 419-3365</td><td class="res-mono">(312) 419-3365</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6946993</td><td>Petya</td><td>Kaloferova</td><td>2026-05-28</td><td class="res-mono">(312) 827-6841</td><td class="res-mono">(312) 827-6841</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6316342</td><td>Silvio</td><td>Kauffmann</td><td>2026-06-15</td><td class="res-mono">(617) 478-6481</td><td class="res-mono">(617) 478-6481</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7028749</td><td>Anita</td><td>Kazanjian</td><td>2026-05-12</td><td class="res-mono">(818) 377-8882</td><td class="res-mono">(818) 377-8882</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2156886</td><td>Maureen</td><td>Kelly</td><td>2026-06-18</td><td class="res-mono">(212) 713-2719</td><td class="res-mono">(212) 713-2719</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6786456</td><td>Jonathan</td><td>Khosa</td><td>2026-06-10</td><td class="res-mono">(312) 525-4608</td><td class="res-mono">(312) 525-4608</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2515717</td><td>Tammie</td><td>Kim</td><td>2026-06-27</td><td class="res-mono">(925) 746-2906</td><td class="res-mono">(925) 746-2906</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5324643</td><td>Wendi</td><td>Koleszar</td><td>2026-06-22</td><td class="res-mono">(214) 965-6152</td><td class="res-mono">(214) 965-6152</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7202710</td><td>Genna</td><td>Kranis</td><td>2026-05-28</td><td class="res-mono">(212) 713-2794</td><td class="res-mono">(212) 713-2794</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>3073626</td><td>Aradhana</td><td>Kuhn</td><td>2026-06-04</td><td class="res-mono">(617) 478-6417</td><td class="res-mono">(617) 478-6417</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5183136</td><td>Raul</td><td>Lacayo</td><td>2026-06-25</td><td class="res-mono">(305) 347-2087</td><td class="res-mono">(305) 347-2087</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4221940</td><td>Ronna</td><td>Lao</td><td>2026-05-15</td><td class="res-mono">(954) 623-7611</td><td class="res-mono">(954) 623-7611</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2584634</td><td>Belinda</td><td>Laws</td><td>2026-06-12</td><td class="res-mono">(504) 584-5671</td><td class="res-mono">(504) 584-5671</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6349379</td><td>Emily</td><td>Lesher</td><td>2026-06-19</td><td class="res-mono">(617) 345-8709</td><td class="res-mono">(617) 345-8709</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7261326</td><td>Devon</td><td>Litchfield</td><td>2026-06-08</td><td class="res-mono">(212) 516-6029</td><td class="res-mono">(212) 516-6029</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5363632</td><td>Jessica</td><td>Lite</td><td>2026-06-08</td><td class="res-mono">(212) 821-7016</td><td class="res-mono">(212) 821-7016</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6985455</td><td>John</td><td>Lupario</td><td>2026-05-07</td><td class="res-mono">(415) 963-5344</td><td class="res-mono">(415) 963-5344</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5024108</td><td>Timothy</td><td>Mackinnon</td><td>2026-06-25</td><td class="res-mono">(617) 589-3370</td><td class="res-mono">(617) 589-3370</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6386149</td><td>Samantha</td><td>Maley</td><td>2026-06-17</td><td class="res-mono">(585) 218-4558</td><td class="res-mono">(585) 218-4558</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4731106</td><td>Cheryl</td><td>Mara</td><td>2026-06-17</td><td class="res-mono">(732) 389-8649</td><td class="res-mono">(732) 389-8649</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6959511</td><td>Maria</td><td>McArdle</td><td>2026-06-12</td><td class="res-mono">(203) 291-1072</td><td class="res-mono">(203) 291-1072</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6488837</td><td>Justin</td><td>McCandless</td><td>2026-05-13</td><td class="res-mono">(816) 932-7805</td><td class="res-mono">(816) 932-7805</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4609748</td><td>Kristin</td><td>McCartin</td><td>2026-06-10</td><td class="res-mono">(410) 736-5452</td><td class="res-mono">(410) 736-5452</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4351987</td><td>Christopher</td><td>McKenna</td><td>2026-06-10</td><td class="res-mono">(973) 315-1925</td><td class="res-mono">(973) 315-1925</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2730806</td><td>Jeremy</td><td>McPherson</td><td>2026-06-16</td><td class="res-mono">(980) 465-7382</td><td class="res-mono">(980) 465-7382</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1724334</td><td>Veronica</td><td>Miller</td><td>2026-05-21</td><td class="res-mono">(713) 940-2931</td><td class="res-mono">(713) 940-2931</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7397237</td><td>Ryan</td><td>Mullins</td><td>2026-06-04</td><td class="res-mono">(304) 353-9030</td><td class="res-mono">(304) 353-9030</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7573563</td><td>Alexis</td><td>Mungioli</td><td>2026-06-15</td><td class="res-mono">(214) 981-0572</td><td class="res-mono">(214) 981-0572</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6089585</td><td>Jeremy</td><td>Mykulak</td><td>2026-06-05</td><td class="res-mono">(404) 479-6082</td><td class="res-mono">(404) 479-6082</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4641970</td><td>Dustin</td><td>Neumann</td><td>2026-06-10</td><td class="res-mono">(612) 303-5975</td><td class="res-mono">(612) 303-5975</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5774162</td><td>Michael</td><td>Nichley</td><td>2026-05-15</td><td class="res-mono">(713) 965-8194</td><td class="res-mono">(713) 965-8194</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7573794</td><td>John</td><td>Ohara</td><td>2026-06-26</td><td class="res-mono">(212) 333-8991</td><td class="res-mono">(212) 333-8991</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4224113</td><td>Christina</td><td>Ordner</td><td>2026-05-21</td><td class="res-mono">(858) 597-7806</td><td class="res-mono">(858) 597-7806</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7193118</td><td>Christian</td><td>Ortiz Gonzalez</td><td>2026-05-15</td><td class="res-mono">(858) 613-8176</td><td class="res-mono">(858) 613-8176</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7922273</td><td>Michael</td><td>Osterberg</td><td>2026-05-27</td><td class="res-mono">(608) 821-3731</td><td class="res-mono">(608) 821-3731</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7522109</td><td>Joseph</td><td>Park</td><td>2026-05-29</td><td class="res-mono">(212) 692-2872</td><td class="res-mono">(212) 692-2872</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5541406</td><td>Lindsay</td><td>Pereguda</td><td>2026-05-29</td><td class="res-mono">(203) 319-5167</td><td class="res-mono">(203) 319-5167</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7513728</td><td>Hampton</td><td>Peters</td><td>2026-06-10</td><td class="res-mono">(865) 330-0729</td><td class="res-mono">(865) 330-0729</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5994462</td><td>Mariana</td><td>Picans</td><td>2026-05-07</td><td class="res-mono">(303) 481-1520</td><td class="res-mono">(303) 481-1520</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7562839</td><td>Carl</td><td>Pierre-Louis</td><td>2026-06-17</td><td class="res-mono">(212) 626-8716</td><td class="res-mono">(212) 626-8716</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5534579</td><td>Michael</td><td>Pollard</td><td>2026-06-18</td><td class="res-mono">(312) 453-9174</td><td class="res-mono">(312) 453-9174</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4941184</td><td>Zachary</td><td>Polun</td><td>2026-06-16</td><td class="res-mono">(404) 459-3887</td><td class="res-mono">(404) 459-3887</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5493282</td><td>Rachel</td><td>Putratz</td><td>2026-06-23</td><td class="res-mono">(651) 298-8063</td><td class="res-mono">(651) 298-8063</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7432387</td><td>Elizabeth</td><td>Quinn</td><td>2026-05-08</td><td class="res-mono">(212) 821-2770</td><td class="res-mono">(212) 821-2770</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5046567</td><td>John</td><td>Race</td><td>2026-06-25</td><td class="res-mono">(504) 585-3951</td><td class="res-mono">(504) 585-3951</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6984125</td><td>Nicholas</td><td>Regen</td><td>2026-06-10</td><td class="res-mono">(212) 315-6263</td><td class="res-mono">(212) 315-6263</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2437502</td><td>Lauryn</td><td>Reinoso</td><td>2026-05-07</td><td class="res-mono">(281) 263-1685</td><td class="res-mono">(281) 263-1685</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1363934</td><td>Jacque</td><td>Richards</td><td>2026-05-12</td><td class="res-mono">(515) 224-5533</td><td class="res-mono">(515) 224-5533</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6955549</td><td>Christopher</td><td>Riess</td><td>2026-06-15</td><td class="res-mono">(504) 595-5471</td><td class="res-mono">(504) 595-5471</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7143989</td><td>Kevin</td><td>Robson</td><td>2026-06-11</td><td class="res-mono">(312) 525-4240</td><td class="res-mono">(312) 525-4240</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4987260</td><td>John</td><td>Rocco</td><td>2026-06-02</td><td class="res-mono">(973) 315-1928</td><td class="res-mono">(973) 315-1928</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6118764</td><td>Joshua</td><td>Rosenstern</td><td>2026-05-19</td><td class="res-mono">(225) 237-3124</td><td class="res-mono">(225) 237-3124</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7979031</td><td>Dylan</td><td>Roy</td><td>2026-06-03</td><td class="res-mono">(203) 221-6021</td><td class="res-mono">(203) 221-6021</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1718085</td><td>Lisa</td><td>Rucker</td><td>2026-05-13</td><td class="res-mono">(901) 766-8625</td><td class="res-mono">(901) 766-8625</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4302660</td><td>Carmine</td><td>Rullo</td><td>2026-06-17</td><td class="res-mono">(617) 757-8897</td><td class="res-mono">(617) 757-8897</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>8147317</td><td>Asher</td><td>Saperstein</td><td>2026-05-28</td><td class="res-mono">(914) 225-0751</td><td class="res-mono">(914) 225-0751</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7758616</td><td>Grace</td><td>Schneble</td><td>2026-06-15</td><td class="res-mono">(608) 821-3707</td><td class="res-mono">(608) 821-3707</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6918067</td><td>Kaylie</td><td>Schur</td><td>2026-06-08</td><td class="res-mono">(312) 648-3060</td><td class="res-mono">(312) 648-3060</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>8209601</td><td>Sophia</td><td>Schwartz</td><td>2026-06-16</td><td class="res-mono">(212) 713-1392</td><td class="res-mono">(212) 713-1392</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7778363</td><td>Bryan</td><td>Scordino</td><td>2026-05-29</td><td class="res-mono">(617) 247-6206</td><td class="res-mono">(617) 247-6206</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7395264</td><td>Paul</td><td>Serio</td><td>2026-06-12</td><td class="res-mono">(617) 247-6224</td><td class="res-mono">(617) 247-6224</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4556235</td><td>Lisa</td><td>Shannon</td><td>2026-06-02</td><td class="res-mono">(405) 270-1853</td><td class="res-mono">(405) 270-1853</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5012743</td><td>Diane</td><td>Sherwin</td><td>2026-05-29</td><td class="res-mono">(262) 794-0830</td><td class="res-mono">(262) 794-0830</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2685772</td><td>Surani</td><td>Sirisena</td><td>2026-05-21</td><td class="res-mono">(212) 492-6755</td><td class="res-mono">(212) 492-6755</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7632271</td><td>Justin</td><td>Smith</td><td>2026-05-12</td><td class="res-mono">(305) 376-8583</td><td class="res-mono">(305) 376-8583</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4533608</td><td>Melissa</td><td>Smith</td><td>2026-05-15</td><td class="res-mono">(937) 226-6573</td><td class="res-mono">(937) 226-6573</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5273789</td><td>Melissa</td><td>Spohn</td><td>2026-05-28</td><td class="res-mono">(203) 705-4248</td><td class="res-mono">(203) 705-4248</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5643478</td><td>Vanessa</td><td>Spoto</td><td>2026-06-01</td><td class="res-mono">(973) 360-4324</td><td class="res-mono">(973) 360-4324</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6985449</td><td>Milena</td><td>Stanton</td><td>2026-06-05</td><td class="res-mono">(212) 903-7797</td><td class="res-mono">(212) 903-7797</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7594874</td><td>Caleb</td><td>Stauch</td><td>2026-06-02</td><td class="res-mono">(937) 428-1332</td><td class="res-mono">(937) 428-1332</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5533167</td><td>Margaret</td><td>Strenk</td><td>2026-05-18</td><td class="res-mono">(303) 572-4891</td><td class="res-mono">(303) 572-4891</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6161094</td><td>Brittany</td><td>Stufano</td><td>2026-05-15</td><td class="res-mono">(212) 821-2881</td><td class="res-mono">(212) 821-2881</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7808277</td><td>Emily</td><td>Suazo</td><td>2026-05-08</td><td class="res-mono">(407) 872-6317</td><td class="res-mono">(407) 872-6317</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6785244</td><td>Benjamin</td><td>Sutton</td><td>2026-06-08</td><td class="res-mono">(415) 693-6445</td><td class="res-mono">(415) 693-6445</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7894784</td><td>John</td><td>Timpson</td><td>2026-06-09</td><td class="res-mono">(212) 713-6015</td><td class="res-mono">(212) 713-6015</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6100811</td><td>Jennifer</td><td>Toney</td><td>2026-06-02</td><td class="res-mono">(562) 901-4384</td><td class="res-mono">(562) 901-4384</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5742753</td><td>Carlos</td><td>Tovar</td><td>2026-06-23</td><td class="res-mono">(305) 523-4544</td><td class="res-mono">(305) 523-4544</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5800990</td><td>Amber</td><td>Turpin</td><td>2026-06-24</td><td class="res-mono">(713) 957-7012</td><td class="res-mono">(713) 957-7012</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>2887580</td><td>Jodi</td><td>Uhrick</td><td>2026-05-13</td><td class="res-mono">(407) 740-4913</td><td class="res-mono">(407) 740-4913</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7941718</td><td>Adam</td><td>Valentini</td><td>2026-06-25</td><td class="res-mono">(312) 525-4226</td><td class="res-mono">(312) 525-4226</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1380973</td><td>Jeanne</td><td>Varwig</td><td>2026-05-07</td><td class="res-mono">(847) 277-2121</td><td class="res-mono">(847) 277-2121</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4873617</td><td>Marianne</td><td>Veenstra</td><td>2026-06-16</td><td class="res-mono">(630) 572-4054</td><td class="res-mono">(630) 572-4054</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7694434</td><td>Mia</td><td>Vettoretti</td><td>2026-05-18</td><td class="res-mono">(212) 713-2213</td><td class="res-mono">(212) 713-2213</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7438067</td><td>Audra</td><td>Vetzel</td><td>2026-05-29</td><td class="res-mono">(423) 752-5687</td><td class="res-mono">(423) 752-5687</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5395384</td><td>Michael</td><td>Von Borsig</td><td>2026-06-25</td><td class="res-mono">(305) 536-9343</td><td class="res-mono">(305) 536-9343</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7369361</td><td>Heidi</td><td>Waldmann</td><td>2026-06-11</td><td class="res-mono">(303) 481-1498</td><td class="res-mono">(303) 481-1498</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4368351</td><td>Laci</td><td>Weatherford</td><td>2026-06-10</td><td class="res-mono">(314) 746-4162</td><td class="res-mono">(314) 746-4162</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>4561921</td><td>Shannon</td><td>Webb</td><td>2026-06-03</td><td class="res-mono">(404) 266-6046</td><td class="res-mono">(404) 266-6046</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>1588396</td><td>Carla</td><td>Weidman</td><td>2026-06-15</td><td class="res-mono">(813) 227-2038</td><td class="res-mono">(813) 227-2038</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>8101871</td><td>Taylor</td><td>Weinstein</td><td>2026-06-10</td><td class="res-mono">(424) 354-5770</td><td class="res-mono">(424) 354-5770</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>3163246</td><td>Allison</td><td>Williams</td><td>2026-05-27</td><td class="res-mono">(214) 981-0541</td><td class="res-mono">(214) 981-0541</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6605285</td><td>Alicia</td><td>Wong</td><td>2026-05-19</td><td class="res-mono">(310) 544-3651</td><td class="res-mono">(310) 544-3651</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6323161</td><td>Eric</td><td>Wylie</td><td>2026-06-24</td><td class="res-mono">(504) 585-3978</td><td class="res-mono">(504) 585-3978</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>7181864</td><td>Matthew</td><td>Zakrzewski</td><td>2026-05-19</td><td class="res-mono">(516) 683-3181</td><td class="res-mono">(516) 683-3181</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>5421760</td><td>Cynthia</td><td>Zapp</td><td>2026-06-08</td><td class="res-mono">(407) 333-8306</td><td class="res-mono">(407) 333-8306</td><td class="res-mono"></td><td>BDRIA</td><td class="res-match">primary to primary</td></tr>
+<tr><td>6953398</td><td>Grant</td><td>Acker</td><td>2026-05-29</td><td class="res-mono">(201) 352-9351</td><td class="res-mono">(800) 354-9103</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5777527</td><td>Farah</td><td>Ali</td><td>2026-06-22</td><td class="res-mono">(212) 275-1549</td><td class="res-mono">(305) 232-9125</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7567025</td><td>Daniel</td><td>Alkhoury</td><td>2026-06-02</td><td class="res-mono">(612) 313-1194</td><td class="res-mono">(612) 371-2811</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6975137</td><td>Mckenzie</td><td>Allen</td><td>2026-06-25</td><td class="res-mono">(785) 661-2490</td><td class="res-mono">(614) 225-3069</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>2136388</td><td>Hyo</td><td>Bahng</td><td>2026-06-01</td><td class="res-mono">(727) 567-7501</td><td class="res-mono">(727) 567-1000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5939027</td><td>Jake</td><td>Bailey</td><td>2026-06-24</td><td class="res-mono">(312) 602-6800</td><td class="res-mono">(212) 272-2000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4208267</td><td>Philippe</td><td>Baumann</td><td>2026-05-27</td><td class="res-mono">(212) 882-5642</td><td class="res-mono">(212) 713-7800</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7603269</td><td>Myles</td><td>Bayne</td><td>2026-05-21</td><td class="res-mono">(212) 705-4501</td><td class="res-mono">(212) 492-6900</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6305220</td><td>Melisa</td><td>Beretin</td><td>2026-06-04</td><td class="res-mono">(212) 276-1188</td><td class="res-mono">(212) 603-6100</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7432911</td><td>Daniel</td><td>Bermudez</td><td>2026-05-29</td><td class="res-mono">(305) 476-3347</td><td class="res-mono">(888) 454-3965</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7895633</td><td>Alexandra</td><td>Bierer</td><td>2026-05-26</td><td class="res-mono">(212) 713-4468</td><td class="res-mono">(212) 713-2000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7597447</td><td>Andres</td><td>Bordone</td><td>2026-06-02</td><td class="res-mono">(305) 376-8516</td><td class="res-mono">(305) 960-3455</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5545008</td><td>David</td><td>Braun</td><td>2026-05-28</td><td class="res-mono">(212) 761-6331</td><td class="res-mono">(212) 761-4000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>2517478</td><td>Peter</td><td>Brehm</td><td>2026-06-26</td><td class="res-mono">(201) 352-0784</td><td class="res-mono">(201) 352-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>2517437</td><td>Paul</td><td>Brown</td><td>2026-05-18</td><td class="res-mono">(407) 740-4900</td><td class="res-mono">(407) 740-4953</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>1459109</td><td>KEVIN</td><td>CALANDRO</td><td>2026-06-05</td><td class="res-mono">(214) 998-2423</td><td class="res-mono">(214) 696-7192</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>2702344</td><td>Suzette</td><td>Callejo</td><td>2026-06-12</td><td class="res-mono">(415) 963-5256</td><td class="res-mono">(415) 963-5217</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4687892</td><td>Rafael</td><td>Castillo</td><td>2026-06-05</td><td class="res-mono">(212) 713-8625</td><td class="res-mono">(201) 352-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7551824</td><td>Patrick</td><td>Cocchia</td><td>2026-05-18</td><td class="res-mono">(914) 225-1933</td><td class="res-mono">(914) 225-5510</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5756971</td><td>Philip</td><td>Collier</td><td>2026-05-18</td><td class="res-mono">(727) 567-3585</td><td class="res-mono">(727) 567-1000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>2434107</td><td>Judith</td><td>Cox</td><td>2026-06-15</td><td class="res-mono">(310) 788-2276</td><td class="res-mono">(310) 788-2000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7843643</td><td>Grant</td><td>Cozzi</td><td>2026-06-08</td><td class="res-mono">(949) 717-5423</td><td class="res-mono">(949) 717-5478</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7623186</td><td>Leo</td><td>Dannenbaum</td><td>2026-05-08</td><td class="res-mono">(424) 397-3301</td><td class="res-mono">(212) 821-7174</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>2791767</td><td>Kimberly</td><td>Darrington</td><td>2026-06-02</td><td class="res-mono">(800) 877-7210</td><td class="res-mono">(916) 444-8041</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6955242</td><td>Jeffrey</td><td>Davi</td><td>2026-05-13</td><td class="res-mono">(480) 979-0494</td><td class="res-mono">(480) 782-1034</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4564972</td><td>Brian</td><td>De Souza</td><td>2026-06-16</td><td class="res-mono">(203) 862-2137</td><td class="res-mono">(314) 342-2000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5125532</td><td>Frank</td><td>DeRosa</td><td>2026-06-24</td><td class="res-mono">(481) 828-3254</td><td class="res-mono">(212) 713-2000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4626340</td><td>Leonard</td><td>Dedo</td><td>2026-05-20</td><td class="res-mono">(847) 498-7791</td><td class="res-mono">(847) 498-7801</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7626500</td><td>Reilly</td><td>Dennedy</td><td>2026-06-17</td><td class="res-mono">(212) 276-4257</td><td class="res-mono">(914) 225-0700</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7523782</td><td>Rhett</td><td>Dunn-Sperling</td><td>2026-06-03</td><td class="res-mono">(612) 607-8905</td><td class="res-mono">(612) 371-2811</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6669383</td><td>Daniel</td><td>Enright</td><td>2026-06-23</td><td class="res-mono">(154) 581-7445</td><td class="res-mono">(651) 766-4932</td><td class="res-mono">(651) 413-1173</td><td>BDRIA</td><td class="res-miss">email matches neither field</td></tr>
+<tr><td>6783989</td><td>Michael</td><td>Flenoy</td><td>2026-05-11</td><td class="res-mono">(314) 875-2232</td><td class="res-mono">(314) 875-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7433431</td><td>Liam</td><td>Fogarty</td><td>2026-06-24</td><td class="res-mono">(347) 852-2828</td><td class="res-mono">(212) 382-8472</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7361558</td><td>Maximilian</td><td>Ford</td><td>2026-06-01</td><td class="res-mono">(727) 567-7501</td><td class="res-mono">(727) 567-1000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5679908</td><td>Kevin</td><td>Garvy</td><td>2026-06-11</td><td class="res-mono">(561) 650-7535</td><td class="res-mono">(561) 650-7500</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7436929</td><td>Edgar</td><td>Gonzalez</td><td>2026-05-12</td><td class="res-mono">(213) 486-7147</td><td class="res-mono">(212) 761-4000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6084773</td><td>Melinda</td><td>Guerrero</td><td>2026-05-28</td><td class="res-mono">(855) 672-4468</td><td class="res-mono">(914) 225-5510</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>3204256</td><td>Hallie</td><td>Hart</td><td>2026-06-04</td><td class="res-mono">(203) 470-0529</td><td class="res-mono">(925) 746-0257</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7326228</td><td>Madelyn</td><td>Henricksen</td><td>2026-06-18</td><td class="res-mono">(563) 293-2807</td><td class="res-mono">(563) 344-4386</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>1174149</td><td>Brian</td><td>Higgins</td><td>2026-06-29</td><td class="res-mono">(792) 079-9174</td><td class="res-mono">(845) 348-6905</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6016198</td><td>Melissa</td><td>Hillebrand</td><td>2026-05-13</td><td class="res-mono">(608) 824-6133</td><td class="res-mono">(608) 831-4282</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6361556</td><td>Whitney</td><td>Hilton</td><td>2026-05-27</td><td class="res-mono">(929) 764-1625</td><td class="res-mono">(212) 761-4000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>1637825</td><td>Daniel</td><td>Hitchcock</td><td>2026-06-11</td><td class="res-mono">(206) 748-3690</td><td class="res-mono">(406) 551-2222</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7190168</td><td>Chung Yan</td><td>Ho</td><td>2026-05-21</td><td class="res-mono">(415) 955-9823</td><td class="res-mono">(415) 398-6400</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>1548436</td><td>George</td><td>Huertas</td><td>2026-05-21</td><td class="res-mono">(925) 973-9615</td><td class="res-mono">(925) 746-2995</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7624011</td><td>Christian</td><td>Issa</td><td>2026-06-11</td><td class="res-mono">(516) 260-7237</td><td class="res-mono">(267) 757-8971</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7123788</td><td>Tyler</td><td>Johnston</td><td>2026-06-15</td><td class="res-mono">(469) 608-7192</td><td class="res-mono">(212) 559-1000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7203146</td><td>Timothy</td><td>Jordan</td><td>2026-05-07</td><td class="res-mono">(646) 656-9177</td><td class="res-mono">(914) 225-5510</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>1882185</td><td>David</td><td>Kalata</td><td>2026-06-04</td><td class="res-mono">(310) 285-6171</td><td class="res-mono">(310) 285-6130</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6454215</td><td>Michael</td><td>Kiriakatos</td><td>2026-06-23</td><td class="res-mono">(212) 276-3449</td><td class="res-mono">(914) 225-0700</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6569897</td><td>Michael</td><td>Lacy</td><td>2026-05-22</td><td class="res-mono">(424) 786-6274</td><td class="res-mono">(704) 417-5716</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4428366</td><td>Franklin</td><td>Laden</td><td>2026-06-01</td><td class="res-mono">(303) 481-1479</td><td class="res-mono">(201) 352-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>3019015</td><td>Gifford</td><td>Lee</td><td>2026-06-08</td><td class="res-mono">(516) 677-5505</td><td class="res-mono">(314) 875-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6936746</td><td>Hanson</td><td>Lee</td><td>2026-06-17</td><td class="res-mono">(212) 373-2110</td><td class="res-mono">(669) 236-4349</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4832838</td><td>Agatha</td><td>Lidzbarski</td><td>2026-05-18</td><td class="res-mono">(206) 447-2448</td><td class="res-mono">(206) 628-8511</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7827814</td><td>Korinnah</td><td>Ling</td><td>2026-06-22</td><td class="res-mono">(512) 507-9388</td><td class="res-mono">(503) 238-3355</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>2491132</td><td>Ajay</td><td>Loganadan</td><td>2026-06-11</td><td class="res-mono">(212) 525-4397</td><td class="res-mono">(212) 525-4955</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6354660</td><td>Daniel</td><td>Lyons</td><td>2026-06-28</td><td class="res-mono">(603) 334-4003</td><td class="res-mono">(603) 334-4000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7551766</td><td>Olivia</td><td>Marchese</td><td>2026-06-17</td><td class="res-mono">(215) 496-2075</td><td class="res-mono">(201) 352-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6836856</td><td>Efren</td><td>Mejia</td><td>2026-06-03</td><td class="res-mono">(201) 763-0301</td><td class="res-mono">(786) 442-1172</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>1602447</td><td>Pamela</td><td>Missimer</td><td>2026-06-16</td><td class="res-mono">(303) 820-5036</td><td class="res-mono">(303) 689-2656</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7592879</td><td>Annette</td><td>Morris</td><td>2026-06-26</td><td class="res-mono">(727) 567-1441</td><td class="res-mono">(727) 567-8711</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>1238910</td><td>Louis</td><td>Mosca</td><td>2026-06-24</td><td class="res-mono">(917) 267-9470</td><td class="res-mono">(215) 854-6026</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6900806</td><td>Anthony</td><td>Musacchia</td><td>2026-06-01</td><td class="res-mono">(929) 659-1436</td><td class="res-mono">(914) 225-1000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4946077</td><td>Daniel</td><td>Neuman</td><td>2026-06-17</td><td class="res-mono">(212) 603-6215</td><td class="res-mono">(561) 393-2003</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7370530</td><td>Eliza</td><td>Nuffer</td><td>2026-06-18</td><td class="res-mono">(925) 746-6336</td><td class="res-mono">(925) 746-0232</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7449625</td><td>Jacquelyne</td><td>Ontiveros</td><td>2026-05-14</td><td class="res-mono">(512) 370-0405</td><td class="res-mono">(512) 480-8833</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7501639</td><td>Abraham</td><td>Patino Rodriguez</td><td>2026-06-02</td><td class="res-mono">(801) 716-4585</td><td class="res-mono">(435) 657-4000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7134541</td><td>Jacob</td><td>Pliner</td><td>2026-06-24</td><td class="res-mono">(833) 674-0765</td><td class="res-mono">(201) 352-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6363713</td><td>Alex</td><td>Powers</td><td>2026-05-29</td><td class="res-mono">(212) 634-7089</td><td class="res-mono">(214) 855-1000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4201245</td><td>Mohamed</td><td>Ramadan</td><td>2026-06-23</td><td class="res-mono">(279) 090-4747</td><td class="res-mono">(973) 884-0462</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6287666</td><td>Charlene</td><td>Rambeau</td><td>2026-05-18</td><td class="res-mono">(727) 567-2116</td><td class="res-mono">(727) 567-1000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>4625948</td><td>Frederik</td><td>Ramos Guerra</td><td>2026-06-26</td><td class="res-mono">(305) 536-9239</td><td class="res-mono">(305) 536-9300</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7915483</td><td>Gabriela</td><td>Reyes</td><td>2026-05-11</td><td class="res-mono">(888) 926-2688</td><td class="res-mono">(212) 449-1000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5041734</td><td>Elizabeth</td><td>Rockwell</td><td>2026-06-17</td><td class="res-mono">(203) 857-9701</td><td class="res-mono">(973) 285-3600</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7148846</td><td>Mario</td><td>Rojas</td><td>2026-06-15</td><td class="res-mono">(212) 271-0398</td><td class="res-mono">(212) 893-6300</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7101355</td><td>Aarshiya</td><td>Sachdeva</td><td>2026-06-26</td><td class="res-mono">(646) 478-1397</td><td class="res-mono">(801) 884-1967</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>8127966</td><td>Adelaide</td><td>Siers</td><td>2026-06-08</td><td class="res-mono">(425) 249-9999</td><td class="res-mono">(425) 349-0474</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>8142132</td><td>Stephen</td><td>Sypek</td><td>2026-06-03</td><td class="res-mono">(615) 744-2711</td><td class="res-mono">(615) 244-4000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6709867</td><td>Charles</td><td>Szostak</td><td>2026-06-23</td><td class="res-mono">(727) 567-7501</td><td class="res-mono">(727) 567-8711</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5906490</td><td>Xay</td><td>Thao</td><td>2026-05-29</td><td class="res-mono">(325) 755-7912</td><td class="res-mono">(612) 316-4644</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7621543</td><td>Daniela</td><td>Vidal Castellanos</td><td>2026-06-01</td><td class="res-mono">(858) 529-8499</td><td class="res-mono">(323) 587-7758</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6984712</td><td>ALEXANDER</td><td>WIDEMAN</td><td>2026-06-05</td><td class="res-mono">(201) 761-5066</td><td class="res-mono">(314) 746-4128</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5884596</td><td>Nicholas</td><td>Yates</td><td>2026-06-23</td><td class="res-mono">(717) 708-6810</td><td class="res-mono">(480) 365-6880</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>5510166</td><td>Jesus</td><td>Zamarripa</td><td>2026-05-07</td><td class="res-mono">(713) 402-7245</td><td class="res-mono">(201) 352-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7114630</td><td>Karen</td><td>Zeltner</td><td>2026-05-18</td><td class="res-mono">(714) 446-8750</td><td class="res-mono">(704) 987-4123</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7805866</td><td>Harry</td><td>Zhang</td><td>2026-05-11</td><td class="res-mono">(949) 453-5131</td><td class="res-mono">(201) 352-3000</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>6938948</td><td>Michael</td><td>Zislin</td><td>2026-06-08</td><td class="res-mono">(561) 394-8600</td><td class="res-mono">(561) 394-8545</td><td class="res-mono"></td><td>BDRIA</td><td class="res-miss">primary vs primary</td></tr>
+<tr><td>7843244</td><td>Jeannette</td><td>Diaz-Torres</td><td>2026-05-28</td><td class="res-mono">(201) 352-0849</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>7718424</td><td>Merek</td><td>Glover</td><td>2026-06-10</td><td class="res-mono">(516) 336-0772</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>4363993</td><td>Leon</td><td>Grayson</td><td>2026-06-11</td><td class="res-mono">(646) 478-1053</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>1030294</td><td>Marc</td><td>Grosso</td><td>2026-06-22</td><td class="res-mono">(248) 820-7120</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>1983744</td><td>Diane</td><td>Humphrey</td><td>2026-06-18</td><td class="res-mono">(800) 558-7567</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>7159497</td><td>Ben</td><td>Nelson</td><td>2026-06-10</td><td class="res-mono">(312) 525-4184</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>7584974</td><td>Brett</td><td>Pearson</td><td>2026-05-27</td><td class="res-mono">(720) 935-8313</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>2232158</td><td>Loren</td><td>Rumsey</td><td>2026-06-16</td><td class="res-mono">(302) 485-9833</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>7322270</td><td>Diego</td><td>Sanchez</td><td>2026-05-25</td><td class="res-mono">(491) 274-6400</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>7617538</td><td>Tyler</td><td>Schuur</td><td>2026-05-12</td><td class="res-mono">(917) 260-5368</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+<tr><td>4265553</td><td>Marc</td><td>Smith</td><td>2026-06-25</td><td class="res-mono">(630) 571-1212</td><td class="res-mono"></td><td class="res-mono"></td><td></td><td class="res-none">no FINTRX phone</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="res-subpane" id="rsp-web" style="display:none">
+<h4 class="res-h">FINTRX vs Web-Scraped Phones <span class="res-badge">primary to primary</span></h4>
+<div class="res-intro">
+  <p>23,063 PBW contacts where both FINTRX and the web scrape have a primary phone.
+  Comparison is primary to primary only; mobile is excluded from this section.</p>
+</div>
+<div class="res-stat-grid">
+  <div class="res-stat res-stat-match"><div class="res-stat-n">20,561</div><div class="res-stat-lbl">Agree (89.2%)</div></div>
+  <div class="res-stat res-stat-miss"><div class="res-stat-n">2,502</div><div class="res-stat-lbl">Differ (10.8%)</div></div>
+</div>
+<div class="tbl-wrap scroll-x">
+<table class="res-tbl">
+<thead><tr><th>Verdict</th><th class="dn">Count</th><th class="dp">%</th><th></th></tr></thead>
+<tbody>
+<tr><td class="res-match">Match</td><td class="res-n">20,561</td><td class="res-pct">89.2%</td><td><span class="res-bar" style="background:#16A34A;width:143px;display:inline-block;height:8px;border-radius:2px;vertical-align:middle;margin-left:6px"></span></td></tr>
+<tr><td class="res-miss">Mismatch</td><td class="res-n">2,502</td><td class="res-pct">10.8%</td><td><span class="res-bar" style="background:#DC2626;width:17px;display:inline-block;height:8px;border-radius:2px;vertical-align:middle;margin-left:6px"></span></td></tr>
+</tbody>
+</table>
+</div>
+<p class="res-note res-note-lg">Individual rows not shown (23,063 records exceed the display limit).
+The 20,561 agreements validate FINTRX primary phone coverage for this population at 89.2%.
+Ask if you want a filtered export of the 2,502 mismatches.</p>
+</div>
+<!-- RESEARCH_TAB_DATA_END -->
   </div>
 
   <div class="pane" id="samples">
@@ -513,14 +887,13 @@ function rows(tbody, data, color) {
     var ck = catKey(r[0]);
     var key = ck ? "CAT:" + ck : "C:" + slug(r[0]);
     var has = r[1] > 0 && (ck ? catHasSamples(ck) : (SAMPLES[scope] && SAMPLES[scope][key] && SAMPLES[scope][key].length));
-    var pm = ck ? phfFor("cat", ck) : null;
     return '<tr' + (has ? ' class="clickable" tabindex="0" role="button"' +
         ' data-key="' + esc(key) + '" data-label="' + esc(r[0]) + '"' +
         ' onclick="openSamples(this.dataset.key, this.dataset.label)"' +
         ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click();}"' : '') +
       '><td>' + esc(r[0]) + '</td>' +
       '<td class="d-bar"><div class="bar-track"><div class="bar-fill" style="width:' + w + '%;background:var(--' + color + ')"></div></div></td>' +
-      '<td class="dn' + z + '">' + fmt(r[1]) + phfSub(pm) + '</td>' +
+      '<td class="dn' + z + '">' + fmt(r[1]) + '</td>' +
       '<td class="dp' + z + '">' + (r[2] === 0 ? "0%" : r[2].toFixed(1) + "%") + '</td></tr>';
   }).join("");
 }
@@ -780,7 +1153,7 @@ function xlEsc(v) {
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-// ── Real XLSX generator (pure JS, no external libs) ─────────────────────────
+// -- Real XLSX generator (pure JS, no external libs) -------------------------
 var _CRC = (function () {
   var t = new Uint32Array(256);
   for (var i = 0; i < 256; i++) {
@@ -1059,7 +1432,7 @@ function openSamples(key, label) {
 
 var CELL_ROUTE = {"c-fill":"fill","c-auto":"ao","c-nr":"nr","c-keep":"keep","c-total":"total"};
 
-// ── Phone-type filter ────────────────────────────────────────────────────────
+// -- Phone-type filter --------------------------------------------------------
 var phoneFilter = "all"; // "all" | "pri" | "mob"
 
 // Per-rule [pri, mob] sample counts from ROWS, used to estimate proportions when DATA_PHF
@@ -1164,10 +1537,8 @@ function render() {
     var rt = CELL_ROUTE[c[0]];
     var filtered = pfCount("route", rt);
     var displayCount = filtered !== null ? fmt(filtered) : c[2];
-    var pm = phoneFilter === "all" ? phfFor("route", rt) : null;
-    var phfHtml = pm ? '<div class="cell-phf">&#9742;&thinsp;' + fmt(pm[0]) + ' &nbsp; &#128241;&thinsp;' + fmt(pm[1]) + '</div>' : '';
     return '<div class="cell ' + c[0] + '"><div class="cell-label">' + c[1] + '</div>' +
-      '<div class="cell-value">' + displayCount + '</div>' + phfHtml + '<div class="cell-sub">' + c[3] + '</div></div>';
+      '<div class="cell-value">' + displayCount + '</div><div class="cell-sub">' + c[3] + '</div></div>';
   }).join("");
 
   // Category table: filter by phone type when active.
@@ -1178,7 +1549,7 @@ function render() {
   var i = scope === "all" ? 3 : 4;
   var ruleMap = {};
   RULES.forEach(function(r) { ruleMap[r[0]] = r; });
-  // Route totals for % in category headers — use filtered counts when active.
+  // Route totals for % in category headers  -  use filtered counts when active.
   var routeTotals = {};
   RULES.forEach(function(r) {
     var n = pfCount("rule", r[0]); if (n === null) n = r[i];
@@ -1200,14 +1571,13 @@ function render() {
       var z = n === 0 ? " zero" : "";
       var key = "R:" + r[0];
       var has = n > 0 && SAMPLES[scope] && SAMPLES[scope][key] && SAMPLES[scope][key].length;
-      var rulePhfHtml = phoneFilter === "all" ? phfSub(phfFor("rule", r[0])) : "";
       rulesHtml += '<tr' + (has ? ' class="clickable" tabindex="0" role="button"' +
           ' data-key="' + esc(key) + '" data-label="' + esc(r[0] + " " + r[2]) + '"' +
           ' onclick="openSamples(this.dataset.key, this.dataset.label)"' +
           ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click();}"' : '') +
         '><td class="r-id r-' + r[1] + '">' + r[0] + '</td><td>' + esc(r[2]) + '</td>' +
         '<td><span class="chip chip-' + r[1] + '">' + ROUTE_LABEL[r[1]] + '</span></td>' +
-        '<td class="dn' + z + '">' + fmt(n) + rulePhfHtml + '</td><td>' + esc(r[5]) + '</td></tr>';
+        '<td class="dn' + z + '">' + fmt(n) + '</td><td>' + esc(r[5]) + '</td></tr>';
     });
   });
   document.getElementById("t-rules").innerHTML = rulesHtml;
@@ -1234,16 +1604,25 @@ function setScope(s) {
 function setTab(t) {
   if (t !== "samples") { lastTab = t; }
   tab = t;
-  ["summary", "rules"].forEach(function (id) {
+  ["summary", "rules", "research"].forEach(function (id) {
     document.getElementById(id).classList.toggle("active", id === t);
     document.getElementById("tb-" + id).classList.toggle("active", id === t);
   });
-  // samples pane has no tab button — toggle directly.
+  // samples pane has no tab button  -  toggle directly.
   document.getElementById("samples").classList.toggle("active", t === "samples");
   if (t === "samples" && !document.getElementById("samp-body").innerHTML) {
     document.getElementById("samp-body").innerHTML =
       '<div class="empty">Pick a row on the Summary or Rules tab to see examples of it.</div>';
   }
+}
+
+function setResearchTab(which) {
+  ["email", "web"].forEach(function(id) {
+    var pane = document.getElementById("rsp-" + id);
+    var btn  = document.getElementById("rst-" + id);
+    if (pane) pane.style.display = id === which ? "" : "none";
+    if (btn)  btn.classList.toggle("active", id === which);
+  });
 }
 
 render();
