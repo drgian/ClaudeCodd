@@ -1062,38 +1062,93 @@ var CELL_ROUTE = {"c-fill":"fill","c-auto":"ao","c-nr":"nr","c-keep":"keep","c-t
 // ── Phone-type filter ────────────────────────────────────────────────────────
 var phoneFilter = "all"; // "all" | "pri" | "mob"
 
-// Returns index into [all_pri, all_mob, act_pri, act_mob], or null when filter is "all".
+// Per-rule [pri, mob] sample counts from ROWS, used to estimate proportions when DATA_PHF
+// is not yet populated.  Built immediately so render() can call pfCount() synchronously.
+var _rphf = { all: {}, act: {} };
+(function () {
+  ROWS.forEach(function (r) {
+    var ru = r["ru"]; if (!ru) return;
+    var isMob = (r[F.pfield] || "").indexOf("cell") === 0;
+    if (!_rphf.all[ru]) _rphf.all[ru] = [0, 0];
+    _rphf.all[ru][isMob ? 1 : 0]++;
+  });
+  // Active-scope proportions derived from the active SAMPLES buckets (a subset of ROWS).
+  if (SAMPLES && SAMPLES["active"]) {
+    Object.keys(SAMPLES["active"]).forEach(function (k) {
+      (SAMPLES["active"][k] || []).forEach(function (idx) {
+        var r = ROWS[idx], ru = r["ru"]; if (!ru) return;
+        var isMob = (r[F.pfield] || "").indexOf("cell") === 0;
+        if (!_rphf.act[ru]) _rphf.act[ru] = [0, 0];
+        _rphf.act[ru][isMob ? 1 : 0]++;
+      });
+    });
+  }
+}());
+
+// Returns index into DATA_PHF [all_pri, all_mob, act_pri, act_mob], or null when "all".
 function pfIdx() {
   if (phoneFilter === "all") return null;
   return scope === "all" ? (phoneFilter === "pri" ? 0 : 1) : (phoneFilter === "pri" ? 2 : 3);
 }
 
-// Returns the filtered count from DATA_PHF, or null if filter is "all" / data missing.
+// Returns a filtered count.  Prefers DATA_PHF; falls back to scaling pre-computed totals
+// by the primary/mobile proportion observed in the ROWS sample.
 function pfCount(type, key) {
+  if (phoneFilter === "all") return null;
+
+  // DATA_PHF path (exact, populated after a build script run).
   var pi = pfIdx();
-  if (pi === null) return null;
-  var d = DATA_PHF && DATA_PHF[type];
-  if (!d) return null;
-  var p = d[key];
-  return p != null ? p[pi] : null;
+  var dpd = DATA_PHF && DATA_PHF[type];
+  if (dpd && dpd[key] != null) return dpd[key][pi];
+
+  // Sample-proportion fallback.
+  var sk = scope === "all" ? "all" : "act";
+  var si = scope === "all" ? 3 : 4; // pre-computed total index in RULES
+
+  if (type === "rule") {
+    var fullCount = 0;
+    for (var j = 0; j < RULES.length; j++) {
+      if (RULES[j][0] === key) { fullCount = RULES[j][si]; break; }
+    }
+    var ph = _rphf[sk][key];
+    if (!ph || ph[0] + ph[1] === 0) return 0;
+    var frac = phoneFilter === "pri" ? ph[0] / (ph[0] + ph[1]) : ph[1] / (ph[0] + ph[1]);
+    return Math.round(fullCount * frac);
+  }
+
+  if (type === "cat") {
+    var cat = null;
+    for (var k = 0; k < CATS.length; k++) { if (CATS[k][0] === key) { cat = CATS[k]; break; } }
+    if (!cat) return 0;
+    return cat[3].reduce(function (s, rc) { return s + (pfCount("rule", rc) || 0); }, 0);
+  }
+
+  if (type === "route") {
+    var total = 0;
+    RULES.forEach(function (r) {
+      if (key === "total" || r[1] === key) total += (pfCount("rule", r[0]) || 0);
+    });
+    return total;
+  }
+
+  return 0;
 }
 
 // Returns a copy of category-table row data with counts replaced by filtered values.
 function filteredCatData(data, routeCode) {
   if (phoneFilter === "all") return data;
-  var rtN = pfCount("route", routeCode);
-  return data.map(function(r) {
+  var rtN = pfCount("route", routeCode) || 1;
+  return data.map(function (r) {
     var ck = catKey(r[0]);
     var n = ck ? pfCount("cat", ck) : null;
     if (n === null) return r;
-    var pct = rtN > 0 ? n / rtN * 100 : 0;
-    return [r[0], n, pct];
+    return [r[0], n, n / rtN * 100];
   });
 }
 
 function setPhoneFilter(f) {
   phoneFilter = f;
-  ["all", "pri", "mob"].forEach(function(v) {
+  ["all", "pri", "mob"].forEach(function (v) {
     document.getElementById("pf-" + v).setAttribute("aria-pressed", String(v === f));
   });
   render();
