@@ -399,7 +399,7 @@ function downloadCatXLSX() {
     });
   });
   try {
-    var b64 = _buildXlsx("Contact Updates", hdrCols, allRows);
+    var b64 = _buildXlsx("Contact Email Updates", hdrCols, allRows);
     var a = document.createElement("a");
     a.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + b64;
     a.download = "email_contact_updates_" + scope + ".xlsx";
