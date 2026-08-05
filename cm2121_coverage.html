@@ -241,6 +241,49 @@ tfoot td.r { text-align: right; }
 .chip-muted  { color: var(--muted); background: var(--surface2); }
 .chip-accent { color: var(--accent); background: var(--accent-lt); }
 
+/* ── Hero banner ── */
+.hero {
+  background: var(--green-bg);
+  border-bottom: 1px solid color-mix(in srgb, var(--green) 25%, transparent);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.hero-pct {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--green);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.hero-body { display: flex; flex-direction: column; gap: 4px; }
+.hero-headline {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+}
+.hero-detail {
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 700px;
+  line-height: 1.5;
+}
+.hero-pills { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+.hero-pill {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 10px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.hero-pill.g { color: var(--green); background: var(--green-bg); border-color: color-mix(in srgb, var(--green) 30%, transparent); }
+.hero-pill.s { color: var(--sky);   background: var(--sky-bg);   border-color: color-mix(in srgb, var(--sky)   30%, transparent); }
+
 /* ── Alert / callout ── */
 .callout {
   border-left: 3px solid var(--amber);
@@ -277,27 +320,40 @@ tfoot td.r { text-align: right; }
   <button class="theme-btn" onclick="toggleTheme()">⏾ Theme</button>
 </header>
 
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-pct">100%</div>
+  <div class="hero-body">
+    <div class="hero-headline">Every identified duplicate will be caught by match rules</div>
+    <div class="hero-detail">All 3,083 PB/Wires duplicate contact pairs satisfy at least one Semarchy contact match rule — either an existing rule already in production, or a rule change proposed in CM-2121. No identified pair escapes rule coverage after CM-2121 is deployed.</div>
+    <div class="hero-pills">
+      <span class="hero-pill g">2,973 pairs — existing rules (96.4%)</span>
+      <span class="hero-pill s">+110 pairs — CM-2121 new rules (3.6%)</span>
+    </div>
+  </div>
+</div>
+
 <!-- KPI row -->
 <div class="kpi-row">
   <div class="kpi">
-    <span class="kpi-label">Total pairs</span>
+    <span class="kpi-label">Total duplicates identified</span>
     <span class="kpi-value">3,083</span>
     <span class="kpi-note">Definite + Likely + Name Collision</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">Covered — existing rules</span>
+    <span class="kpi-label">Covered by existing rules</span>
     <span class="kpi-value green">2,973</span>
-    <span class="kpi-note">96.4% · 6 existing Semarchy rules</span>
+    <span class="kpi-note">96.4% · rules already in production</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">Incremental — CM-2121</span>
+    <span class="kpi-label">Added by CM-2121</span>
     <span class="kpi-value sky">110</span>
-    <span class="kpi-note">3.6% · R5 ExactEmail fix adds these</span>
+    <span class="kpi-note">3.6% · net-new coverage from R5</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">All covered</span>
-    <span class="kpi-value">3,083</span>
-    <span class="kpi-note">100% after CM-2121 rule changes</span>
+    <span class="kpi-label">Remaining uncovered</span>
+    <span class="kpi-value green">0</span>
+    <span class="kpi-note">None — 100% rule coverage after CM-2121</span>
   </div>
 </div>
 
@@ -315,7 +371,7 @@ tfoot td.r { text-align: right; }
 <div id="tab-summary" class="tab-pane active">
   <div class="eyebrow">Overview</div>
   <h2>Coverage by workbook bucket</h2>
-  <p>All 3,083 duplicate contact pairs satisfy at least one Semarchy contact match rule condition — either an existing rule (at or above the auto-merge threshold) or a rule change proposed in CM-2121. The table below mirrors the workbook tab structure.</p>
+  <p>96.4% of the identified pairs are already covered by rules in production today. The remaining 3.6% (110 pairs with different last names but a shared email) are covered by R5 in CM-2121. The table below shows the split per workbook bucket — Remaining is zero across all buckets.</p>
 
   <div class="tbl-wrap">
     <table>
