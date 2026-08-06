@@ -7,6 +7,7 @@
   --green:#15803D;--green-bg:#DCFCE7;
   --sky:#0369A1;--sky-bg:#E0F2FE;
   --teal:#0F766E;--teal-bg:#CCFBF1;
+  --orange:#C2410C;--orange-bg:#FFF7ED;
   --amber:#B45309;--amber-bg:#FEF3C7;
   --red:#B91C1C;--red-bg:#FEE2E2;
   --row-alt:#F5F8FF;
@@ -17,12 +18,13 @@
   --green:#4ADE80;--green-bg:#052E16;
   --sky:#38BDF8;--sky-bg:#082030;
   --teal:#2DD4BF;--teal-bg:#012A24;
+  --orange:#FB923C;--orange-bg:#431407;
   --amber:#FCD34D;--amber-bg:#1C1200;
   --red:#FCA5A5;--red-bg:#2D0A0A;
   --row-alt:#0C1628;
 }}
-:root[data-theme="light"]{--bg:#F0F4FB;--surface:#FFFFFF;--surface2:#E8EEF8;--border:#CBD5E9;--border2:#DDE4F2;--text:#0F1F40;--muted:#5A6A8A;--accent:#1D54C4;--accent-lt:#EEF3FF;--green:#15803D;--green-bg:#DCFCE7;--sky:#0369A1;--sky-bg:#E0F2FE;--teal:#0F766E;--teal-bg:#CCFBF1;--amber:#B45309;--amber-bg:#FEF3C7;--red:#B91C1C;--red-bg:#FEE2E2;--row-alt:#F5F8FF;}
-:root[data-theme="dark"]{--bg:#070D1C;--surface:#0E1A30;--surface2:#162240;--border:#1F305A;--border2:#253868;--text:#DCE4F5;--muted:#7A90BE;--accent:#4D8EFF;--accent-lt:#0D1E44;--green:#4ADE80;--green-bg:#052E16;--sky:#38BDF8;--sky-bg:#082030;--teal:#2DD4BF;--teal-bg:#012A24;--amber:#FCD34D;--amber-bg:#1C1200;--red:#FCA5A5;--red-bg:#2D0A0A;--row-alt:#0C1628;}
+:root[data-theme="light"]{--bg:#F0F4FB;--surface:#FFFFFF;--surface2:#E8EEF8;--border:#CBD5E9;--border2:#DDE4F2;--text:#0F1F40;--muted:#5A6A8A;--accent:#1D54C4;--accent-lt:#EEF3FF;--green:#15803D;--green-bg:#DCFCE7;--sky:#0369A1;--sky-bg:#E0F2FE;--teal:#0F766E;--teal-bg:#CCFBF1;--orange:#C2410C;--orange-bg:#FFF7ED;--amber:#B45309;--amber-bg:#FEF3C7;--red:#B91C1C;--red-bg:#FEE2E2;--row-alt:#F5F8FF;}
+:root[data-theme="dark"]{--bg:#070D1C;--surface:#0E1A30;--surface2:#162240;--border:#1F305A;--border2:#253868;--text:#DCE4F5;--muted:#7A90BE;--accent:#4D8EFF;--accent-lt:#0D1E44;--green:#4ADE80;--green-bg:#052E16;--sky:#38BDF8;--sky-bg:#082030;--teal:#2DD4BF;--teal-bg:#012A24;--orange:#FB923C;--orange-bg:#431407;--amber:#FCD34D;--amber-bg:#1C1200;--red:#FCA5A5;--red-bg:#2D0A0A;--row-alt:#0C1628;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:13px;line-height:1.5;background:var(--bg);color:var(--text);min-height:100vh;}
 
@@ -48,7 +50,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-seri
 .kpi-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);}
 .kpi-value{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1;}
 .kpi-note{font-size:11px;color:var(--muted);}
-.c-green{color:var(--green);}.c-sky{color:var(--sky);}.c-teal{color:var(--teal);}
+.c-green{color:var(--green);}.c-sky{color:var(--sky);}.c-teal{color:var(--orange);}.c-orange{color:var(--orange);}
 
 .tab-strip{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 24px;overflow-x:auto;}
 .tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:500;letter-spacing:.02em;padding:10px 14px 9px;white-space:nowrap;transition:color .15s,border-color .15s;}
@@ -87,8 +89,8 @@ tfoot td.r{text-align:right;}
 .chip{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:3px;}
 .chip-green{color:var(--green);background:var(--green-bg);}
 .chip-sky{color:var(--sky);background:var(--sky-bg);}
-.chip-teal{color:var(--teal);background:var(--teal-bg);}
-.chip-amber{color:var(--amber);background:var(--amber-bg);}
+.chip-orange{color:var(--orange);background:var(--teal-bg);}
+.chip-amber{color:var(--amber);background:var(--amber-bg);}.chip-orange{color:var(--orange);background:var(--orange-bg);}
 .chip-muted{color:var(--muted);background:var(--surface2);}
 .chip-accent{color:var(--accent);background:var(--accent-lt);}
 
@@ -134,12 +136,12 @@ tfoot td.r{text-align:right;}
     <div class="hero-bar">
       <div style="width:25.8%;background:var(--green)"></div>
       <div style="width:58.0%;background:var(--sky)"></div>
-      <div style="width:16.2%;background:var(--teal)"></div>
+      <div style="width:16.2%;background:var(--orange)"></div>
     </div>
     <div class="hero-legend">
       <span><span class="dot" style="background:var(--green)"></span>795 — existing PROD rules (25.8%)</span>
       <span><span class="dot" style="background:var(--sky)"></span>1,787 — CM-2121 R5–R14, auto-merge (58.0%)</span>
-      <span><span class="dot" style="background:var(--teal)"></span>501 — CM-2121 R12–R13, suggestion queue (16.2%)</span>
+      <span><span class="dot" style="background:var(--orange)"></span>501 — CM-2121 R12–R13, suggestion queue (16.2%)</span>
     </div>
   </div>
   <div class="hero-stat-col">
@@ -160,7 +162,7 @@ tfoot td.r{text-align:right;}
   </div>
   <div class="kpi">
     <span class="kpi-label">CM-2121 R12–R13 · suggestion queue</span>
-    <span class="kpi-value c-teal">501</span>
+    <span class="kpi-value c-orange">501</span>
     <span class="kpi-note">16.2% · steward review</span>
   </div>
 </div>
@@ -214,12 +216,12 @@ tfoot td.r{text-align:right;}
         <div class="cov-bar">
           <div style="width:44.0%;background:var(--green)"></div>
           <div style="width:47.8%;background:var(--sky)"></div>
-          <div style="width:8.2%;background:var(--teal)"></div>
+          <div style="width:8.2%;background:var(--orange)"></div>
         </div>
         <div class="cov-legend">
           <span><span style="color:var(--green)">■</span> 522 existing PROD</span>
           <span><span style="color:var(--sky)">■</span> 567 R10 (auto-merge)</span>
-          <span><span style="color:var(--teal)">■</span> 98 R13 (suggestion queue)</span>
+          <span><span style="color:var(--orange)">■</span> 98 R13 (suggestion queue)</span>
         </div>
       </div>
       <p>Shared email + name similarity, OR shared phone + name similarity. The 98 R13 pairs have similar but non-identical last names — likely spelling variants or name changes — paired with a shared phone.</p>
@@ -250,12 +252,12 @@ tfoot td.r{text-align:right;}
         <div class="cov-bar">
           <div style="width:13.0%;background:var(--green)"></div>
           <div style="width:65.1%;background:var(--sky)"></div>
-          <div style="width:21.9%;background:var(--teal)"></div>
+          <div style="width:21.9%;background:var(--orange)"></div>
         </div>
         <div class="cov-legend">
           <span><span style="color:var(--green)">■</span> 240 existing PROD</span>
           <span><span style="color:var(--sky)">■</span> 894 R10 + 305 R11</span>
-          <span><span style="color:var(--teal)">■</span> 403 R12 (suggestion queue)</span>
+          <span><span style="color:var(--orange)">■</span> 403 R12 (suggestion queue)</span>
         </div>
       </div>
       <p>Same last name + JW(full) ≥ 75 + at least one of: phone, email, ZIP, address, or biz team. The 403 R12 pairs have biz team as their only corroborating signal beyond name similarity — routed to suggestion queue for steward confirmation.</p>
@@ -265,8 +267,8 @@ tfoot td.r{text-align:right;}
           <tbody>
             <tr><td>Charles Parry</td><td>Chase Parry</td><td>Wells Fargo Advisors</td><td>3 shared teams + phone</td><td><span class="chip chip-sky">R11</span></td></tr>
             <tr><td>Josh Nicolaus</td><td>John Nicolaus</td><td>Morgan Stanley</td><td>Shared team + phone</td><td><span class="chip chip-sky">R11</span></td></tr>
-            <tr><td>Aaron Longenecker</td><td>Robyn Longenecker</td><td>Raymond James</td><td>Shared biz team only</td><td><span class="chip chip-teal">R12</span></td></tr>
-            <tr><td>Alec Vicknair</td><td>Cole Vicknair</td><td>Merrill Lynch</td><td>Shared biz team only</td><td><span class="chip chip-teal">R12</span></td></tr>
+            <tr><td>Aaron Longenecker</td><td>Robyn Longenecker</td><td>Raymond James</td><td>Shared biz team only</td><td><span class="chip chip-orange">R12</span></td></tr>
+            <tr><td>Alec Vicknair</td><td>Cole Vicknair</td><td>Merrill Lynch</td><td>Shared biz team only</td><td><span class="chip chip-orange">R12</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -515,7 +517,7 @@ tfoot td.r{text-align:right;}
 
         <tr class="rule-row" onclick="toggleDetail('r-r12')">
           <td><span class="chevron">▶</span></td>
-          <td><strong>R12: FuzzyFNExactLNBizTeam</strong></td><td><span class="chip chip-teal">CM-2121</span></td><td class="r">80</td><td class="r">403</td>
+          <td><strong>R12: FuzzyFNExactLNBizTeam</strong></td><td><span class="chip chip-orange">CM-2121</span></td><td class="r">80</td><td class="r">403</td>
         </tr>
         <tr class="detail-row" id="r-r12"><td colspan="5">
           <div class="detail-grid">
@@ -531,7 +533,7 @@ tfoot td.r{text-align:right;}
 
         <tr class="rule-row" onclick="toggleDetail('r-r13')">
           <td><span class="chevron">▶</span></td>
-          <td><strong>R13: FuzzyFNFuzzyLNPhone</strong></td><td><span class="chip chip-teal">CM-2121</span></td><td class="r">85</td><td class="r">98</td>
+          <td><strong>R13: FuzzyFNFuzzyLNPhone</strong></td><td><span class="chip chip-orange">CM-2121</span></td><td class="r">85</td><td class="r">98</td>
         </tr>
         <tr class="detail-row" id="r-r13"><td colspan="5">
           <div class="detail-grid">
