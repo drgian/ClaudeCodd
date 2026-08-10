@@ -155,7 +155,7 @@
 </section>
 
 <section>
-  <h2>Extrapolation Chart — Full Scale (0–110,000 records)</h2>
+  <h2>Extrapolation Chart — Full Scale (0–55,000 records)</h2>
   <div class="chart-wrap">
     <div class="legend">
       <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>new model</span>
@@ -198,12 +198,12 @@
   }
 
   // Projections
-  const targets = [1000,5000,10000,25000,55000,110000];
+  const targets = [1000,5000,10000,25000,55000];
   const grid = document.getElementById('projGrid');
   targets.forEach(n => {
     const sN=projNew(n), sO=projOld(n);
     const spd=(sO/sN).toFixed(1);
-    const hi = n===55000||n===110000;
+    const hi = n===55000;
     const card=document.createElement('div');
     card.className='proj-card'+(hi?' highlight':'');
     card.innerHTML=`<div class="proj-n">${n.toLocaleString()} records</div>
@@ -294,5 +294,5 @@
   }
 
   drawChart('chartTrials',1100,()=>Math.max(projOld(1100)*1.05,4000));
-  drawChart('chartFull',110000,n=>projOld(n)*1.05);
+  drawChart('chartFull',55000,n=>projOld(n)*1.05);
 </script>
