@@ -1,0 +1,298 @@
+<title>BT Load — Runtime Analysis</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --border: #e2e5ea;
+    --text: #1a1d23;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --good: #16a34a;
+    --good-light: #f0fdf4;
+    --warn: #d97706;
+    --bad: #dc2626;
+    --gray-line: #cbd5e1;
+    --old-line: #f97316;
+    --mono: 'Courier New', monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1117; --surface: #1a1d26; --border: #2a2d38;
+      --text: #e8eaf0; --muted: #8b92a5; --accent: #4f8ef7;
+      --accent-light: #1a2340; --good: #22c55e; --good-light: #052e16;
+      --warn: #f59e0b; --bad: #f87171; --gray-line: #3a3f52; --old-line: #fb923c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1117; --surface: #1a1d26; --border: #2a2d38;
+    --text: #e8eaf0; --muted: #8b92a5; --accent: #4f8ef7;
+    --accent-light: #1a2340; --good: #22c55e; --good-light: #052e16;
+    --warn: #f59e0b; --bad: #f87171; --gray-line: #3a3f52; --old-line: #fb923c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.6; padding: 2rem; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
+  section { margin-bottom: 2rem; }
+  h2 { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th { text-align: left; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+  .data-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table .num { text-align: right; }
+  .pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 99px; font-size: 0.72rem; font-weight: 600; }
+  .pill-blue { background: var(--accent-light); color: var(--accent); }
+  .pill-green { background: var(--good-light); color: var(--good); }
+  .speedup { font-weight: 700; color: var(--good); }
+  .old-val { color: var(--muted); text-decoration: line-through; font-size: 0.85em; }
+
+  .model-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; }
+  .formula { font-family: var(--mono); font-size: 0.88rem; background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 0.6rem 1rem; margin: 0.75rem 0; color: var(--accent); }
+  .finding-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+  .finding { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem; }
+  .finding-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+  .finding-value { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .finding-sub { font-size: 0.74rem; color: var(--muted); margin-top: 0.15rem; }
+
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; overflow-x: auto; }
+  canvas { display: block; width: 100%; }
+  .legend { display: flex; gap: 1.25rem; margin-bottom: 0.75rem; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+  .legend-swatch { width: 24px; height: 3px; display: inline-block; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  .proj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+  .proj-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; }
+  .proj-n { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.2rem; }
+  .proj-time { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--good); }
+  .proj-old { font-size: 0.75rem; color: var(--muted); text-decoration: line-through; margin-top: 0.1rem; }
+  .proj-speedup { font-size: 0.75rem; color: var(--good); font-weight: 600; }
+  .proj-card.highlight { border-color: var(--accent); }
+  .proj-card.highlight .proj-time { color: var(--accent); }
+
+  .note { background: var(--surface); border-left: 3px solid var(--warn); padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; font-size: 0.82rem; color: var(--muted); }
+  .note strong { color: var(--text); }
+  .badge-speedup { display: inline-block; background: var(--good-light); color: var(--good); font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 99px; font-size: 0.8rem; margin-left: 0.5rem; }
+</style>
+
+<h1>Business Team Load — Runtime Analysis <span class="badge-speedup">~7× faster</span></h1>
+<p class="subtitle">Power-law fit (t = a + c·nᵏ) · Pre-PROD · Updated 2026-08-10 after optimizations</p>
+
+<section>
+  <h2>Trial Data — Before vs After Optimization</h2>
+  <div class="chart-wrap" style="padding-bottom:0.5rem">
+    <table class="data-table">
+      <thead>
+        <tr><th>Records</th><th class="num">Before</th><th class="num">After</th><th class="num">Speedup</th><th class="num">Batch</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill pill-blue">25</span></td>
+          <td class="num old-val">2:26</td>
+          <td class="num"><strong>1:00</strong></td>
+          <td class="num speedup">2.4×</td>
+          <td class="num">20055</td>
+        </tr>
+        <tr>
+          <td><span class="pill pill-blue">250</span></td>
+          <td class="num old-val">12:05</td>
+          <td class="num"><strong>2:00</strong></td>
+          <td class="num speedup">6.0×</td>
+          <td class="num">20056</td>
+        </tr>
+        <tr>
+          <td><span class="pill pill-blue">1,000</span></td>
+          <td class="num old-val">57:34</td>
+          <td class="num"><strong>8:01</strong></td>
+          <td class="num speedup">7.2×</td>
+          <td class="num">20057</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Updated Model — Power-Law Fit (3-Point Exact)</h2>
+  <div class="model-box">
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem">Fitting <strong style="color:var(--text)">t = a + c · nᵏ</strong> to all three new trials exactly. Exponent k=1.39 (was 1.22) — the optimized run is faster in absolute terms but retains super-linear growth as the matching pool fills.</p>
+    <div class="formula">t = 58.5 + 0.02856 · n<sup>1.39</sup></div>
+    <p style="font-size:0.82rem;color:var(--muted)">With k = 1.39: <strong style="color:var(--text)">doubling records takes ~2.62× as long</strong> (2<sup>1.39</sup>). Every 10× more records ≈ 24.5× more time.</p>
+    <div class="finding-row">
+      <div class="finding">
+        <div class="finding-label">Fixed overhead (a)</div>
+        <div class="finding-value">~59 sec</div>
+        <div class="finding-sub">was ~109s — 1.8× faster startup</div>
+      </div>
+      <div class="finding">
+        <div class="finding-label">Coefficient (c)</div>
+        <div class="finding-value">0.02856</div>
+        <div class="finding-sub">was 0.732 — ~26× lower per-record cost</div>
+      </div>
+      <div class="finding">
+        <div class="finding-label">Exponent (k)</div>
+        <div class="finding-value">1.39</div>
+        <div class="finding-sub">was 1.22 — steeper but from a much lower base</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Runtime Chart — Trial Range (0–1,100 records)</h2>
+  <div class="chart-wrap">
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>new model (k=1.39)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--old-line)"></span>old model (k=1.22)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--good)"></span>new actual</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--bad)"></span>old actual</span>
+    </div>
+    <canvas id="chartTrials" height="220"></canvas>
+  </div>
+</section>
+
+<section>
+  <h2>Extrapolation Chart — Full Scale (0–110,000 records)</h2>
+  <div class="chart-wrap">
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>new model</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--old-line)"></span>old model</span>
+    </div>
+    <canvas id="chartFull" height="220"></canvas>
+  </div>
+</section>
+
+<section>
+  <h2>Projections — New vs Old</h2>
+  <div class="proj-grid" id="projGrid"></div>
+</section>
+
+<div class="note">
+  <strong>Caveat:</strong> 3-point fit — projections are order-of-magnitude estimates. The exponent k=1.39 is steeper than before, but the coefficient is ~26× lower, so the new model wins at all scales. Re-run trials after further changes and refit.
+</div>
+
+<script>
+  // New model
+  const aN=58.5, cN=0.02856, kN=1.39;
+  const projNew = n => aN + cN * Math.pow(n, kN);
+
+  // Old model
+  const aO=108.8, cO=0.732, kO=1.22;
+  const projOld = n => aO + cO * Math.pow(n, kO);
+
+  const trialsNew = [{n:25,s:61},{n:250,s:120},{n:1000,s:482}];
+  const trialsOld = [{n:25,s:146},{n:250,s:725},{n:1000,s:3454}];
+
+  function fmt(secs) {
+    const h=Math.floor(secs/3600), m=Math.floor((secs%3600)/60), s=Math.round(secs%60);
+    if(h>0) return h+'h '+m+'m';
+    return m+'m '+s+'s';
+  }
+  function dhm(secs) {
+    const d=Math.floor(secs/86400), h=Math.floor((secs%86400)/3600), m=Math.floor((secs%3600)/60);
+    if(d>0) return d+'d '+h+'h '+m+'m';
+    return h+'h '+m+'m';
+  }
+
+  // Projections
+  const targets = [1000,5000,10000,25000,55000,110000];
+  const grid = document.getElementById('projGrid');
+  targets.forEach(n => {
+    const sN=projNew(n), sO=projOld(n);
+    const spd=(sO/sN).toFixed(1);
+    const hi = n===55000||n===110000;
+    const card=document.createElement('div');
+    card.className='proj-card'+(hi?' highlight':'');
+    card.innerHTML=`<div class="proj-n">${n.toLocaleString()} records</div>
+      <div class="proj-time">${fmt(sN)}</div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:0.1rem">${dhm(sN)}</div>
+      <div class="proj-old">${fmt(sO)}</div>
+      <div class="proj-speedup">${spd}× faster</div>`;
+    grid.appendChild(card);
+  });
+
+  function getColors() {
+    const s=getComputedStyle(document.documentElement);
+    return {
+      accent:  s.getPropertyValue('--accent').trim(),
+      oldLine: s.getPropertyValue('--old-line').trim(),
+      muted:   s.getPropertyValue('--muted').trim(),
+      border:  s.getPropertyValue('--border').trim(),
+      text:    s.getPropertyValue('--text').trim(),
+      good:    s.getPropertyValue('--good').trim(),
+      bad:     s.getPropertyValue('--bad').trim(),
+      grayLine:s.getPropertyValue('--gray-line').trim(),
+    };
+  }
+
+  function drawChart(id, maxN, maxSFn) {
+    const canvas=document.getElementById(id);
+    const dpr=window.devicePixelRatio||1;
+    const W=canvas.parentElement.clientWidth-48, H=220;
+    canvas.width=W*dpr; canvas.height=H*dpr;
+    canvas.style.width=W+'px'; canvas.style.height=H+'px';
+    const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+    const clr=getColors();
+    const pad={top:16,right:20,bottom:36,left:60};
+    const cw=W-pad.left-pad.right, ch=H-pad.top-pad.bottom;
+    const maxS=maxSFn(maxN);
+    const tx=n=>pad.left+(n/maxN)*cw;
+    const ty=s=>pad.top+ch-(Math.min(s,maxS)/maxS)*ch;
+
+    // Grid
+    for(let i=0;i<=5;i++){
+      const s=(i/5)*maxS;
+      ctx.strokeStyle=clr.border; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(pad.left,ty(s)); ctx.lineTo(pad.left+cw,ty(s)); ctx.stroke();
+      ctx.fillStyle=clr.muted; ctx.font='10px -apple-system,sans-serif'; ctx.textAlign='right';
+      const lbl=s<3600?Math.round(s/60)+'m':s<86400?(s/3600).toFixed(1)+'h':(s/86400).toFixed(1)+'d';
+      ctx.fillText(lbl,pad.left-6,ty(s)+4);
+    }
+
+    // Old model (orange)
+    ctx.beginPath(); ctx.strokeStyle=clr.oldLine; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+    for(let n=0;n<=maxN;n+=maxN/200){
+      const s=projOld(n);
+      n===0?ctx.moveTo(tx(n),ty(s)):ctx.lineTo(tx(n),ty(s));
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // New model (blue)
+    ctx.beginPath(); ctx.strokeStyle=clr.accent; ctx.lineWidth=2.5; ctx.setLineDash([6,3]);
+    for(let n=0;n<=maxN;n+=maxN/200){
+      const s=projNew(n);
+      n===0?ctx.moveTo(tx(n),ty(s)):ctx.lineTo(tx(n),ty(s));
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // Trial points (only trial chart)
+    if(id==='chartTrials'){
+      trialsOld.forEach(({n,s})=>{
+        ctx.beginPath(); ctx.arc(tx(n),ty(s),5,0,Math.PI*2);
+        ctx.fillStyle=clr.bad; ctx.fill();
+      });
+      trialsNew.forEach(({n,s})=>{
+        ctx.beginPath(); ctx.arc(tx(n),ty(s),5,0,Math.PI*2);
+        ctx.fillStyle=clr.good; ctx.fill();
+        ctx.fillStyle=clr.text; ctx.font='10px -apple-system,sans-serif'; ctx.textAlign='center';
+        ctx.fillText(n.toLocaleString(),tx(n),ty(s)-10);
+      });
+    }
+
+    // X axis
+    for(let i=0;i<=5;i++){
+      const n=(i/5)*maxN;
+      ctx.fillStyle=clr.muted; ctx.font='10px -apple-system,sans-serif'; ctx.textAlign='center';
+      const lbl=n>=1000?(n/1000).toFixed(0)+'K':n.toFixed(0);
+      ctx.fillText(lbl,tx(n),pad.top+ch+18);
+    }
+    ctx.fillStyle=clr.muted; ctx.font='10px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Records',pad.left+cw/2,H-4);
+  }
+
+  drawChart('chartTrials',1100,()=>Math.max(projOld(1100)*1.05,4000));
+  drawChart('chartFull',110000,n=>projOld(n)*1.05);
+</script>
