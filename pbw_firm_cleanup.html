@@ -308,7 +308,7 @@ function renderCards(rows){
 
     var metas=[];
     if(finra) metas.push('FINRA current: <strong>'+esc(finra)+'</strong>');
-    if(edited) metas.push('Last edited: <strong>'+esc(edited)+(editDate?' ('+esc(editDate.slice(0,10))+')')+'</strong>');
+    if(edited) metas.push('Last edited: <strong>'+esc(edited)+(editDate?' ('+esc(editDate.slice(0,10))+')':'')+'</strong>');
     if(owner) metas.push('Owner: <strong>'+esc(owner)+'</strong>');
     if(metas.length) html+='<div class="card-meta">'+metas.map(function(m){return '<span>'+m+'</span>';}).join('')+'</div>';
 
