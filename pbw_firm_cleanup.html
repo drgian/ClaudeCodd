@@ -79,6 +79,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .empty{color:var(--text-3);font-size:14px;padding:30px 0;text-align:center;}
 #view-main{display:block;}
 #view-drill{display:none;}
+.flt-btn{font-family:inherit;font-size:12px;font-weight:600;padding:4px 14px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text-2);cursor:pointer;transition:background .12s,color .12s,border-color .12s;}
+.flt-btn:hover{border-color:var(--text-2);}
+.flt-btn.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+.bchip-warn{background:#FEF3C7;color:#92400E;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .bchip-warn{background:#3B1A00;color:#FCD34D;}}
+:root[data-theme="dark"] .bchip-warn{background:#3B1A00;color:#FCD34D;}
 </style>
 <div class="wrap">
 
@@ -155,6 +161,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <span class="cnt" id="ex-count"></span>
       <button class="dl-btn" id="dl-btn" onclick="downloadXLSX()">&#8595; Download .xlsx</button>
     </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
+      <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);">Filter:</span>
+      <button class="flt-btn" id="flt-rel" onclick="toggleFilter('rel')">Relevant</button>
+      <button class="flt-btn" id="flt-act" onclick="toggleFilter('act')">Active 12mo</button>
+    </div>
     <div id="ex-cards"></div>
   </div>
 
@@ -167,6 +178,7 @@ const PAIRS=[{"wf":"Wells Fargo","ng":"UBS","n":93},{"wf":"Morgan Stanley","ng":
 const TOTAL=215608;
 
 var drillCtx = null;
+var filterState = {rel:false, act:false};
 
 function fmt(n){return n!=null?n.toLocaleString():'0';}
 function esc(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
@@ -214,32 +226,68 @@ function sideChip(b, isMismatch){
   return '<span class="bchip '+cls+'">'+esc(b)+'</span>';
 }
 
+var INTERNAL_SRCS={SFDC_NG:1,SFDC_GWM:1,SFDC_ICPS:1,DEALCLOUD:1};
+
+function isSfdcOnly(sources){
+  if(!sources) return false;
+  var parts=sources.split(/[|,;]/).map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
+  if(!parts.length) return false;
+  return parts.every(function(p){return INTERNAL_SRCS[p];});
+}
+
 function rowsForKey(key){
   var idxs=SAMPLES[key]||[];
   return idxs.map(function(i){return ROWS[i];});
 }
 
+function filterRows(rows){
+  var iRel=F.indexOf('IS_RELEVANT'), iAct=F.indexOf('HAS_ACTIVITY');
+  return rows.filter(function(r){
+    if(filterState.rel && r[iRel]!=='Y') return false;
+    if(filterState.act && r[iAct]!=='Y') return false;
+    return true;
+  });
+}
+
+function toggleFilter(key){
+  filterState[key]=!filterState[key];
+  var btn=document.getElementById('flt-'+key);
+  if(filterState[key]) btn.classList.add('on'); else btn.classList.remove('on');
+  refreshDrill();
+}
+
 function drillKey(key, title){
-  drillCtx={key:key, wf:null, ng:null};
-  var rows=rowsForKey(key);
-  showDrill(rows, COUNTS[key]||0, title);
+  drillCtx={key:key, wf:null, ng:null, total:COUNTS[key]||0, title:title};
+  openDrill();
 }
 
 function drillPair(wf, ng, title){
-  drillCtx={key:'mismatch', wf:wf, ng:ng};
-  var iWf=F.indexOf('wf_bucket'), iNg=F.indexOf('ng_bucket');
-  var allMismatch=rowsForKey('mismatch');
-  var rows=allMismatch.filter(function(r){return r[iWf]===wf && r[iNg]===ng;});
   var total=0;
   PAIRS.forEach(function(p){if(p.wf===wf&&p.ng===ng)total=p.n;});
-  showDrill(rows, total, title);
+  drillCtx={key:'mismatch', wf:wf, ng:ng, total:total, title:title};
+  openDrill();
 }
 
-function showDrill(rows, total, title){
+function openDrill(){
+  filterState.rel=false; filterState.act=false;
+  document.getElementById('flt-rel').classList.remove('on');
+  document.getElementById('flt-act').classList.remove('on');
   document.getElementById('view-main').style.display='none';
   document.getElementById('view-drill').style.display='block';
-  document.getElementById('ex-title').textContent=title;
-  document.getElementById('ex-count').textContent='Showing '+rows.length.toLocaleString()+' of '+total.toLocaleString();
+  document.getElementById('ex-title').textContent=drillCtx.title;
+  refreshDrill();
+}
+
+function refreshDrill(){
+  var allRows;
+  if(drillCtx.wf){
+    var iWf=F.indexOf('wf_bucket'), iNg=F.indexOf('ng_bucket');
+    allRows=rowsForKey('mismatch').filter(function(r){return r[iWf]===drillCtx.wf&&r[iNg]===drillCtx.ng;});
+  } else {
+    allRows=rowsForKey(drillCtx.key);
+  }
+  var rows=filterRows(allRows);
+  document.getElementById('ex-count').textContent='Showing '+rows.length.toLocaleString()+' of '+(drillCtx.total||0).toLocaleString();
   document.getElementById('dl-btn').textContent='Download '+rows.length.toLocaleString()+' rows as .xlsx';
   renderCards(rows);
 }
@@ -279,6 +327,8 @@ function renderCards(rows){
     var editDate=fv(row,'FIRM_LAST_CHG_DATE');
     var active=fv(row,'HAS_ACTIVITY');
     var call=fv(row,'HAS_CALL_12MO');
+    var srcNg=fv(row,'SOURCES_BACKING_NG');
+    var sfdcOnly=isSfdcOnly(srcNg);
 
     var html='<div class="card">';
     html+='<div class="card-top">';
@@ -286,6 +336,7 @@ function renderCards(rows){
     if(ngId) html+='<span class="crd-tag" style="color:var(--text-3)">xDM '+esc(ngId)+'</span>';
     if(active==='Y') html+='<span class="bchip bchip-tl" style="margin-left:4px">Active</span>';
     if(call==='Y') html+='<span class="bchip bchip-ok" style="margin-left:2px">Called 12mo</span>';
+    if(sfdcOnly) html+='<span class="bchip bchip-warn" style="margin-left:auto" title="NG firm backed only by Salesforce or DealCloud">SFDC/DC only</span>';
     html+='</div>';
 
     html+='<div class="vs-row">';
@@ -364,13 +415,14 @@ function renderCards(rows){
 var DOWNLOAD_EXCL = new Set(['routing']);
 function downloadXLSX(){
   if(!drillCtx) return;
-  var rows;
+  var allRows;
   if(drillCtx.wf){
     var iWf=F.indexOf('wf_bucket'), iNg=F.indexOf('ng_bucket');
-    rows=rowsForKey('mismatch').filter(function(r){return r[iWf]===drillCtx.wf&&r[iNg]===drillCtx.ng;});
+    allRows=rowsForKey('mismatch').filter(function(r){return r[iWf]===drillCtx.wf&&r[iNg]===drillCtx.ng;});
   } else {
-    rows=rowsForKey(drillCtx.key);
+    allRows=rowsForKey(drillCtx.key);
   }
+  var rows=filterRows(allRows);
   var cols=F.filter(function(c){return !DOWNLOAD_EXCL.has(c);});
   var idxs=cols.map(function(c){return F.indexOf(c);});
   var drows=rows.map(function(r){return idxs.map(function(j){return String(r[j]||'');});});
