@@ -29,6 +29,8 @@
   .wrap { max-width:min(1120px, 100%); margin:0 auto; }
 
   .hdr { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:6px; }
+  .theme-btn { margin-left:auto; padding:5px 10px; font-size:16px; line-height:1; border:1px solid var(--border); border-radius:7px; background:var(--surface); cursor:pointer; color:var(--text-2); transition:background 0.12s,border-color 0.12s; }
+  .theme-btn:hover { background:var(--border); }
   .hdr h2 { font-size:22px; font-weight:700; color:var(--navy); margin:0; text-wrap:balance; letter-spacing:-0.01em; }
   .hdr .meta { font-size:13px; color:var(--text-3); font-variant-numeric:tabular-nums; }
 
@@ -330,6 +332,7 @@
   <div class="hdr">
     <h2>PB/Wires Phone Cleanup</h2>
     <span class="meta" id="meta"></span>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
   </div>
 
   <div class="controls-bar">
@@ -824,6 +827,24 @@ var DATA = {
          ["Regulatory evidence confirms NG firm",27,2.4]]
   }
 };
+
+// Theme toggle — persists to localStorage; respects system preference as default.
+(function () {
+  var stored = localStorage.getItem("pbw-theme");
+  var theme = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.documentElement.setAttribute("data-theme", theme);
+})();
+function toggleTheme() {
+  var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("pbw-theme", next);
+  document.getElementById("theme-btn").textContent = next === "dark" ? "☀️" : "🌙";
+}
+// Set correct icon on load.
+document.addEventListener("DOMContentLoaded", function () {
+  var btn = document.getElementById("theme-btn");
+  if (btn) btn.textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "☀️" : "🌙";
+});
 
 var scope = "all", tab = "summary", lastTab = "summary", openKey = null, openLabel = "";
 var fmt = function (n) { return n.toLocaleString("en-US"); };
