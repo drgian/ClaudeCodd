@@ -1356,6 +1356,14 @@ var OVERRIDE_COLS = [
   ["f11","NG primary phone"],["f12","NG mobile"],
   ["f10","Proposed phone"]
 ];
+var NR_COLS = [
+  ["f0","CRD"],["f2","NextGen SF ID"],
+  ["f6","First name"],["f7","Last name"],
+  ["f8","Compare type"],
+  ["f11","NG primary phone"],["f12","NG mobile"],
+  ["f10","Proposed phone"],
+  ["ru","Rule"],["rs","Reason"],["_guidance","Why flagged for steward review"]
+];
 
 function downloadAllCategories() {
   var ao = [], keep = [], nr = [], fill = [];
@@ -1366,10 +1374,17 @@ function downloadAllCategories() {
     else if (rt === "nr")   { nr.push(r); }
     else if (rt === "fill") { fill.push(r); }
   });
+  var ruleDesc = {};
+  RULES.forEach(function(r) { if (r[5]) ruleDesc[r[0]] = r[5]; });
+  var nrAnnotated = nr.map(function(r) {
+    var copy = Object.assign({}, r);
+    copy._guidance = ruleDesc[r["ru"]] || "";
+    return copy;
+  });
   var sheets = [
     xlSheet("Override",      OVERRIDE_COLS, ao),
     xlSheet("Keep",          SUMMARY_COLS, keep),
-    xlSheet("Needs Review",  SUMMARY_COLS, nr)
+    xlSheet("Needs Review",  NR_COLS, nrAnnotated)
   ];
   if (fill.length) { sheets.push(xlSheet("Fill", SUMMARY_COLS, fill)); }
   triggerXlDownload(xlWorkbook(sheets), "PBW Phone Cleanup - All Categories.xlsx");
