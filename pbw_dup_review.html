@@ -174,7 +174,6 @@ tfoot td.r{text-align:right;}
     <div class="site-title">PB/Wires Duplicate Coverage</div>
     <div class="site-sub">3,083 duplicate pairs · existing PROD rules + proposed rules (R5–R14)</div>
   </div>
-  <span class="site-badge">Proposed</span>
   <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
 </header>
 
@@ -280,18 +279,18 @@ tfoot td.r{text-align:right;}
     </div>
     <div id="sum-panel-body" class="sum-panel-body"></div>
   </div>
-</div>
-
-<!-- ALL RULES -->
-<div id="tab-rules" class="tab-pane">
 
   <div class="export-panel">
     <div class="export-title">Export pair population</div>
-    <p class="export-note">Downloads a .xlsx with two sheets: <strong>Merger</strong> — all auto-merge pairs (existing PROD rules + proposed auto-merge rules R5/R6/R7/R8/R9/R10/R14); <strong>Review</strong> — all suggestion-queue pairs (proposed R11/R12/R13). Representative samples per rule are included for each population.</p>
+    <p class="export-note">Downloads a .xlsx with two sheets: <strong>Merger</strong> — all auto-merge pairs (existing PROD rules + proposed auto-merge rules R5/R6/R7/R8/R9/R10/R14); <strong>Review</strong> — all suggestion-queue pairs (proposed R11/R12/R13). Representative samples per rule are included.</p>
     <div class="export-btns">
       <button class="xbtn" onclick="downloadXlsx()">Download .xlsx</button>
     </div>
   </div>
+</div>
+
+<!-- ALL RULES -->
+<div id="tab-rules" class="tab-pane">
 
   <div class="eyebrow">Click any rule row to expand — sample pairs show Market Data and NextGen fields side by side</div>
   <h2>All Rules — PROD + Proposed (R5–R14)</h2>
@@ -1015,7 +1014,7 @@ function downloadXlsx() {
 
 // ── SUMMARY DRILL-DOWN DATA ────────────────────────────────────────────────
 
-var LIKELY_PROD_SAMPLES = [
+var _LIKELY_PROD_SAMPLES_UNUSED = [
   { cat:'likely', catLabel:'Likely',
     whyDup:'Both records share the same standardized direct-dial phone and exact name (Jennifer Santos) across DISCOVERY_BD market data and SFDC_NG CRM. The existing ExactFNLNSfxPhone rule (score 85) already groups them into the suggestion queue today.',
     whyCat:'Likely: shared phone + exact name is strong but not definitively conclusive without a CRD to confirm FINRA registration. The steward reviews and accepts.',
@@ -1075,66 +1074,43 @@ var LIKELY_AUTO_SAMPLES = [
   }
 ];
 
-var SUM_SAMPLES = {
-  'definite-prod': {
-    title: 'Definite · Existing PROD rules',
-    note: 'ExactEmail (95), ExactLastNameEmail (95), ExactFNLNSfxZipPhone (97) — all auto-merge today. Shared email or name+ZIP+phone is conclusive.',
-    pairs: D.re.pairs.concat(D.rle.pairs).concat(D.rzp.pairs)
-  },
-  'definite-auto': {
-    title: 'Definite · Proposed auto-merge',
-    note: 'R5 (ExactEmail SFDC_NG eligible), R6 (ExactFNLNZip all publishers), R10 (FuzzyFNExactLNPhone at 92) — all auto-merge on activation.',
-    pairs: D.r10.pairs.concat(D.r5.pairs).concat(D.r6.pairs)
-  },
-  'definite-sugg': {
-    title: 'Definite · Proposed suggestion queue',
-    note: 'R13: FuzzyFNFuzzyLNPhone — score 85, routed to steward review. Pairs are effectively conclusive (phone + CRD) but fuzzy-last-name rule carries higher false-positive risk at scale.',
-    pairs: D.r13.pairs
-  },
-  'likely-prod': {
-    title: 'Likely · Existing PROD rules',
-    note: 'ExactFNLNSfxPhone (85) / ExactPreferredNameAddress (85) / ExactFNLNSfxZip PREQIN (95) — suggestion queue today. Name + one signal without a CRD anchor.',
-    pairs: D.rp85.pairs.concat(D.ra85.pairs).concat(D.rz.pairs).concat(LIKELY_PROD_SAMPLES)
-  },
-  'likely-auto': {
-    title: 'Likely · Proposed auto-merge',
-    note: 'R7 (ExactPreferredNameAddress 85→92) / R8 (ExactFNLNPhone 85→92) / R9 (ExactFNLNZipPhone new at 92) — auto-merges on activation. Same name + corroborating signals cross the confirmed-golden threshold.',
-    pairs: D.r7.pairs.concat(D.r8.pairs).concat(D.r9.pairs).concat(LIKELY_AUTO_SAMPLES)
-  },
-  'likely-sugg': {
-    title: 'Likely · Proposed suggestion queue',
-    note: 'R11 (score 85) and R12 (score 80) — FuzzyFN + ExactLN + shared biz team. Routed to steward review; pairs below span both rules.',
-    pairs: D.r11.pairs.concat(D.r12.pairs)
-  },
-  'email-prod': {
-    title: 'Email Variant · Existing PROD rules',
-    note: 'ExactFNLNSfxFirmState — score 95, auto-merges today. Same name + firm + state catches most middle-initial email variants.',
-    pairs: D.rfs.pairs
-  },
-  'email-auto': {
-    title: 'Email Variant · Proposed auto-merge',
-    note: 'R14: ExactFNLNEmailVariant — score 95, auto-merges on activation. Catches email-variant pairs not already covered by ExactFNLNSfxFirmState.',
-    pairs: D.r14.pairs
-  }
+var SUM_SAMPLES_META = {
+  'definite-prod': { title:'Definite · Existing PROD rules', note:'ExactEmail (95), ExactLastNameEmail (95), ExactFNLNSfxZipPhone (97) — all auto-merge today. Shared email or name+ZIP+phone is conclusive.' },
+  'definite-auto': { title:'Definite · Proposed auto-merge', note:'R5 (ExactEmail SFDC_NG eligible), R6 (ExactFNLNZip all publishers), R10 (FuzzyFNExactLNPhone at 92) — all auto-merge on activation.' },
+  'definite-sugg': { title:'Definite · Proposed suggestion queue', note:'R13: FuzzyFNFuzzyLNPhone — score 85, routed to steward review.' },
+  'likely-prod': { title:'Likely · Existing PROD rules', note:'ExactFNLNSfxPhone (85) / ExactPreferredNameAddress (85) / ExactFNLNSfxZip PREQIN (95) — suggestion queue today.' },
+  'likely-auto': { title:'Likely · Proposed auto-merge', note:'R7 (ExactPreferredNameAddress 85→92) / R8 (ExactFNLNPhone 85→92) / R9 (ExactFNLNZipPhone new at 92) — auto-merges on activation.' },
+  'likely-sugg': { title:'Likely · Proposed suggestion queue', note:'R11 (score 85) and R12 (score 80) — FuzzyFN + ExactLN + shared biz team. Routed to steward review.' },
+  'email-prod': { title:'Email Variant · Existing PROD rules', note:'ExactFNLNSfxFirmState — score 95, auto-merges today.' },
+  'email-auto': { title:'Email Variant · Proposed auto-merge', note:'R14: ExactFNLNEmailVariant — score 95, auto-merges on activation.' }
 };
+function getSumPairs(key) {
+  var g = function(k) { return D[k] ? D[k].pairs : []; };
+  var m = {
+    'definite-prod': g('re').concat(g('rle')).concat(g('rzp')),
+    'definite-auto': g('r10').concat(g('r5')).concat(g('r6')),
+    'definite-sugg': g('r13'),
+    'likely-prod':   g('rp85').concat(g('ra85')).concat(g('rz')),
+    'likely-auto':   g('r7').concat(g('r8')).concat(g('r9')),
+    'likely-sugg':   g('r11').concat(g('r12')),
+    'email-prod':    g('rfs'),
+    'email-auto':    g('r14')
+  };
+  return m[key] || [];
+}
 
-var KPI_SAMPLES = {
-  'prod': {
-    title: '795 · Existing PROD rules — in effect today',
-    note: 'These pairs auto-merge under existing production rules before any new rules are added. Coverage spans ExactEmail (432 pairs), ExactFNLNSfxFirmState (364), ExactFNLNSfxZip (287), and others.',
-    pairs: D.re.pairs.concat(D.rfs.pairs)
-  },
-  'auto': {
-    title: '1,787 · Proposed auto-merge — on activation of R5–R14',
-    note: 'These pairs will auto-merge when proposed rules are activated. Samples span R10 (FuzzyFNExactLNPhone), R14 (ExactFNLNEmailVariant), R7/R8/R9 (score raises), and R15 (email-prefix name variant).',
-    pairs: D.r10.pairs.concat(D.r14.pairs).concat(LIKELY_AUTO_SAMPLES).concat(D.r15.pairs)
-  },
-  'sugg': {
-    title: '501 · Proposed suggestion queue — steward review',
-    note: 'These pairs will be routed to the steward queue under R11/R12/R13. A steward reviews each proposed merge and accepts or rejects. Samples below span all three rules.',
-    pairs: D.r11.pairs.concat(D.r12.pairs).concat(D.r13.pairs)
-  }
+var KPI_SAMPLES_META = {
+  'prod': { title:'795 · Existing PROD rules — in effect today', note:'These pairs auto-merge under existing production rules before any new rules are added. Coverage spans ExactEmail (432 pairs), ExactFNLNSfxFirmState (364), ExactFNLNSfxZip (287), and others.' },
+  'auto': { title:'1,787 · Proposed auto-merge — on activation of R5–R14', note:'These pairs will auto-merge when proposed rules are activated. Samples span R10 (FuzzyFNExactLNPhone), R14 (ExactFNLNEmailVariant), R7/R8/R9 (score raises), and R15 (email-prefix name variant).' },
+  'sugg': { title:'501 · Proposed suggestion queue — steward review', note:'These pairs will be routed to the steward queue under R11/R12/R13. A steward reviews each proposed merge and accepts or rejects.' }
 };
+function getKpiPairs(bucket) {
+  var g = function(k) { return D[k] ? D[k].pairs : []; };
+  if (bucket === 'prod') return g('re').concat(g('rfs'));
+  if (bucket === 'auto') return g('r10').concat(g('r14')).concat(g('r15'));
+  if (bucket === 'sugg') return g('r11').concat(g('r12')).concat(g('r13'));
+  return [];
+}
 
 // ── ADDITIONAL RULE DATA (added after LIKELY_* arrays are defined) ──────────
 
@@ -1436,13 +1412,15 @@ D.r9 = {
 };
 
 function showKpiSamples(bucket) {
-  var s = KPI_SAMPLES[bucket];
+  var meta = KPI_SAMPLES_META[bucket];
   var wrap = document.getElementById('kpi-panel');
-  if (!s) { wrap.style.display = 'none'; return; }
-  document.getElementById('kpi-panel-title').textContent = s.title;
-  document.getElementById('kpi-panel-note').textContent = s.note;
-  document.getElementById('kpi-panel-body').innerHTML = s.pairs.map(function(p, i) {
-    return pairCard(p, i, s.pairs.length);
+  if (!meta) { wrap.style.display = 'none'; return; }
+  var pairs = getKpiPairs(bucket);
+  if (!pairs.length) { wrap.style.display = 'none'; return; }
+  document.getElementById('kpi-panel-title').textContent = meta.title;
+  document.getElementById('kpi-panel-note').textContent = meta.note;
+  document.getElementById('kpi-panel-body').innerHTML = pairs.slice(0, 10).map(function(p, i) {
+    return pairCard(p, i, 10);
   }).join('');
   wrap.style.display = 'block';
   wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
@@ -1454,14 +1432,14 @@ function closeKpiPanel() {
 
 function showSumSamples(bucket, col) {
   var key = bucket + '-' + col;
-  var s = SUM_SAMPLES[key];
+  var meta = SUM_SAMPLES_META[key];
+  var pairs = getSumPairs(key);
   var panel = document.getElementById('sum-panel');
-  if (!s || !s.pairs || !s.pairs.length) { panel.style.display='none'; return; }
-  document.getElementById('sum-panel-title').textContent = s.title;
-  document.getElementById('sum-panel-note').textContent = s.note;
-  var body = document.getElementById('sum-panel-body');
-  var shown = s.pairs.slice(0, 10);
-  body.innerHTML = shown.map(function(p, i) { return pairCard(p, i, shown.length); }).join('');
+  if (!meta || !pairs.length) { panel.style.display='none'; return; }
+  document.getElementById('sum-panel-title').textContent = meta.title;
+  document.getElementById('sum-panel-note').textContent = meta.note;
+  var shown = pairs.slice(0, 10);
+  document.getElementById('sum-panel-body').innerHTML = shown.map(function(p, i) { return pairCard(p, i, shown.length); }).join('');
   panel.style.display = 'block';
   panel.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
