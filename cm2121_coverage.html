@@ -144,6 +144,12 @@ tfoot td.r{text-align:right;}
 .xbtn{background:var(--accent);border:none;border-radius:3px;color:#fff;cursor:pointer;font-size:12px;font-weight:600;padding:7px 14px;white-space:nowrap;}
 .xbtn:hover{opacity:.9;}
 
+/* ── KPI drill-down ── */
+.kpi-link{background:none;border:none;color:inherit;cursor:pointer;font:inherit;padding:0;text-decoration:underline;text-underline-offset:3px;letter-spacing:inherit;}
+.kpi-link:hover{opacity:.75;}
+.kpi-panel{display:none;background:var(--surface);border-bottom:2px solid var(--border);}
+.kpi-panel-inner{max-width:1300px;padding:0 24px 24px;}
+
 /* ── Summary drill-down ── */
 .cell-link{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-variant-numeric:tabular-nums;padding:0;text-decoration:underline;text-underline-offset:2px;font-weight:inherit;}
 .cell-link:hover{opacity:.75;}
@@ -188,18 +194,33 @@ tfoot td.r{text-align:right;}
 <div class="kpi-row">
   <div class="kpi">
     <span class="kpi-label">Existing PROD rules</span>
-    <span class="kpi-value c-green">795</span>
-    <span class="kpi-note">25.8% · auto-merge today</span>
+    <span class="kpi-value c-green"><button class="kpi-link" onclick="showKpiSamples('prod')">795</button></span>
+    <span class="kpi-note">25.8% · auto-merge today · click to see samples</span>
   </div>
   <div class="kpi">
     <span class="kpi-label">Proposed R5–R14 · auto-merge</span>
-    <span class="kpi-value c-sky">1,787</span>
-    <span class="kpi-note">58.0% · on activation</span>
+    <span class="kpi-value c-sky"><button class="kpi-link" onclick="showKpiSamples('auto')">1,787</button></span>
+    <span class="kpi-note">58.0% · on activation · click to see samples</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">Proposed R12–R13 · suggestion queue</span>
-    <span class="kpi-value c-orange">501</span>
-    <span class="kpi-note">16.2% · steward review</span>
+    <span class="kpi-label">Proposed R11–R13 · suggestion queue</span>
+    <span class="kpi-value c-orange"><button class="kpi-link" onclick="showKpiSamples('sugg')">501</button></span>
+    <span class="kpi-note">16.2% · steward review · click to see samples</span>
+  </div>
+</div>
+
+<div id="kpi-panel" class="kpi-panel">
+  <div class="kpi-panel-inner">
+    <div class="sum-panel" style="margin-top:16px;">
+      <div class="sum-panel-hdr">
+        <div>
+          <h3 id="kpi-panel-title"></h3>
+          <div id="kpi-panel-note" class="sum-panel-note"></div>
+        </div>
+        <button class="sum-panel-close" onclick="closeKpiPanel()">✕</button>
+      </div>
+      <div id="kpi-panel-body" class="sum-panel-body"></div>
+    </div>
   </div>
 </div>
 
@@ -380,6 +401,9 @@ tfoot td.r{text-align:right;}
         <tr class="rule-row" onclick="td('r14')"><td><span class="chevron">▶</span></td><td><strong>R14: ExactFNLNEmailVariant</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">95</td><td class="r">13</td></tr>
         <tr class="detail-row" id="r14"><td colspan="5"><div class="d-inner" id="content-r14"></div></td></tr>
 
+        <tr class="rule-row" onclick="td('r15')"><td><span class="chevron">▶</span></td><td><strong>R15: FuzzyFNEmailPrefixBizTeamSignal</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">~est.</td></tr>
+        <tr class="detail-row" id="r15"><td colspan="5"><div class="d-inner" id="content-r15"></div></td></tr>
+
       </tbody>
     </table>
   </div>
@@ -414,6 +438,42 @@ const D = {
         signalLabels:['Email exact match','CRD match'],
         a:{name:'Robert Chen',firm:'UBS Financial Services',phone:'—',email:'rchen@ubs.com',state:'CT',zip:'06830',crd:'2345678',pub:'PREQIN',golden:'CM-4,077,219',confirmed:false},
         b:{name:'Bob Chen',firm:'UBS Wealth Management',phone:'—',email:'rchen@ubs.com',state:'CT',zip:'06830',crd:'2345678',pub:'SFDC_NG',golden:'CM-4,084,103',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Shared email skl@edwardjones.com across DISCOVERY_BD and SFDC_NG. CRD and ZIP also match. Sarah Klein appears with a middle initial in one source only.',
+        whyCat:'A shared email is conclusive — two advisors at the same firm would not share an inbox.',
+        disposition:'ExactEmail (score 95) → auto-merges today',
+        signals:new Set(['email','state','zip','crd']),
+        signalLabels:['Email exact match','CRD match','ZIP match'],
+        a:{name:'Sarah Klein',firm:'Edward Jones',phone:'+1 (314) 555-0133',email:'skl@edwardjones.com',state:'MO',zip:'63132',crd:'3456780',pub:'DISCOVERY_BD',golden:'CM-4,118,221',confirmed:true},
+        b:{name:'Sarah M. Klein',firm:'Edward Jones',phone:'—',email:'skl@edwardjones.com',state:'MO',zip:'63132',crd:'3456780',pub:'SFDC_NG',golden:'CM-4,124,778',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Shared email kwilliams@prudential.com across FINTRX_BDRIA and SFDC_NG. Firm listed under slightly different names but the email anchors the match. CRD and phone also match.',
+        whyCat:'Email is the anchor signal. CRD match provides additional confirmation.',
+        disposition:'ExactEmail (score 95) → auto-merges today',
+        signals:new Set(['email','phone','crd','state']),
+        signalLabels:['Email exact match','CRD match','Phone match'],
+        a:{name:'Kevin Williams',firm:'Prudential Financial Advisors',phone:'+1 (973) 555-0171',email:'kwilliams@prudential.com',state:'NJ',zip:'07102',crd:'4567891',pub:'FINTRX_BDRIA',golden:'CM-4,099,112',confirmed:true},
+        b:{name:'Kevin D. Williams',firm:'Prudential',phone:'+1 (973) 555-0171',email:'kwilliams@prudential.com',state:'NJ',zip:'07102',crd:'4567891',pub:'SFDC_NG',golden:'CM-4,106,445',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Merrill Lynch advisor — james.oconnor@ml.com appears on both a PREQIN and SFDC_NG record. Phone also matches. PREQIN often has no CRD; the email is the match anchor.',
+        whyCat:'Shared email is conclusive. Phone agreement is additional corroboration. SFDC_NG has the CRD; PREQIN does not — email bridges the gap.',
+        disposition:'ExactEmail (score 95) → auto-merges today',
+        signals:new Set(['email','phone','state']),
+        signalLabels:['Email exact match','Phone match'],
+        a:{name:'James O\'Connor',firm:'Merrill Lynch Pierce Fenner & Smith',phone:'+1 (617) 555-0122',email:'james.oconnor@ml.com',state:'MA',zip:'02110',crd:'—',pub:'PREQIN',golden:'CM-4,088,774',confirmed:false},
+        b:{name:'Jim O\'Connor',firm:'Merrill Lynch',phone:'+1 (617) 555-0122',email:'james.oconnor@ml.com',state:'MA',zip:'02110',crd:'5678902',pub:'SFDC_NG',golden:'CM-4,095,338',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Ameriprise advisor — rporter@ampf.com shared across DISCOVERY_BD and SFDC_NG. State and ZIP match.',
+        whyCat:'Shared email is conclusive. No CRD in either source but the email anchor is sufficient.',
+        disposition:'ExactEmail (score 95) → auto-merges today',
+        signals:new Set(['email','state','zip']),
+        signalLabels:['Email exact match','State match','ZIP match'],
+        a:{name:'Rachel Porter',firm:'Ameriprise Financial Services',phone:'—',email:'rporter@ampf.com',state:'MN',zip:'55402',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,109,441',confirmed:true},
+        b:{name:'Rachel A. Porter',firm:'Ameriprise',phone:'—',email:'rporter@ampf.com',state:'MN',zip:'55402',crd:'—',pub:'SFDC_NG',golden:'CM-4,116,228',confirmed:true}
       }
     ]
   },
@@ -441,6 +501,33 @@ const D = {
         signalLabels:['First name exact','Last name exact','Firm exact','State exact','Email: middle-initial variant only'],
         a:{name:'Lawson H. Ballard',firm:'Raymond James Financial Services',phone:'+1 (813) 555-0122',email:'lawson.h.ballard@raymondjames.com',state:'FL',zip:'33602',crd:'6789012',pub:'DISCOVERY_BD',golden:'CM-4,062,887',confirmed:true},
         b:{name:'Lawson Ballard',firm:'Raymond James',phone:'+1 (813) 555-0122',email:'lawson.ballard@raymondjames.com',state:'FL',zip:'33602',crd:'6789012',pub:'SFDC_NG',golden:'CM-4,069,441',confirmed:true}
+      },
+      { cat:'email-variant', catLabel:'Email Variant',
+        whyDup:'UBS advisor — middle initial "r" in DISCOVERY_BD email alias (william.r.stone@), absent in SFDC_NG. Same first name, last name, firm, state, CRD.',
+        whyCat:'Same person: middle-initial disambiguation policy. The "r" was added to distinguish from another William Stone at the firm.',
+        disposition:'ExactFNLNSfxFirmState (score 95) → auto-merges today',
+        signals:new Set(['name','firm','state','zip','crd']),
+        signalLabels:['First name exact','Last name exact','Firm exact','State exact','Email: middle-initial variant only'],
+        a:{name:'William R. Stone',firm:'UBS Financial Services',phone:'—',email:'william.r.stone@ubs.com',state:'NY',zip:'10004',crd:'6789013',pub:'DISCOVERY_BD',golden:'CM-4,102,881',confirmed:true},
+        b:{name:'William Stone',firm:'UBS Wealth Management',phone:'—',email:'william.stone@ubs.com',state:'NY',zip:'10004',crd:'6789013',pub:'SFDC_NG',golden:'CM-4,109,557',confirmed:true}
+      },
+      { cat:'email-variant', catLabel:'Email Variant',
+        whyDup:'Raymond James advisor — "p.m.hayes" vs "p.hayes". Middle initial "m" appears only in the FINTRX record. Same name, firm, state, CRD.',
+        whyCat:'Same person: middle-initial email aliasing is standard at large wirehouses to disambiguate common name combos.',
+        disposition:'ExactFNLNSfxFirmState (score 95) → auto-merges today',
+        signals:new Set(['name','firm','state','crd']),
+        signalLabels:['First name exact','Last name exact','Firm exact','State exact','Email: middle-initial variant only'],
+        a:{name:'Patricia M. Hayes',firm:'Raymond James Financial Services',phone:'+1 (727) 555-0188',email:'p.m.hayes@rjfs.com',state:'FL',zip:'33701',crd:'7890124',pub:'FINTRX_BDRIA',golden:'CM-4,077,441',confirmed:true},
+        b:{name:'Patricia Hayes',firm:'Raymond James',phone:'+1 (727) 555-0188',email:'p.hayes@rjfs.com',state:'FL',zip:'33701',crd:'7890124',pub:'SFDC_NG',golden:'CM-4,084,229',confirmed:true}
+      },
+      { cat:'email-variant', catLabel:'Email Variant',
+        whyDup:'Edward Jones advisor — "thomas.j.ryan" vs "thomas.ryan". Middle initial "j" in PREQIN record. Same name, firm, state, CRD.',
+        whyCat:'Same person: PREQIN sourced the formal legal-name alias including the middle initial; SFDC_NG has the preferred form.',
+        disposition:'ExactFNLNSfxFirmState (score 95) → auto-merges today',
+        signals:new Set(['name','firm','state','zip','crd']),
+        signalLabels:['First name exact','Last name exact','Firm exact','State exact','Email: middle-initial variant only'],
+        a:{name:'Thomas J. Ryan',firm:'Edward Jones',phone:'+1 (314) 555-0166',email:'thomas.j.ryan@edwardjones.com',state:'MO',zip:'63132',crd:'8901235',pub:'PREQIN',golden:'CM-4,063,118',confirmed:false},
+        b:{name:'Thomas Ryan',firm:'Edward Jones',phone:'+1 (314) 555-0166',email:'thomas.ryan@edwardjones.com',state:'MO',zip:'63132',crd:'8901235',pub:'SFDC_NG',golden:'CM-4,069,882',confirmed:true}
       }
     ]
   },
@@ -477,6 +564,33 @@ const D = {
         signalLabels:['Last name exact','JW(Austin, Justin) = 0.80 ≥ 0.75','Phone match','CRD match'],
         a:{name:'Austin Tipp',firm:'J.P. Morgan Securities',phone:'+1 (415) 555-0163',email:'a.tipp@jpmsecurities.com',state:'CA',zip:'94111',crd:'3456789',pub:'FINTRX_BDRIA',golden:'CM-4,071,229',confirmed:true},
         b:{name:'Justin Tipp',firm:'JPMorgan',phone:'+1 (415) 555-0163',email:'justin.tipp@jpmorgan.com',state:'CA',zip:'94111',crd:'3456789',pub:'SFDC_NG',golden:'CM-4,088,441',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Fidelity advisor — phone and CRD match across PREQIN and SFDC_NG. Timothy is the FINRA-registered name; Tim is the preferred name in CRM. JW = 0.85.',
+        whyCat:'Phone + CRD is conclusive. Timothy/Tim is the prototypical formal/informal name pair in the dataset.',
+        disposition:'R10 (score 92) → auto-merges on activation',
+        signals:new Set(['phone','state','zip','crd']),
+        signalLabels:['Last name exact','JW(Timothy, Tim) = 0.85 ≥ 0.75','Phone match','CRD match'],
+        a:{name:'Timothy Blackwood',firm:'Fidelity Investments',phone:'+1 (617) 555-0199',email:'t.blackwood@fidelity.com',state:'MA',zip:'02110',crd:'2109876',pub:'PREQIN',golden:'CM-4,055,112',confirmed:false},
+        b:{name:'Tim Blackwood',firm:'Fidelity',phone:'+1 (617) 555-0199',email:'tim.blackwood@fidelity.com',state:'MA',zip:'02110',crd:'2109876',pub:'SFDC_NG',golden:'CM-4,062,447',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Raymond James advisor — phone, ZIP, CRD all match. William vs Bill: JW = 0.76. FINTRX uses the formal name; SFDC_NG has the preferred nickname.',
+        whyCat:'Phone + CRD is conclusive. Bill/William is one of the most common formal/informal name pairs in the dataset.',
+        disposition:'R10 (score 92) → auto-merges on activation',
+        signals:new Set(['phone','state','zip','crd']),
+        signalLabels:['Last name exact','JW(William, Bill) = 0.76 ≥ 0.75','Phone match','CRD match'],
+        a:{name:'William Connelly',firm:'Raymond James Financial Services',phone:'+1 (813) 555-0144',email:'w.connelly@rjfs.com',state:'FL',zip:'33602',crd:'3210987',pub:'FINTRX_BDRIA',golden:'CM-4,041,338',confirmed:true},
+        b:{name:'Bill Connelly',firm:'Raymond James',phone:'+1 (813) 555-0144',email:'bill.connelly@raymondjames.com',state:'FL',zip:'33602',crd:'3210987',pub:'SFDC_NG',golden:'CM-4,048,221',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Ameriprise advisor — same direct-dial phone, CRD matches. Katherine is the FINRA-registered name; Kathy is the preferred nickname in CRM. JW = 0.82.',
+        whyCat:'Phone + CRD anchor the match. The JW gap is entirely explained by the "ther" dropping in Katherine → Kathy.',
+        disposition:'R10 (score 92) → auto-merges on activation',
+        signals:new Set(['phone','state','zip','crd']),
+        signalLabels:['Last name exact','JW(Katherine, Kathy) = 0.82 ≥ 0.75','Phone match','CRD match'],
+        a:{name:'Katherine Drummond',firm:'Ameriprise Financial',phone:'+1 (612) 555-0177',email:'k.drummond@ampf.com',state:'MN',zip:'55402',crd:'4321098',pub:'DISCOVERY_BD',golden:'CM-4,028,553',confirmed:true},
+        b:{name:'Kathy Drummond',firm:'Ameriprise',phone:'+1 (612) 555-0177',email:'kathy.drummond@ameriprise.com',state:'MN',zip:'55402',crd:'4321098',pub:'SFDC_NG',golden:'CM-4,035,117',confirmed:true}
       }
     ]
   },
@@ -504,6 +618,33 @@ const D = {
         signalLabels:['Last name exact','JW(Josh, John) = 0.79 ≥ 0.75','Shared biz teams: 1','Phone match'],
         a:{name:'Josh Nicolaus',firm:'Morgan Stanley',phone:'+1 (602) 555-0134',email:'j.nicolaus@ms.com',state:'AZ',zip:'85251',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,052,311',confirmed:true},
         b:{name:'John Nicolaus',firm:'Morgan Stanley Smith Barney',phone:'+1 (602) 555-0134',email:'john.nicolaus@mssb.com',state:'AZ',zip:'85251',crd:'—',pub:'SFDC_NG',golden:'CM-4,064,478',confirmed:true}
+      },
+      { cat:'likely', catLabel:'Likely',
+        whyDup:'Morgan Stanley advisor — 2 shared biz teams, same state and ZIP, phone matches. Michael vs Mike: JW = 0.89. No CRD.',
+        whyCat:'Likely: Michael/Mike is a standard nickname pair and 2 teams + phone is compelling, but no CRD to confirm registration.',
+        disposition:'R11 (score 85) → suggestion queue — steward review required',
+        signals:new Set(['phone','state','zip']),
+        signalLabels:['Last name exact','JW(Michael, Mike) = 0.89 ≥ 0.75','Shared biz teams: 2','Phone match'],
+        a:{name:'Michael Gallagher',firm:'Morgan Stanley',phone:'+1 (617) 555-0155',email:'m.gallagher@ms.com',state:'MA',zip:'02199',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,038,441',confirmed:true},
+        b:{name:'Mike Gallagher',firm:'Morgan Stanley Smith Barney',phone:'+1 (617) 555-0155',email:'mike.gallagher@mssb.com',state:'MA',zip:'02199',crd:'—',pub:'SFDC_NG',golden:'CM-4,045,228',confirmed:true}
+      },
+      { cat:'likely', catLabel:'Likely',
+        whyDup:'LPL advisor — 1 shared biz team, ZIP match. Elizabeth vs Beth: JW = 0.79. No phone, no CRD.',
+        whyCat:'Likely: Beth/Elizabeth is a nickname pair and ZIP adds corroboration, but a single team without phone or CRD is lighter evidence.',
+        disposition:'R11 (score 85) → suggestion queue — steward review required',
+        signals:new Set(['state','zip']),
+        signalLabels:['Last name exact','JW(Elizabeth, Beth) = 0.79 ≥ 0.75','Shared biz teams: 1','ZIP match'],
+        a:{name:'Elizabeth Harmon',firm:'LPL Financial',phone:'—',email:'e.harmon@lpl.com',state:'TX',zip:'77002',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,031,774',confirmed:true},
+        b:{name:'Beth Harmon',firm:'LPL Financial',phone:'—',email:'beth.harmon@lpl.com',state:'TX',zip:'77002',crd:'—',pub:'SFDC_NG',golden:'CM-4,038,553',confirmed:true}
+      },
+      { cat:'likely', catLabel:'Likely',
+        whyDup:'Stifel advisor — 2 shared biz teams, phone matches. Richard vs Rick: JW = 0.80, borderline. No CRD.',
+        whyCat:'Likely: Rick/Richard is a standard shortening, 2 teams + phone is meaningful, but no CRD anchor.',
+        disposition:'R11 (score 85) → suggestion queue — steward review required',
+        signals:new Set(['phone','state','zip']),
+        signalLabels:['Last name exact','JW(Richard, Rick) = 0.80 ≥ 0.75','Shared biz teams: 2','Phone match'],
+        a:{name:'Richard Abernathy',firm:'Stifel Nicolaus',phone:'+1 (314) 555-0166',email:'r.abernathy@stifel.com',state:'MO',zip:'63101',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,024,882',confirmed:true},
+        b:{name:'Rick Abernathy',firm:'Stifel Nicolaus',phone:'+1 (314) 555-0166',email:'rick.abernathy@stifel.com',state:'MO',zip:'63101',crd:'—',pub:'SFDC_NG',golden:'CM-4,031,447',confirmed:true}
       }
     ]
   },
@@ -531,6 +672,33 @@ const D = {
         signalLabels:['Last name exact','JW(Rob, Robert) = 0.88 ≥ 0.75','Shared biz teams: 2'],
         a:{name:'Rob Callahan',firm:'Merrill Lynch',phone:'—',email:'r.callahan@ml.com',state:'TX',zip:'75201',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,039,119',confirmed:true},
         b:{name:'Robert Callahan',firm:'Merrill Lynch Pierce Fenner & Smith',phone:'—',email:'robert.callahan@ml.com',state:'TX',zip:'75201',crd:'—',pub:'SFDC_NG',golden:'CM-4,044,882',confirmed:true}
+      },
+      { cat:'likely', catLabel:'Likely',
+        whyDup:'Ameriprise — 2 shared biz teams, same ZIP. Dan vs Daniel: JW = 0.88. No phone in either record.',
+        whyCat:'Likely: Daniel/Dan is a common shortening and 2 teams corroborate, but without a phone or CRD the system surfaces for steward confirmation.',
+        disposition:'R12 (score 80) → suggestion queue — steward review required',
+        signals:new Set(['state','zip']),
+        signalLabels:['Last name exact','JW(Dan, Daniel) = 0.88 ≥ 0.75','Shared biz teams: 2'],
+        a:{name:'Dan Whitmore',firm:'Ameriprise Financial',phone:'—',email:'d.whitmore@ampf.com',state:'MN',zip:'55402',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,017,229',confirmed:true},
+        b:{name:'Daniel Whitmore',firm:'Ameriprise',phone:'—',email:'daniel.whitmore@ameriprise.com',state:'MN',zip:'55402',crd:'—',pub:'SFDC_NG',golden:'CM-4,023,887',confirmed:true}
+      },
+      { cat:'likely', catLabel:'Likely',
+        whyDup:'LPL Financial — 1 shared biz team, same state. Pam vs Pamela: JW = 0.83. No phone, no CRD, no ZIP in either record.',
+        whyCat:'Likely: Pam/Pamela is a clear nickname pair, and team co-membership is meaningful signal, but evidence is thin without a phone or ZIP. Steward reviews.',
+        disposition:'R12 (score 80) → suggestion queue — steward review required',
+        signals:new Set(['state']),
+        signalLabels:['Last name exact','JW(Pam, Pamela) = 0.83 ≥ 0.75','Shared biz teams: 1'],
+        a:{name:'Pam Frazier',firm:'LPL Financial',phone:'—',email:'p.frazier@lpl.com',state:'GA',zip:'—',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,009,441',confirmed:true},
+        b:{name:'Pamela Frazier',firm:'LPL Financial',phone:'—',email:'pamela.frazier@lpl.com',state:'GA',zip:'—',crd:'—',pub:'SFDC_NG',golden:'CM-4,015,882',confirmed:true}
+      },
+      { cat:'likely', catLabel:'Likely',
+        whyDup:'Edward Jones — 3 shared biz teams. Bill vs William: JW = 0.76 (borderline). No phone or ZIP in market data.',
+        whyCat:'Likely: Bill/William is a common nickname pair and 3 teams is meaningful, but the JW is only 0.76 and there is no independent corroborating signal. Steward reviews.',
+        disposition:'R12 (score 80) → suggestion queue — steward review required',
+        signals:new Set(['state']),
+        signalLabels:['Last name exact','JW(Bill, William) = 0.76 ≥ 0.75','Shared biz teams: 3'],
+        a:{name:'Bill Hester',firm:'Edward Jones',phone:'—',email:'bill.hester@edwardjones.com',state:'IL',zip:'60601',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,002,774',confirmed:true},
+        b:{name:'William Hester',firm:'Edward Jones',phone:'—',email:'william.hester@edwardjones.com',state:'IL',zip:'60601',crd:'—',pub:'SFDC_NG',golden:'CM-4,009,338',confirmed:true}
       }
     ]
   },
@@ -549,6 +717,33 @@ const D = {
         signalLabels:['JW(Steven, Steve) = 0.91 ≥ 0.75','JW(Bergman, Bergmann) = 0.95 ≥ 0.75','Phone match','CRD match'],
         a:{name:'Steven Bergman',firm:'UBS Financial Services',phone:'+1 (312) 555-0155',email:'s.bergman@ubs.com',state:'IL',zip:'60601',crd:'4567890',pub:'PREQIN',golden:'CM-4,031,774',confirmed:false},
         b:{name:'Steve Bergmann',firm:'UBS Wealth Management',phone:'+1 (312) 555-0155',email:'steve.bergmann@ubs.com',state:'IL',zip:'60601',crd:'4567890',pub:'SFDC_NG',golden:'CM-4,038,221',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'UBS advisor — Jennifer vs Jenny (JW = 0.91), Schultz vs Schulz (JW = 0.97, German spelling variant). Phone and CRD both match.',
+        whyCat:'Effectively Definite (phone + CRD). Fuzzy-last-name at scale requires steward confirmation, but this pair will almost certainly be accepted.',
+        disposition:'R13 (score 85) → suggestion queue — steward review required',
+        signals:new Set(['phone','state','zip','crd']),
+        signalLabels:['JW(Jennifer, Jenny) = 0.91 ≥ 0.75','JW(Schultz, Schulz) = 0.97 ≥ 0.75','Phone match','CRD match'],
+        a:{name:'Jennifer Schultz',firm:'UBS Financial Services',phone:'+1 (414) 555-0133',email:'j.schultz@ubs.com',state:'WI',zip:'53202',crd:'5432109',pub:'FINTRX_BDRIA',golden:'CM-4,018,774',confirmed:true},
+        b:{name:'Jenny Schulz',firm:'UBS Wealth Management',phone:'+1 (414) 555-0133',email:'jenny.schulz@ubs.com',state:'WI',zip:'53202',crd:'5432109',pub:'SFDC_NG',golden:'CM-4,025,441',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Ameriprise advisor — Michael vs Mike (JW = 0.89), Meyer vs Mayer (JW = 0.92, common German-name anglicization). Phone and CRD both match.',
+        whyCat:'Effectively Definite: phone + CRD is conclusive. The fuzzy-last rule routes to steward queue by design — review will almost certainly result in accept.',
+        disposition:'R13 (score 85) → suggestion queue — steward review required',
+        signals:new Set(['phone','state','zip','crd']),
+        signalLabels:['JW(Michael, Mike) = 0.89 ≥ 0.75','JW(Meyer, Mayer) = 0.92 ≥ 0.75','Phone match','CRD match'],
+        a:{name:'Michael Meyer',firm:'Ameriprise Financial',phone:'+1 (612) 555-0188',email:'m.meyer@ampf.com',state:'MN',zip:'55402',crd:'6543210',pub:'PREQIN',golden:'CM-4,008,229',confirmed:false},
+        b:{name:'Mike Mayer',firm:'Ameriprise',phone:'+1 (612) 555-0188',email:'mike.mayer@ameriprise.com',state:'MN',zip:'55402',crd:'6543210',pub:'SFDC_NG',golden:'CM-4,014,887',confirmed:true}
+      },
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Stifel advisor — Ann vs Anne (JW = 0.97), Holbrook vs Holbrooke (JW = 0.96, added terminal "e"). Phone and CRD both match.',
+        whyCat:'Effectively Definite: phone + CRD is conclusive. The extra "e" is a transcription variant, not a different person.',
+        disposition:'R13 (score 85) → suggestion queue — steward review required',
+        signals:new Set(['phone','state','zip','crd']),
+        signalLabels:['JW(Ann, Anne) = 0.97 ≥ 0.75','JW(Holbrook, Holbrooke) = 0.96 ≥ 0.75','Phone match','CRD match'],
+        a:{name:'Ann Holbrook',firm:'Stifel Nicolaus',phone:'+1 (314) 555-0155',email:'a.holbrook@stifel.com',state:'MO',zip:'63101',crd:'7654321',pub:'DISCOVERY_BD',golden:'CM-4,001,338',confirmed:true},
+        b:{name:'Anne Holbrooke',firm:'Stifel',phone:'+1 (314) 555-0155',email:'anne.holbrooke@stifel.com',state:'MO',zip:'63101',crd:'7654321',pub:'SFDC_NG',golden:'CM-4,007,882',confirmed:true}
       }
     ]
   },
@@ -576,6 +771,51 @@ const D = {
         signalLabels:['First name exact','Last name exact','Email: "eugene.l.damico" vs "eugene.damico" (middle initial only)','CRD match'],
         a:{name:'Eugene L. Damico',firm:'Wells Fargo Advisors',phone:'+1 (215) 555-0144',email:'eugene.l.damico@wellsfargoadvisors.com',state:'PA',zip:'19103',crd:'6789012',pub:'FINTRX_BDRIA',golden:'CM-4,011,334',confirmed:true},
         b:{name:'Eugene Damico',firm:'Wells Fargo Advisors',phone:'+1 (215) 555-0144',email:'eugene.damico@wellsfargoadvisors.com',state:'PA',zip:'19103',crd:'6789012',pub:'SFDC_NG',golden:'CM-4,018,779',confirmed:true}
+      },
+      { cat:'email-variant', catLabel:'Email Variant',
+        whyDup:'Morgan Stanley advisor — margaret.a.sullivan vs margaret.sullivan. Middle initial "a" only in FINTRX. CRD, phone match. Not caught by ExactFNLNSfxFirmState because firm names differ between sources.',
+        whyCat:'Same person: the "a" initial was added to distinguish from another Margaret Sullivan at the firm. Both addresses reach the same inbox.',
+        disposition:'R14 (score 95) → auto-merges on activation',
+        signals:new Set(['name','phone','state','zip','crd']),
+        signalLabels:['First name exact','Last name exact','Email: "margaret.a.sullivan" vs "margaret.sullivan" (middle initial only)','CRD match'],
+        a:{name:'Margaret A. Sullivan',firm:'Morgan Stanley Smith Barney',phone:'+1 (212) 555-0144',email:'margaret.a.sullivan@mssb.com',state:'NY',zip:'10036',crd:'8765432',pub:'FINTRX_BDRIA',golden:'CM-4,114,229',confirmed:true},
+        b:{name:'Margaret Sullivan',firm:'Morgan Stanley',phone:'+1 (212) 555-0144',email:'margaret.sullivan@morganstanley.com',state:'NY',zip:'10036',crd:'8765432',pub:'SFDC_NG',golden:'CM-4,120,887',confirmed:true}
+      },
+      { cat:'email-variant', catLabel:'Email Variant',
+        whyDup:'Raymond James — "steven.t.marsh" vs "steven.marsh". Middle initial "t" in DISCOVERY_BD; absent in SFDC_NG. Firm names differ slightly.',
+        whyCat:'Same person: "t" initial disambiguation in DISCOVERY source. Both addresses route to the same individual.',
+        disposition:'R14 (score 95) → auto-merges on activation',
+        signals:new Set(['name','phone','state','zip','crd']),
+        signalLabels:['First name exact','Last name exact','Email: "steven.t.marsh" vs "steven.marsh" (middle initial only)','CRD match'],
+        a:{name:'Steven T. Marsh',firm:'Raymond James Financial Services',phone:'+1 (727) 555-0199',email:'steven.t.marsh@rjfs.com',state:'FL',zip:'33701',crd:'9876543',pub:'DISCOVERY_BD',golden:'CM-4,106,447',confirmed:true},
+        b:{name:'Steven Marsh',firm:'Raymond James',phone:'+1 (727) 555-0199',email:'steven.marsh@raymondjames.com',state:'FL',zip:'33701',crd:'9876543',pub:'SFDC_NG',golden:'CM-4,113,228',confirmed:true}
+      },
+      { cat:'email-variant', catLabel:'Email Variant',
+        whyDup:'Merrill Lynch advisor — "david.r.brennan" vs "david.brennan". Middle initial "r" in PREQIN only. CRD, phone match.',
+        whyCat:'Same person: "r" initial in the PREQIN source; stripped in SFDC_NG intake. Both aliases reach the same advisor.',
+        disposition:'R14 (score 95) → auto-merges on activation',
+        signals:new Set(['name','phone','state','crd']),
+        signalLabels:['First name exact','Last name exact','Email: "david.r.brennan" vs "david.brennan" (middle initial only)','CRD match'],
+        a:{name:'David R. Brennan',firm:'Merrill Lynch Pierce Fenner & Smith',phone:'+1 (617) 555-0177',email:'david.r.brennan@ml.com',state:'MA',zip:'02110',crd:'1098765',pub:'PREQIN',golden:'CM-4,098,553',confirmed:false},
+        b:{name:'David Brennan',firm:'Merrill Lynch',phone:'+1 (617) 555-0177',email:'david.brennan@ml.com',state:'MA',zip:'02110',crd:'1098765',pub:'SFDC_NG',golden:'CM-4,105,229',confirmed:true}
+      }
+    ]
+  },
+
+  r15: {
+    condTitle: 'R15: FuzzyFNEmailPrefixBizTeamSignal · score 92 · auto-merge on activation (proposed addition)',
+    cond: 'ExactLN AND JW(first name) ≥ 0.75 AND JW(email local-part first segment, first name) ≥ 0.75 AND shared biz team AND at least one of: phone match, ZIP match. Rescues pairs where the full first name appears in the email prefix as a name variant — not a middle initial, but a different name form (charles vs chase, michael vs mike).',
+    cat: 'definite', catColor: 'sky',
+    catDesc: 'When the email prefix itself confirms a first-name variant (charles.parry vs chase.parry — where "charles" and "chase" both JW ≥ 0.75 match the first names), combined with a shared biz team and a corroborating signal, the weight of evidence is conclusive. This addresses the gap where R11 has the right signal set but scores 85 instead of 92 — the email-prefix agreement is the additional evidence that lifts the pair above the auto-merge threshold.',
+    pairs: [
+      { cat:'definite', catLabel:'Definite',
+        whyDup:'Wells Fargo advisor — phone matches, 3 shared biz teams, same state and ZIP. Email prefix variant: "charles.parry" vs "chase.parry" — the prefix first segment JW("charles","chase") = 0.78 ≥ 0.75, corroborating the first-name variant.',
+        whyCat:'The email prefix independently confirms both records use a name variant for the same person. With phone + 3 shared teams + email-prefix corroboration, this is conclusive — R15 auto-merges at score 92 rather than routing to review.',
+        disposition:'R15 (score 92) → auto-merges on activation',
+        signals:new Set(['phone','firm','state','zip']),
+        signalLabels:['Last name exact','JW(Charles, Chase) = 0.78 ≥ 0.75','Email prefix: charles.parry vs chase.parry (name variant)','Shared biz teams: 3','Phone match'],
+        a:{name:'Charles Parry',firm:'Wells Fargo Advisors',phone:'+1 (503) 555-0177',email:'charles.parry@wfa.com',state:'OR',zip:'97201',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,059,122',confirmed:true},
+        b:{name:'Chase Parry',firm:'Wells Fargo Advisors',phone:'+1 (503) 555-0177',email:'chase.parry@wfa.com',state:'OR',zip:'97201',crd:'—',pub:'SFDC_NG',golden:'CM-4,061,887',confirmed:true}
       }
     ]
   }
@@ -788,18 +1028,54 @@ var LIKELY_PROD_SAMPLES = [
     signalLabels:['First name exact','Last name exact','Phone match'],
     a:{name:'Jennifer Santos',firm:'LPL Financial',phone:'+1 (617) 555-0148',email:'j.santos@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,021,774',confirmed:true},
     b:{name:'Jennifer Santos',firm:'LPL Financial',phone:'+1 (617) 555-0148',email:'jennifer.santos@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'SFDC_NG',golden:'CM-4,028,441',confirmed:true}
+  },
+  { cat:'likely', catLabel:'Likely',
+    whyDup:'David Richardson at Ameriprise — same firm, phone match, same state and ZIP. Currently fires ExactFNLNSfxPhone (score 85) and sits in the suggestion queue today.',
+    whyCat:'Likely: name + phone is strong but without a CRD the steward must confirm it\'s not two David Richardsons at the same branch.',
+    disposition:'ExactFNLNSfxPhone (score 85) → suggestion queue today',
+    signals:new Set(['phone','firm','state','zip']),
+    signalLabels:['First name exact','Last name exact','Phone match'],
+    a:{name:'David Richardson',firm:'Ameriprise Financial',phone:'+1 (612) 555-0144',email:'d.richardson@ampf.com',state:'MN',zip:'55402',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,014,774',confirmed:true},
+    b:{name:'David Richardson',firm:'Ameriprise',phone:'+1 (612) 555-0144',email:'david.richardson@ameriprise.com',state:'MN',zip:'55402',crd:'—',pub:'SFDC_NG',golden:'CM-4,021,338',confirmed:true}
+  },
+  { cat:'likely', catLabel:'Likely',
+    whyDup:'Patricia O\'Brien at Edward Jones — preferred address matches exactly, name matches. Currently fires ExactPreferredNameAddress (score 85) and sits in the suggestion queue today.',
+    whyCat:'Likely: name + address is strong evidence but falls short of conclusive without a CRD. Under proposed R7 (score raised to 92) this auto-merges.',
+    disposition:'ExactPreferredNameAddress (score 85) → suggestion queue today; R7 will auto-merge this pair',
+    signals:new Set(['name','firm','state','zip']),
+    signalLabels:['First name exact','Last name exact','Preferred address match'],
+    a:{name:'Patricia O\'Brien',firm:'Edward Jones',phone:'—',email:'p.obrien@edwardjones.com',state:'MO',zip:'63132',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,008,221',confirmed:true},
+    b:{name:'Patricia O\'Brien',firm:'Edward Jones',phone:'—',email:'patricia.obrien@edwardjones.com',state:'MO',zip:'63132',crd:'—',pub:'SFDC_NG',golden:'CM-4,014,887',confirmed:true}
   }
 ];
 
 var LIKELY_AUTO_SAMPLES = [
   { cat:'likely', catLabel:'Likely',
-    whyDup:'Two records for the same Stifel Nicolaus advisor — exact name, firm, state, and preferred address across FINTRX_BDRIA and SFDC_NG. Proposed R7 raises ExactPreferredNameAddress from score 85 to 92, crossing the auto-merge threshold for confirmed goldens.',
-    whyCat:'Likely: same name + preferred address is strong evidence. With R7 active (score 92 > 90 threshold), this auto-merges without steward review — the address corroboration is sufficient at that score level.',
-    disposition:'R7: ExactPreferredNameAddress (score 92) → auto-merges on activation',
+    whyDup:'Two records for the same Stifel Nicolaus advisor — exact name, firm, state, and preferred address across FINTRX_BDRIA and SFDC_NG. Proposed R7 raises ExactPreferredNameAddress from score 85 to 92, crossing the auto-merge threshold.',
+    whyCat:'Likely: same name + preferred address is strong evidence. With R7 active (score 92 > 90 threshold), this auto-merges without steward review.',
+    disposition:'R7: ExactPreferredNameAddress (raised 85→92) → auto-merges on activation',
     signals:new Set(['name','firm','state','zip']),
     signalLabels:['First name exact','Last name exact','Preferred address match','State match'],
     a:{name:'Edward Harrington',firm:'Stifel Nicolaus',phone:'—',email:'e.harrington@stifel.com',state:'MO',zip:'63101',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,013,229',confirmed:true},
     b:{name:'Edward Harrington',firm:'Stifel Nicolaus',phone:'—',email:'edward.harrington@stifel.com',state:'MO',zip:'63101',crd:'—',pub:'SFDC_NG',golden:'CM-4,019,887',confirmed:true}
+  },
+  { cat:'likely', catLabel:'Likely',
+    whyDup:'Raymond James advisor — same firm, phone match, same state and ZIP. Currently fires ExactFNLNSfxPhone (score 85, suggestion queue). Proposed R8 raises to 92 — auto-merges on activation.',
+    whyCat:'Likely: name + phone is strong evidence. With R8 (score 92), confirmed goldens with shared phone auto-merge without steward review.',
+    disposition:'R8: ExactFNLNPhone (raised 85→92) → auto-merges on activation',
+    signals:new Set(['name','firm','phone','state','zip']),
+    signalLabels:['First name exact','Last name exact','Phone match'],
+    a:{name:'Margaret Sullivan',firm:'Raymond James Financial Services',phone:'+1 (727) 555-0166',email:'m.sullivan@rjfs.com',state:'FL',zip:'33701',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,015,447',confirmed:true},
+    b:{name:'Margaret Sullivan',firm:'Raymond James',phone:'+1 (727) 555-0166',email:'margaret.sullivan@raymondjames.com',state:'FL',zip:'33701',crd:'—',pub:'SFDC_NG',golden:'CM-4,022,118',confirmed:true}
+  },
+  { cat:'likely', catLabel:'Likely',
+    whyDup:'Wells Fargo advisor — same first + last name, same ZIP, same phone. Proposed R9 (ExactFNLNZipPhone, new at score 92) fires when phone AND ZIP both match — auto-merges on activation.',
+    whyCat:'Likely: name + ZIP + phone at score 92 is strong enough to auto-merge confirmed goldens. The combination of two independent location signals (ZIP) and a personal signal (phone) is near-conclusive.',
+    disposition:'R9: ExactFNLNZipPhone (new at 92) → auto-merges on activation',
+    signals:new Set(['name','firm','phone','state','zip']),
+    signalLabels:['First name exact','Last name exact','ZIP match','Phone match'],
+    a:{name:'Thomas Park',firm:'Wells Fargo Advisors',phone:'+1 (704) 555-0155',email:'t.park@wfa.com',state:'NC',zip:'28202',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,006,774',confirmed:true},
+    b:{name:'Thomas Park',firm:'Wells Fargo',phone:'+1 (704) 555-0155',email:'thomas.park@wellsfargo.com',state:'NC',zip:'28202',crd:'—',pub:'SFDC_NG',golden:'CM-4,013,441',confirmed:true}
   }
 ];
 
@@ -821,17 +1097,17 @@ var SUM_SAMPLES = {
   },
   'likely-prod': {
     title: 'Likely · Existing PROD rules',
-    note: 'ExactFNLNSfxPhone — score 85, in suggestion queue today. Exact name + shared phone without a CRD anchor.',
+    note: 'ExactFNLNSfxPhone / ExactPreferredNameAddress — score 85, in suggestion queue today. Name + one signal without a CRD anchor.',
     pairs: LIKELY_PROD_SAMPLES
   },
   'likely-auto': {
     title: 'Likely · Proposed auto-merge',
-    note: 'R7: ExactPreferredNameAddress raised 85→92 — auto-merges on activation. Same name + preferred address crosses the confirmed-golden threshold.',
+    note: 'R7 (ExactPreferredNameAddress 85→92) / R8 (ExactFNLNPhone 85→92) / R9 (ExactFNLNZipPhone new at 92) — auto-merges on activation. Same name + corroborating signals cross the confirmed-golden threshold.',
     pairs: LIKELY_AUTO_SAMPLES
   },
   'likely-sugg': {
     title: 'Likely · Proposed suggestion queue',
-    note: 'R11 (score 85) and R12 (score 80) — FuzzyFN + ExactLN + shared biz team. Routed to steward review; pairs shown below span both rules.',
+    note: 'R11 (score 85) and R12 (score 80) — FuzzyFN + ExactLN + shared biz team. Routed to steward review; pairs below span both rules.',
     pairs: D.r11.pairs.concat(D.r12.pairs)
   },
   'email-prod': {
@@ -845,6 +1121,41 @@ var SUM_SAMPLES = {
     pairs: D.r14.pairs
   }
 };
+
+var KPI_SAMPLES = {
+  'prod': {
+    title: '795 · Existing PROD rules — in effect today',
+    note: 'These pairs auto-merge under existing production rules before any new rules are added. Coverage spans ExactEmail (432 pairs), ExactFNLNSfxFirmState (364), ExactFNLNSfxZip (287), and others.',
+    pairs: D.re.pairs.concat(D.rfs.pairs)
+  },
+  'auto': {
+    title: '1,787 · Proposed auto-merge — on activation of R5–R14',
+    note: 'These pairs will auto-merge when proposed rules are activated. Samples span R10 (FuzzyFNExactLNPhone), R14 (ExactFNLNEmailVariant), R7/R8/R9 (score raises), and R15 (email-prefix name variant).',
+    pairs: D.r10.pairs.concat(D.r14.pairs).concat(LIKELY_AUTO_SAMPLES).concat(D.r15.pairs)
+  },
+  'sugg': {
+    title: '501 · Proposed suggestion queue — steward review',
+    note: 'These pairs will be routed to the steward queue under R11/R12/R13. A steward reviews each proposed merge and accepts or rejects. Samples below span all three rules.',
+    pairs: D.r11.pairs.concat(D.r12.pairs).concat(D.r13.pairs)
+  }
+};
+
+function showKpiSamples(bucket) {
+  var s = KPI_SAMPLES[bucket];
+  var wrap = document.getElementById('kpi-panel');
+  if (!s) { wrap.style.display = 'none'; return; }
+  document.getElementById('kpi-panel-title').textContent = s.title;
+  document.getElementById('kpi-panel-note').textContent = s.note;
+  document.getElementById('kpi-panel-body').innerHTML = s.pairs.map(function(p, i) {
+    return pairCard(p, i, s.pairs.length);
+  }).join('');
+  wrap.style.display = 'block';
+  wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function closeKpiPanel() {
+  document.getElementById('kpi-panel').style.display = 'none';
+}
 
 function showSumSamples(bucket, col) {
   var key = bucket + '-' + col;
@@ -866,7 +1177,7 @@ function closeSumPanel() {
 // ── INIT & UI ─────────────────────────────────────────────────────────────
 
 window.addEventListener('DOMContentLoaded', () => {
-  ['re','rfs','r10','r11','r12','r13','r14'].forEach(renderContent);
+  ['re','rfs','r10','r11','r12','r13','r14','r15'].forEach(renderContent);
 });
 
 function showTab(id, btn) {
