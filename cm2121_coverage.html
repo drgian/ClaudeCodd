@@ -106,6 +106,9 @@ tfoot td.r{text-align:right;}
 .cat-banner.b-teal{border-color:var(--teal);background:var(--teal-bg);}
 .cat-banner.b-orange{border-color:var(--orange);background:var(--orange-bg);}
 .cat-banner b{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.samples-toggle{margin-top:12px;}
+.samples-btn{background:var(--accent);border:none;border-radius:3px;color:#fff;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.03em;padding:6px 14px;}
+.samples-btn:hover{opacity:.82;}
 
 /* ── Pair card ── */
 .pair-card{border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:14px;background:var(--surface);}
@@ -126,9 +129,9 @@ tfoot td.r{text-align:right;}
 .cc thead th{background:var(--surface2);color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border2);border-top:none;}
 .cc thead th:first-child{width:110px;}
 .pub-tag{font-size:9px;background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:1px 4px;margin-left:4px;letter-spacing:.03em;font-weight:500;text-transform:none;}
-.cc tbody td{padding:5px 10px;border-top:1px solid var(--border2);vertical-align:top;word-break:break-all;}
+.cc tbody td{padding:5px 10px;border-top:1px solid var(--border2);vertical-align:top;word-break:break-all;color:var(--text);background:var(--surface);}
 .cc td.fl{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);white-space:nowrap;word-break:normal;}
-.cc td.match{background:color-mix(in srgb,var(--sky) 9%,var(--surface));}
+.cc td.match{background:color-mix(in srgb,var(--sky) 18%,var(--surface));color:var(--text);}
 .cc tr.sec-row td{background:var(--surface2);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:3px 10px;}
 
 /* ── Signals bar ── */
@@ -169,7 +172,7 @@ tfoot td.r{text-align:right;}
     <div class="site-sub">3,083 duplicate pairs · existing PROD rules + proposed rules (R5–R14)</div>
   </div>
   <span class="site-badge">Proposed</span>
-  <button class="theme-btn" onclick="toggleTheme()">⏾ Theme</button>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
 </header>
 
 <div class="hero">
@@ -233,10 +236,10 @@ tfoot td.r{text-align:right;}
 <div id="tab-summary" class="tab-pane active">
   <div class="eyebrow">Overview</div>
   <h2>Coverage by workbook bucket</h2>
-  <p>Existing PROD rules handle 795 pairs today. Proposed R5–R14 add 1,787 via auto-merge and route 501 lower-confidence pairs to the suggestion queue. All 3,083 identified duplicates are covered. <strong>Click any number to see sample pairs.</strong></p>
+  <p>Existing PROD rules handle 795 pairs today. Proposed R5–R14 add 1,787 via auto-merge and 501 via the steward review queue. All 3,083 identified duplicates are covered. <strong>Click any number to see sample pairs.</strong> The <em>Proposed: review queue</em> column shows pairs where the proposed rule scores only 80–85 — below the strict &gt;90 threshold for auto-merge — so a steward reviews before they merge, even when we know from independent analysis they are the same person.</p>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Bucket</th><th class="r">Total</th><th class="r">Existing PROD</th><th class="r">Proposed auto-merge</th><th class="r">Proposed suggestion</th></tr></thead>
+      <thead><tr><th>Bucket</th><th class="r">Total</th><th class="r">Existing PROD</th><th class="r">Proposed auto-merge</th><th class="r" title="Proposed rules score 80–85 — below the >90 auto-merge threshold. Goes to steward review queue.">Proposed: review queue</th></tr></thead>
       <tbody>
         <tr>
           <td><span class="chip chip-accent">Definite</span></td>
@@ -308,83 +311,39 @@ tfoot td.r{text-align:right;}
         <tr class="detail-row" id="re"><td colspan="5"><div class="d-inner" id="content-re"></div></td></tr>
 
         <tr class="rule-row" onclick="td('rle')"><td><span class="chevron">▶</span></td><td><strong>ExactLastNameEmail</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">298</td></tr>
-        <tr class="detail-row" id="rle"><td colspan="5"><div class="d-inner">
-          <div class="dl">
-            <div><div class="dl-label">Condition</div><div class="dl-val">Exact last name AND shared cleansed email. Catches cases where the same email appears with a name variant across publishers.</div></div>
-            <div><div class="dl-label">Score</div><div class="dl-val">95 — two independent signals. Auto-merges confirmed goldens.</div></div>
-          </div>
-        </div></td></tr>
+        <tr class="detail-row" id="rle"><td colspan="5"><div class="d-inner" id="content-rle"></div></td></tr>
 
         <tr class="rule-row" onclick="td('rzp')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">97</td><td class="r">287</td></tr>
-        <tr class="detail-row" id="rzp"><td colspan="5"><div class="d-inner">
-          <div class="dl">
-            <div><div class="dl-label">Condition</div><div class="dl-val">First + last + suffix exact AND ZIP AND phone. Highest-scoring name-based rule.</div></div>
-            <div><div class="dl-label">Note</div><div class="dl-val">ZIP comparison uses <code>LEFT(PRIZIP,5)</code> to normalize ZIP+4.</div></div>
-          </div>
-        </div></td></tr>
+        <tr class="detail-row" id="rzp"><td colspan="5"><div class="d-inner" id="content-rzp"></div></td></tr>
 
         <tr class="rule-row" onclick="td('rfs')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">364</td></tr>
         <tr class="detail-row" id="rfs"><td colspan="5"><div class="d-inner" id="content-rfs"></div></td></tr>
 
         <tr class="rule-row" onclick="td('rz')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxZip</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">378</td></tr>
-        <tr class="detail-row" id="rz"><td colspan="5"><div class="d-inner">
-          <div class="dl">
-            <div><div class="dl-label">Condition</div><div class="dl-val">First + last + suffix exact AND ZIP match.</div></div>
-            <div><div class="dl-label">Restriction</div><div class="dl-val">PREQIN records only today. R6 expands to all publisher pairs.</div></div>
-          </div>
-        </div></td></tr>
+        <tr class="detail-row" id="rz"><td colspan="5"><div class="d-inner" id="content-rz"></div></td></tr>
 
         <tr class="rule-row" onclick="td('rp85')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">85</td><td class="r">434</td></tr>
-        <tr class="detail-row" id="rp85"><td colspan="5"><div class="d-inner">
-          <div class="dl">
-            <div><div class="dl-label">Condition</div><div class="dl-val">First + last + suffix exact AND phone match.</div></div>
-            <div><div class="dl-label">Score</div><div class="dl-val">85 today — below auto-merge threshold. R8 raises to 92. R10 supersedes for fuzzy-first-name variants.</div></div>
-          </div>
-        </div></td></tr>
+        <tr class="detail-row" id="rp85"><td colspan="5"><div class="d-inner" id="content-rp85"></div></td></tr>
 
         <tr class="rule-row" onclick="td('ra85')"><td><span class="chevron">▶</span></td><td><strong>ExactPreferredNameAddress</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">85</td><td class="r">293</td></tr>
-        <tr class="detail-row" id="ra85"><td colspan="5"><div class="d-inner">
-          <div class="dl">
-            <div><div class="dl-label">Condition</div><div class="dl-val">Preferred name exact AND primary address exact.</div></div>
-            <div><div class="dl-label">Score</div><div class="dl-val">85 today — R7 raises to 92.</div></div>
-          </div>
-        </div></td></tr>
+        <tr class="detail-row" id="ra85"><td colspan="5"><div class="d-inner" id="content-ra85"></div></td></tr>
 
         <tr class="section-divider"><td colspan="5">Proposed Rules</td></tr>
 
         <tr class="rule-row" onclick="td('r5')"><td><span class="chevron">▶</span></td><td><strong>R5: ExactEmail — remove SFDC_NG exclusion</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">95</td><td class="r">432+</td></tr>
-        <tr class="detail-row" id="r5"><td colspan="5"><div class="d-inner">
-          <div class="dl">
-            <div><div class="dl-label">Change</div><div class="dl-val">Remove the publisher guard preventing SFDC_NG from matching via ExactEmail. All publisher pairs now eligible.</div></div>
-            <div><div class="dl-label">Impact</div><div class="dl-val">Adds SFDC_NG email pairs currently invisible to the rule.</div></div>
-          </div>
-        </div></td></tr>
+        <tr class="detail-row" id="r5"><td colspan="5"><div class="d-inner" id="content-r5"></div></td></tr>
 
         <tr class="rule-row" onclick="td('r6')"><td><span class="chevron">▶</span></td><td><strong>R6: ExactFNLNZip — all publishers</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">95</td><td class="r">378+</td></tr>
-        <tr class="detail-row" id="r6"><td colspan="5"><div class="d-inner">
-          <div class="dl"><div><div class="dl-label">Change</div><div class="dl-val">Expands ExactFNLNSfxZip from PREQIN-only to all publisher pairs.</div></div></div>
-        </div></td></tr>
+        <tr class="detail-row" id="r6"><td colspan="5"><div class="d-inner" id="content-r6"></div></td></tr>
 
         <tr class="rule-row" onclick="td('r7')"><td><span class="chevron">▶</span></td><td><strong>R7: ExactPreferredNameAddress — raise to 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">293</td></tr>
-        <tr class="detail-row" id="r7"><td colspan="5"><div class="d-inner">
-          <div class="dl">
-            <div><div class="dl-label">Change</div><div class="dl-val">Score raised 85 → 92, crossing the auto-merge threshold for confirmed goldens.</div></div>
-            <div><div class="dl-label">Impact</div><div class="dl-val">293 pairs currently in suggestion queue auto-merge on activation.</div></div>
-          </div>
-        </div></td></tr>
+        <tr class="detail-row" id="r7"><td colspan="5"><div class="d-inner" id="content-r7"></div></td></tr>
 
         <tr class="rule-row" onclick="td('r8')"><td><span class="chevron">▶</span></td><td><strong>R8: ExactFNLNPhone — raise to 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">434</td></tr>
-        <tr class="detail-row" id="r8"><td colspan="5"><div class="d-inner">
-          <div class="dl">
-            <div><div class="dl-label">Change</div><div class="dl-val">Score raised 85 → 92. Exact-name + phone pairs auto-merge on activation.</div></div>
-            <div><div class="dl-label">Note</div><div class="dl-val">R10 supersedes R8 for PB/Wires pairs (exact first name satisfies JW ≥ 0.75). R8 remains for the broader population.</div></div>
-          </div>
-        </div></td></tr>
+        <tr class="detail-row" id="r8"><td colspan="5"><div class="d-inner" id="content-r8"></div></td></tr>
 
         <tr class="rule-row" onclick="td('r9')"><td><span class="chevron">▶</span></td><td><strong>R9: ExactFNLNZipPhone — new at 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">287</td></tr>
-        <tr class="detail-row" id="r9"><td colspan="5"><div class="d-inner">
-          <div class="dl"><div><div class="dl-label">Condition</div><div class="dl-val">Exact first + last (no suffix required) AND ZIP AND phone. New rule for contacts without suffix field populated.</div></div></div>
-        </div></td></tr>
+        <tr class="detail-row" id="r9"><td colspan="5"><div class="d-inner" id="content-r9"></div></td></tr>
 
         <tr class="rule-row" onclick="td('r10')"><td><span class="chevron">▶</span></td><td><strong>R10: FuzzyFNExactLNPhone</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">1,469</td></tr>
         <tr class="detail-row" id="r10"><td colspan="5"><div class="d-inner" id="content-r10"></div></td></tr>
@@ -899,11 +858,12 @@ function renderContent(id) {
   <b>Why these are ${d.cat === 'email-variant' ? 'email variants' : d.cat === 'definite' ? 'definite duplicates' : 'likely duplicates'}</b>
   ${d.catDesc}
 </div>
-<div class="samples-label" style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">
-  Representative samples (${d.pairs.length} shown — see source workbook for complete set)
-</div>`;
-
-  html += d.pairs.map((p, i) => pairCard(p, i, d.pairs.length)).join('');
+`;
+  if (d.pairs && d.pairs.length) {
+    const n = d.pairs.length;
+    const ph = d.pairs.map((p, i) => pairCard(p, i, n)).join('');
+    html += `<div class="samples-toggle"><button class="samples-btn" onclick="toggleRuleSamples(this)">View ${n} sample pair${n===1?'':'s'}</button><div class="samples-cards" style="display:none">${ph}</div></div>`;
+  }
   el.innerHTML = html;
 }
 
@@ -1140,6 +1100,305 @@ var KPI_SAMPLES = {
   }
 };
 
+// ── ADDITIONAL RULE DATA (added after LIKELY_* arrays are defined) ──────────
+
+D.rle = {
+  condTitle: 'ExactLastNameEmail · score 95 · auto-merges today',
+  cond: 'Exact last name AND shared cleansed email. Catches cases where the same email appears with a name variant (first name, suffix) across publishers.',
+  cat: 'definite', catColor: 'sky',
+  catDesc: 'A shared email is an unambiguous individual identifier. The last-name anchor prevents matching two people who merely share an email domain.',
+  pairs: [
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Goldman Sachs advisor — last name "Morgan" and email l.morgan@gs.com both match across DISCOVERY_BD and SFDC_NG. First name differs (Laura vs Lauren) but ExactLastNameEmail fires on last name + email alone.',
+      whyCat:'Last name + shared email is conclusive. Two advisors at the same bank do not share an email address regardless of how the first name is styled.',
+      disposition:'ExactLastNameEmail (score 95) → auto-merges today',
+      signals:new Set(['email','state','crd']),
+      signalLabels:['Last name exact','Email exact match','CRD match'],
+      a:{name:'Laura Morgan',firm:'Goldman Sachs',phone:'+1 (212) 555-0188',email:'l.morgan@gs.com',state:'NY',zip:'10004',crd:'9012345',pub:'DISCOVERY_BD',golden:'CM-4,093,774',confirmed:true},
+      b:{name:'Lauren Morgan',firm:'Goldman Sachs & Co.',phone:'+1 (212) 555-0188',email:'l.morgan@gs.com',state:'NY',zip:'10004',crd:'9012345',pub:'SFDC_NG',golden:'CM-4,100,441',confirmed:true}
+    },
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Ameriprise advisor — last name "Reyes" and tanya.reyes@ampf.com match across FINTRX_BDRIA and SFDC_NG. One record has a suffix ("Jr."), the other does not.',
+      whyCat:'Email is the match anchor; last name confirms it is not a domain coincidence. CRD also matches.',
+      disposition:'ExactLastNameEmail (score 95) → auto-merges today',
+      signals:new Set(['email','state','zip','crd']),
+      signalLabels:['Last name exact','Email exact match','CRD match'],
+      a:{name:'Tanya Reyes',firm:'Ameriprise Financial',phone:'—',email:'tanya.reyes@ampf.com',state:'MN',zip:'55402',crd:'7778889',pub:'FINTRX_BDRIA',golden:'CM-4,082,112',confirmed:true},
+      b:{name:'Tanya J. Reyes',firm:'Ameriprise',phone:'—',email:'tanya.reyes@ampf.com',state:'MN',zip:'55402',crd:'7778889',pub:'SFDC_NG',golden:'CM-4,088,997',confirmed:true}
+    }
+  ]
+};
+
+D.rzp = {
+  condTitle: 'ExactFNLNSfxZipPhone · score 97 · auto-merges today',
+  cond: 'First + last + suffix exact AND ZIP AND phone. Highest-scoring name-based rule — five independent fields.',
+  cat: 'definite', catColor: 'sky',
+  catDesc: 'Five exact fields (full name with suffix + ZIP + direct-dial phone) is effectively conclusive. Two different advisors cannot share all of these simultaneously.',
+  pairs: [
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Raymond James advisor — first name, last name, suffix ("Jr."), ZIP, and phone all match exactly across FINTRX_BDRIA and SFDC_NG. Highest-scoring name rule at 97.',
+      whyCat:'Name + suffix + ZIP + phone = five exact signals. No CRD available but the combination is conclusive.',
+      disposition:'ExactFNLNSfxZipPhone (score 97) → auto-merges today',
+      signals:new Set(['name','phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','Suffix exact','ZIP exact','Phone exact'],
+      a:{name:'Steven R. Collins Jr.',firm:'Raymond James Financial Services',phone:'+1 (727) 555-0144',email:'s.collins@rjfs.com',state:'FL',zip:'33701',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,086,774',confirmed:true},
+      b:{name:'Steven R. Collins Jr.',firm:'Raymond James',phone:'+1 (727) 555-0144',email:'steven.r.collins@raymondjames.com',state:'FL',zip:'33701',crd:'—',pub:'SFDC_NG',golden:'CM-4,093,441',confirmed:true}
+    },
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'LPL Financial advisor — full name with suffix "III", ZIP, and phone all match across DISCOVERY_BD and SFDC_NG. Score 97 makes this the highest-confidence name-based match.',
+      whyCat:'Five exact fields leave no ambiguity. The suffix "III" rules out the possibility of a father/son confusion.',
+      disposition:'ExactFNLNSfxZipPhone (score 97) → auto-merges today',
+      signals:new Set(['name','phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','Suffix exact','ZIP exact','Phone exact'],
+      a:{name:'Gregory A. Barnes III',firm:'LPL Financial',phone:'+1 (617) 555-0199',email:'g.barnes@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,079,338',confirmed:true},
+      b:{name:'Gregory A. Barnes III',firm:'LPL Financial',phone:'+1 (617) 555-0199',email:'greg.barnes@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'SFDC_NG',golden:'CM-4,086,115',confirmed:true}
+    }
+  ]
+};
+
+D.rz = {
+  condTitle: 'ExactFNLNSfxZip · score 95 · auto-merges today (PREQIN pairs only)',
+  cond: 'First + last + suffix exact AND ZIP. Currently restricted to PREQIN source records. R6 expands this to all publisher pairs.',
+  cat: 'definite', catColor: 'sky',
+  catDesc: 'PREQIN records often have no phone or email — ZIP is the available corroborating field alongside the name. Name + ZIP across PREQIN and SFDC_NG is strong evidence, and the CRD on the SFDC_NG side confirms the FINRA registration.',
+  pairs: [
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'PREQIN market-data record matches SFDC_NG on exact first + last + suffix + ZIP. PREQIN has no phone or email — ZIP is the corroborating field. CRD in SFDC_NG confirms FINRA registration.',
+      whyCat:'Name + ZIP is conclusive for a PREQIN record that has no other contact data. The SFDC_NG CRD is the definitive anchor.',
+      disposition:'ExactFNLNSfxZip (score 95, PREQIN pairs) → auto-merges today',
+      signals:new Set(['name','state','zip','crd']),
+      signalLabels:['First name exact','Last name exact','Suffix exact','ZIP exact'],
+      a:{name:'James T. Brennan',firm:'J.P. Morgan Securities',phone:'—',email:'—',state:'NY',zip:'10036',crd:'—',pub:'PREQIN',golden:'CM-4,079,112',confirmed:false},
+      b:{name:'James T. Brennan',firm:'JPMorgan',phone:'+1 (212) 555-0166',email:'james.t.brennan@jpmorgan.com',state:'NY',zip:'10036',crd:'4089765',pub:'SFDC_NG',golden:'CM-4,086,447',confirmed:true}
+    }
+  ]
+};
+
+D.rp85 = {
+  condTitle: 'ExactFNLNSfxPhone · score 85 · suggestion queue today; R8 raises to 92',
+  cond: 'First + last + suffix exact AND phone match. Score 85 puts these in the suggestion queue today. Proposed R8 raises to 92 — confirmed goldens auto-merge on activation.',
+  cat: 'likely', catColor: 'amber',
+  catDesc: 'Exact name + phone is strong evidence but falls just below the auto-merge threshold at score 85. These pairs sit in the steward suggestion queue today. When R8 raises the score to 92, confirmed goldens auto-merge without steward review.',
+  pairs: [
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'LPL Financial advisor — same name and direct-dial phone across DISCOVERY_BD and SFDC_NG. Currently fires ExactFNLNSfxPhone at score 85 and sits in the suggestion queue today.',
+      whyCat:'Likely: shared phone + exact name is strong but score 85 < 90 threshold requires steward review. R8 auto-merges this pair on activation.',
+      disposition:'ExactFNLNSfxPhone (score 85) → suggestion queue today; R8 (score 92) → auto-merges on activation',
+      signals:new Set(['phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','Phone match'],
+      a:{name:'Jennifer Santos',firm:'LPL Financial',phone:'+1 (617) 555-0148',email:'j.santos@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,021,774',confirmed:true},
+      b:{name:'Jennifer Santos',firm:'LPL Financial',phone:'+1 (617) 555-0148',email:'jennifer.santos@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'SFDC_NG',golden:'CM-4,028,441',confirmed:true}
+    },
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'Ameriprise advisor — same name and phone across DISCOVERY_BD and SFDC_NG. Currently in suggestion queue at score 85. No CRD in either source.',
+      whyCat:'Likely: name + phone without a CRD anchor keeps the steward in the loop at score 85. R8 raises to 92 and confirmed goldens auto-merge.',
+      disposition:'ExactFNLNSfxPhone (score 85) → suggestion queue today; R8 (score 92) → auto-merges on activation',
+      signals:new Set(['phone','firm','state','zip']),
+      signalLabels:['First name exact','Last name exact','Phone match'],
+      a:{name:'David Richardson',firm:'Ameriprise Financial',phone:'+1 (612) 555-0144',email:'d.richardson@ampf.com',state:'MN',zip:'55402',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,014,774',confirmed:true},
+      b:{name:'David Richardson',firm:'Ameriprise',phone:'+1 (612) 555-0144',email:'david.richardson@ameriprise.com',state:'MN',zip:'55402',crd:'—',pub:'SFDC_NG',golden:'CM-4,021,338',confirmed:true}
+    }
+  ]
+};
+
+D.ra85 = {
+  condTitle: 'ExactPreferredNameAddress · score 85 · suggestion queue today; R7 raises to 92',
+  cond: 'Preferred name exact AND primary address exact. Score 85 today — steward suggestion queue. R7 raises to 92; confirmed goldens auto-merge on activation.',
+  cat: 'likely', catColor: 'amber',
+  catDesc: 'Same name + preferred address is strong evidence but score 85 routes these to the steward queue today. When R7 raises the score to 92, confirmed goldens auto-merge without review.',
+  pairs: [
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'Edward Jones advisor — preferred address matches exactly across FINTRX_BDRIA and SFDC_NG. Currently fires ExactPreferredNameAddress (score 85), in suggestion queue today. R7 auto-merges on activation.',
+      whyCat:'Likely: name + preferred address is strong. Score 85 < 90 keeps the steward in the loop today. R7 at score 92 eliminates that step for confirmed goldens.',
+      disposition:'ExactPreferredNameAddress (score 85) → suggestion queue today; R7 (score 92) → auto-merges on activation',
+      signals:new Set(['name','firm','state','zip']),
+      signalLabels:['First name exact','Last name exact','Preferred address match'],
+      a:{name:"Patricia O'Brien",firm:'Edward Jones',phone:'—',email:'p.obrien@edwardjones.com',state:'MO',zip:'63132',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,008,221',confirmed:true},
+      b:{name:"Patricia O'Brien",firm:'Edward Jones',phone:'—',email:'patricia.obrien@edwardjones.com',state:'MO',zip:'63132',crd:'—',pub:'SFDC_NG',golden:'CM-4,014,887',confirmed:true}
+    }
+  ]
+};
+
+D.r5 = {
+  condTitle: 'R5: ExactEmail — remove SFDC_NG exclusion · score 95 · auto-merges on activation',
+  cond: 'Remove the publisher guard preventing SFDC_NG from matching via ExactEmail. All publisher pairs become eligible at score 95.',
+  cat: 'definite', catColor: 'sky',
+  catDesc: 'ExactEmail already auto-merges for non-SFDC_NG pairs today. R5 extends this to pairs where the CRM record (SFDC_NG) shares an email with a market-data record. The email match logic is identical — only the publisher restriction changes.',
+  pairs: [
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Wells Fargo advisor — same cleansed email (mweston@wfa.com) across DISCOVERY_BD and SFDC_NG. ExactEmail currently excludes this pair because one contact is SFDC_NG. R5 removes that restriction.',
+      whyCat:'Email is conclusive. The SFDC_NG restriction was a conservative guard; R5 removes it since shared-email pairs are reliably the same individual regardless of publisher.',
+      disposition:'R5: ExactEmail (score 95, SFDC_NG now eligible) → auto-merges on activation',
+      signals:new Set(['email','phone','state','crd']),
+      signalLabels:['Email exact match','CRD match','Phone match'],
+      a:{name:'Michael Weston',firm:'Wells Fargo Advisors',phone:'+1 (704) 555-0177',email:'mweston@wfa.com',state:'NC',zip:'28202',crd:'1122334',pub:'DISCOVERY_BD',golden:'CM-4,131,447',confirmed:true},
+      b:{name:'Mike Weston',firm:'Wells Fargo',phone:'+1 (704) 555-0177',email:'mweston@wfa.com',state:'NC',zip:'28202',crd:'1122334',pub:'SFDC_NG',golden:'CM-4,138,229',confirmed:true}
+    },
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Fidelity advisor — a.nguyen@fidelity.com shared between FINTRX_BDRIA and SFDC_NG. Currently blocked by the SFDC_NG exclusion in ExactEmail.',
+      whyCat:'Email is conclusive. R5 makes this pair eligible for auto-merge without changing any other rule logic.',
+      disposition:'R5: ExactEmail (score 95, SFDC_NG now eligible) → auto-merges on activation',
+      signals:new Set(['email','state','zip','crd']),
+      signalLabels:['Email exact match','CRD match'],
+      a:{name:'Andrew Nguyen',firm:'Fidelity Investments',phone:'+1 (617) 555-0144',email:'a.nguyen@fidelity.com',state:'MA',zip:'02110',crd:'2233445',pub:'FINTRX_BDRIA',golden:'CM-4,127,881',confirmed:true},
+      b:{name:'Andy Nguyen',firm:'Fidelity',phone:'+1 (617) 555-0144',email:'a.nguyen@fidelity.com',state:'MA',zip:'02110',crd:'2233445',pub:'SFDC_NG',golden:'CM-4,134,558',confirmed:true}
+    },
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Morgan Stanley advisor — same email rmccarthy@mssb.com across PREQIN and SFDC_NG. Currently blocked because ExactEmail excludes SFDC_NG pairs. CRD also matches.',
+      whyCat:'Email across PREQIN and SFDC_NG is conclusive — the PREQIN record has a real inbox, confirmed by the matching CRD.',
+      disposition:'R5: ExactEmail (score 95, SFDC_NG now eligible) → auto-merges on activation',
+      signals:new Set(['email','state','crd']),
+      signalLabels:['Email exact match','CRD match'],
+      a:{name:'Robert McCarthy',firm:'Morgan Stanley',phone:'—',email:'rmccarthy@mssb.com',state:'NY',zip:'10036',crd:'5566778',pub:'PREQIN',golden:'CM-4,142,774',confirmed:false},
+      b:{name:'Rob McCarthy',firm:'Morgan Stanley Smith Barney',phone:'+1 (212) 555-0166',email:'rmccarthy@mssb.com',state:'NY',zip:'10036',crd:'5566778',pub:'SFDC_NG',golden:'CM-4,149,441',confirmed:true}
+    }
+  ]
+};
+
+D.r6 = {
+  condTitle: 'R6: ExactFNLNZip — all publishers · score 95 · auto-merges on activation',
+  cond: 'Expands ExactFNLNSfxZip from PREQIN-restricted to all publisher pairs. Catches non-PREQIN name + ZIP matches currently missed.',
+  cat: 'definite', catColor: 'sky',
+  catDesc: 'ExactFNLNSfxZip fires at score 95 today but only when at least one contact is PREQIN. R6 removes this restriction so the same rule covers DISCOVERY_BD / FINTRX / SFDC_NG pairs where name and ZIP both match.',
+  pairs: [
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Wells Fargo advisor — first name, last name, and ZIP all match across DISCOVERY_BD and SFDC_NG. ExactFNLNSfxZip is PREQIN-only today so this pair is missed. CRD also matches.',
+      whyCat:'Name + ZIP + CRD is conclusive. R6 extends the rule to cover non-PREQIN publisher pairs where the same evidence exists.',
+      disposition:'R6: ExactFNLNZip all publishers (score 95) → auto-merges on activation',
+      signals:new Set(['name','state','zip','crd']),
+      signalLabels:['First name exact','Last name exact','ZIP exact','CRD match'],
+      a:{name:'David Harrison',firm:'Wells Fargo Advisors',phone:'+1 (704) 555-0133',email:'d.harrison@wfa.com',state:'NC',zip:'28202',crd:'2019876',pub:'DISCOVERY_BD',golden:'CM-4,082,774',confirmed:true},
+      b:{name:'David Harrison',firm:'Wells Fargo',phone:'—',email:'david.harrison@wellsfargo.com',state:'NC',zip:'28202',crd:'2019876',pub:'SFDC_NG',golden:'CM-4,089,441',confirmed:true}
+    },
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Merrill Lynch advisor — name and ZIP match across FINTRX_BDRIA and SFDC_NG. Neither is PREQIN, so ExactFNLNSfxZip does not fire today. CRD confirms same FINRA registration.',
+      whyCat:'Name + ZIP + CRD is conclusive. The PREQIN restriction was not needed for this evidence combination.',
+      disposition:'R6: ExactFNLNZip all publishers (score 95) → auto-merges on activation',
+      signals:new Set(['name','state','zip','crd']),
+      signalLabels:['First name exact','Last name exact','ZIP exact','CRD match'],
+      a:{name:'Karen Mitchell',firm:'Merrill Lynch Pierce Fenner & Smith',phone:'—',email:'k.mitchell@ml.com',state:'TX',zip:'77002',crd:'3120987',pub:'FINTRX_BDRIA',golden:'CM-4,074,338',confirmed:true},
+      b:{name:'Karen Mitchell',firm:'Merrill Lynch',phone:'—',email:'karen.mitchell@ml.com',state:'TX',zip:'77002',crd:'3120987',pub:'SFDC_NG',golden:'CM-4,081,221',confirmed:true}
+    },
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Edward Jones advisor — name and ZIP match across MS_DATAPACK and SFDC_NG. MS_DATAPACK is not PREQIN, so today this pair has no matching rule. R6 covers it.',
+      whyCat:'Name + ZIP across two non-PREQIN market data sources. CRD anchors the match.',
+      disposition:'R6: ExactFNLNZip all publishers (score 95) → auto-merges on activation',
+      signals:new Set(['name','state','zip','crd']),
+      signalLabels:['First name exact','Last name exact','ZIP exact','CRD match'],
+      a:{name:'Stephanie Walsh',firm:'Edward Jones',phone:'—',email:'swalsh@edwardjones.com',state:'MO',zip:'63132',crd:'6677889',pub:'MS_DATAPACK',golden:'CM-4,091,112',confirmed:true},
+      b:{name:'Stephanie Walsh',firm:'Edward Jones',phone:'—',email:'stephanie.walsh@edwardjones.com',state:'MO',zip:'63132',crd:'6677889',pub:'SFDC_NG',golden:'CM-4,097,887',confirmed:true}
+    }
+  ]
+};
+
+D.r7 = {
+  condTitle: 'R7: ExactPreferredNameAddress — raise 85→92 · auto-merges on activation',
+  cond: 'Score raised 85 → 92, crossing the auto-merge threshold for confirmed goldens. 293 pairs currently in suggestion queue auto-merge on activation.',
+  cat: 'likely', catColor: 'amber',
+  catDesc: 'ExactPreferredNameAddress today fires at score 85, routing pairs to the suggestion queue. At score 92 (strictly > 90 auto-merge threshold), confirmed goldens auto-merge. Pairs shown are already in the suggestion queue — they auto-merge when R7 is activated.',
+  pairs: [
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'Stifel Nicolaus advisor — exact name, firm, state, and preferred address across FINTRX_BDRIA and SFDC_NG. Currently in suggestion queue at score 85. R7 (score 92) auto-merges on activation.',
+      whyCat:'Same name + preferred address is strong evidence. At score 92 the auto-merge threshold is crossed for confirmed goldens — no steward review needed.',
+      disposition:'R7: ExactPreferredNameAddress (raised 85→92) → auto-merges on activation',
+      signals:new Set(['name','firm','state','zip']),
+      signalLabels:['First name exact','Last name exact','Preferred address match','Firm match'],
+      a:{name:'Edward Harrington',firm:'Stifel Nicolaus',phone:'—',email:'e.harrington@stifel.com',state:'MO',zip:'63101',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,013,229',confirmed:true},
+      b:{name:'Edward Harrington',firm:'Stifel Nicolaus',phone:'—',email:'edward.harrington@stifel.com',state:'MO',zip:'63101',crd:'—',pub:'SFDC_NG',golden:'CM-4,019,887',confirmed:true}
+    },
+    { cat:'likely', catLabel:'Likely',
+      whyDup:"Edward Jones advisor — exact name and preferred address match across FINTRX_BDRIA and SFDC_NG. Currently in suggestion queue at score 85. R7 activates auto-merge.",
+      whyCat:'Same name + preferred address. With R7 at score 92, the steward queue step is eliminated for confirmed goldens.',
+      disposition:'R7: ExactPreferredNameAddress (raised 85→92) → auto-merges on activation',
+      signals:new Set(['name','firm','state','zip']),
+      signalLabels:['First name exact','Last name exact','Preferred address match'],
+      a:{name:"Patricia O'Brien",firm:'Edward Jones',phone:'—',email:'p.obrien@edwardjones.com',state:'MO',zip:'63132',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,008,221',confirmed:true},
+      b:{name:"Patricia O'Brien",firm:'Edward Jones',phone:'—',email:'patricia.obrien@edwardjones.com',state:'MO',zip:'63132',crd:'—',pub:'SFDC_NG',golden:'CM-4,014,887',confirmed:true}
+    },
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'RBC Wealth advisor — exact name and preferred address across DISCOVERY_BD and SFDC_NG. Phone and ZIP match as additional corroborating signals.',
+      whyCat:'Name + preferred address is strong. Additional phone + ZIP agreement makes this very likely the same individual. R7 auto-merges on activation.',
+      disposition:'R7: ExactPreferredNameAddress (raised 85→92) → auto-merges on activation',
+      signals:new Set(['name','firm','phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','Preferred address match','Phone match','ZIP match'],
+      a:{name:'Catherine Wu',firm:'RBC Wealth Management',phone:'+1 (612) 555-0177',email:'c.wu@rbc.com',state:'MN',zip:'55402',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,017,441',confirmed:true},
+      b:{name:'Catherine Wu',firm:'RBC',phone:'+1 (612) 555-0177',email:'catherine.wu@rbc.com',state:'MN',zip:'55402',crd:'—',pub:'SFDC_NG',golden:'CM-4,024,118',confirmed:true}
+    }
+  ]
+};
+
+D.r8 = {
+  condTitle: 'R8: ExactFNLNPhone — raise 85→92 · auto-merges on activation',
+  cond: 'Score raised 85 → 92. Exact-name + phone pairs auto-merge on activation. R10 supersedes for JW first-name variants; R8 covers exact-name pairs in the broader population.',
+  cat: 'likely', catColor: 'amber',
+  catDesc: 'ExactFNLNSfxPhone at score 85 puts exact-name + phone pairs into the suggestion queue today. At score 92, confirmed goldens auto-merge on activation.',
+  pairs: [
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'Raymond James advisor — exact name and phone match across FINTRX_BDRIA and SFDC_NG. Currently at score 85, suggestion queue. R8 auto-merges on activation.',
+      whyCat:'Exact name + phone at score 92 is strong enough to auto-merge confirmed goldens. No CRD available but the name+phone combination is sufficient.',
+      disposition:'R8: ExactFNLNPhone (raised 85→92) → auto-merges on activation',
+      signals:new Set(['name','firm','phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','Phone match'],
+      a:{name:'Margaret Sullivan',firm:'Raymond James Financial Services',phone:'+1 (727) 555-0166',email:'m.sullivan@rjfs.com',state:'FL',zip:'33701',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,015,447',confirmed:true},
+      b:{name:'Margaret Sullivan',firm:'Raymond James',phone:'+1 (727) 555-0166',email:'margaret.sullivan@raymondjames.com',state:'FL',zip:'33701',crd:'—',pub:'SFDC_NG',golden:'CM-4,022,118',confirmed:true}
+    },
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'LPL Financial advisor — exact name and phone match across DISCOVERY_BD and SFDC_NG. Currently in suggestion queue at score 85. R8 auto-merges on activation.',
+      whyCat:'Exact name + phone at score 92 removes the steward review step for confirmed golden pairs.',
+      disposition:'R8: ExactFNLNPhone (raised 85→92) → auto-merges on activation',
+      signals:new Set(['phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','Phone match'],
+      a:{name:'Jennifer Santos',firm:'LPL Financial',phone:'+1 (617) 555-0148',email:'j.santos@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,021,774',confirmed:true},
+      b:{name:'Jennifer Santos',firm:'LPL Financial',phone:'+1 (617) 555-0148',email:'jennifer.santos@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'SFDC_NG',golden:'CM-4,028,441',confirmed:true}
+    },
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'UBS advisor — exact name and phone match across FINTRX_BDRIA and SFDC_NG. State and ZIP also agree. Currently in suggestion queue at score 85.',
+      whyCat:'Name + phone + ZIP is very strong. R8 raises the score to 92 and confirmed goldens auto-merge.',
+      disposition:'R8: ExactFNLNPhone (raised 85→92) → auto-merges on activation',
+      signals:new Set(['name','phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','Phone match','ZIP match'],
+      a:{name:'Richard Delgado',firm:'UBS Financial Services',phone:'+1 (212) 555-0133',email:'r.delgado@ubs.com',state:'NY',zip:'10036',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,033,774',confirmed:true},
+      b:{name:'Richard Delgado',firm:'UBS Wealth Management',phone:'+1 (212) 555-0133',email:'richard.delgado@ubs.com',state:'NY',zip:'10036',crd:'—',pub:'SFDC_NG',golden:'CM-4,040,441',confirmed:true}
+    }
+  ]
+};
+
+D.r9 = {
+  condTitle: 'R9: ExactFNLNZipPhone — new at 92 · auto-merges on activation',
+  cond: 'Exact first + last (no suffix required) AND ZIP AND phone. New rule for contacts without a suffix field. Score 92 — auto-merges confirmed goldens on activation.',
+  cat: 'likely', catColor: 'amber',
+  catDesc: 'ExactFNLNSfxZipPhone (score 97) requires a suffix. Many contacts have no suffix field populated. R9 drops the suffix requirement, allowing name + ZIP + phone to match at score 92.',
+  pairs: [
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'Wells Fargo advisor — same first + last name, same ZIP, same phone across DISCOVERY_BD and SFDC_NG. Neither record has a suffix, so ExactFNLNSfxZipPhone does not fire. R9 covers this case.',
+      whyCat:'Name + ZIP + phone without suffix at score 92 is sufficient to auto-merge confirmed goldens. Two independent location+contact signals.',
+      disposition:'R9: ExactFNLNZipPhone (new at 92) → auto-merges on activation',
+      signals:new Set(['name','firm','phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','ZIP exact','Phone exact'],
+      a:{name:'Thomas Park',firm:'Wells Fargo Advisors',phone:'+1 (704) 555-0155',email:'t.park@wfa.com',state:'NC',zip:'28202',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,006,774',confirmed:true},
+      b:{name:'Thomas Park',firm:'Wells Fargo',phone:'+1 (704) 555-0155',email:'thomas.park@wellsfargo.com',state:'NC',zip:'28202',crd:'—',pub:'SFDC_NG',golden:'CM-4,013,441',confirmed:true}
+    },
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'Ameriprise advisor — exact name, same ZIP, same phone across FINTRX_BDRIA and SFDC_NG. No suffix in either record. R9 covers this pair that ExactFNLNSfxZipPhone currently misses.',
+      whyCat:'Name + ZIP + phone at score 92 is near-conclusive when no suffix is available. Two corroborating signals in addition to the name.',
+      disposition:'R9: ExactFNLNZipPhone (new at 92) → auto-merges on activation',
+      signals:new Set(['name','firm','phone','state','zip']),
+      signalLabels:['First name exact','Last name exact','ZIP exact','Phone exact'],
+      a:{name:'Christopher Lee',firm:'Ameriprise Financial',phone:'+1 (612) 555-0133',email:'c.lee@ampf.com',state:'MN',zip:'55402',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,003,881',confirmed:true},
+      b:{name:'Christopher Lee',firm:'Ameriprise',phone:'+1 (612) 555-0133',email:'chris.lee@ameriprise.com',state:'MN',zip:'55402',crd:'—',pub:'SFDC_NG',golden:'CM-4,010,558',confirmed:true}
+    },
+    { cat:'likely', catLabel:'Likely',
+      whyDup:'Morgan Stanley advisor — exact name, ZIP, phone across DISCOVERY_BD and SFDC_NG. No suffix populated. CRD also matches across both sources.',
+      whyCat:'Name + ZIP + phone + CRD at score 92 — effectively conclusive. R9 captures this common no-suffix case.',
+      disposition:'R9: ExactFNLNZipPhone (new at 92) → auto-merges on activation',
+      signals:new Set(['name','phone','state','zip','crd']),
+      signalLabels:['First name exact','Last name exact','ZIP exact','Phone exact','CRD match'],
+      a:{name:'Diane Foster',firm:'Morgan Stanley',phone:'+1 (212) 555-0144',email:'d.foster@ms.com',state:'NY',zip:'10036',crd:'8899001',pub:'DISCOVERY_BD',golden:'CM-4,009,338',confirmed:true},
+      b:{name:'Diane Foster',firm:'Morgan Stanley Smith Barney',phone:'+1 (212) 555-0144',email:'diane.foster@ms.com',state:'NY',zip:'10036',crd:'8899001',pub:'SFDC_NG',golden:'CM-4,016,115',confirmed:true}
+    }
+  ]
+};
+
 function showKpiSamples(bucket) {
   var s = KPI_SAMPLES[bucket];
   var wrap = document.getElementById('kpi-panel');
@@ -1174,10 +1433,20 @@ function closeSumPanel() {
   document.getElementById('sum-panel').style.display='none';
 }
 
+function toggleRuleSamples(btn) {
+  var cards = btn.nextElementSibling;
+  var showing = cards.style.display !== 'none';
+  cards.style.display = showing ? 'none' : 'block';
+  var n = cards.querySelectorAll('.pair-card').length;
+  btn.textContent = showing ? 'View ' + n + ' sample pair' + (n===1?'':'s') : 'Hide samples';
+}
+
 // ── INIT & UI ─────────────────────────────────────────────────────────────
 
 window.addEventListener('DOMContentLoaded', () => {
-  ['re','rfs','r10','r11','r12','r13','r14','r15'].forEach(renderContent);
+  ['re','rfs','r10','r11','r12','r13','r14','r15',
+   'rle','rzp','rz','rp85','ra85',
+   'r5','r6','r7','r8','r9'].forEach(renderContent);
 });
 
 function showTab(id, btn) {
@@ -1189,8 +1458,20 @@ function showTab(id, btn) {
 
 function toggleTheme() {
   const r = document.documentElement;
-  r.setAttribute('data-theme', r.getAttribute('data-theme')==='dark' ? 'light' : 'dark');
+  const dark = r.getAttribute('data-theme') !== 'dark';
+  const t = dark ? 'dark' : 'light';
+  r.setAttribute('data-theme', t);
+  localStorage.setItem('pbw-dup-theme', t);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = dark ? '☀️' : '🌙';
 }
+(function(){
+  const saved = localStorage.getItem('pbw-dup-theme');
+  const dark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme:dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = dark ? '☀️' : '🌙';
+})();
 
 function td(id) {
   const det = document.getElementById(id);
