@@ -498,22 +498,25 @@ function renderMarketCards(rows, container){
 function renderSourceCards(rows, container){
   var srcLabel={'fintrx':'FINTRX','discovery':'Discovery','ssc':'SSC'}[activeTab]||activeTab;
   rows.slice(0,50).forEach(function(row){
-    var crd    =fv(row,'CRD'), ngId=fv(row,'NEXTGEN_ID');
-    var fname  =fv(row,'FIRSTNAME'), lname=fv(row,'LASTNAME');
-    var name   =[fname,lname].filter(Boolean).join(' ');
-    var srcFirm=fv(row,'src_firm_name'), srcFirmC=fv(row,'src_firm_crd');
-    var srcB   =fv(row,'src_bucket'), subSrc=fv(row,'sub_src')||srcLabel;
-    var ngFirm =fv(row,'ng_firm_name'), ngFirmC=fv(row,'ng_firm_crd'), ngB=fv(row,'ng_bucket');
+    var crd     =fv(row,'CRD'), ngId=fv(row,'NEXTGEN_ID');
+    var fname   =fv(row,'FIRSTNAME'), lname=fv(row,'LASTNAME');
+    var name    =[fname,lname].filter(Boolean).join(' ');
+    var srcFirm =fv(row,'src_firm_name'), srcFirmC=fv(row,'src_firm_crd');
+    var srcB    =fv(row,'src_bucket'), subSrc=fv(row,'sub_src')||srcLabel;
+    var ngFirm  =fv(row,'ng_firm_name'), ngFirmC=fv(row,'ng_firm_crd'), ngB=fv(row,'ng_bucket');
     var srcEmail=fv(row,'src_email'), srcPhone=fv(row,'src_phone');
-    var srcMob =fv(row,'src_mobile'), srcTitle=fv(row,'src_title');
-    var srcCity=fv(row,'src_city'), srcState=fv(row,'src_state'), srcStat=fv(row,'src_status');
+    var srcMob  =fv(row,'src_mobile'), srcTitle=fv(row,'src_title');
+    var srcCity =fv(row,'src_city'), srcState=fv(row,'src_state'), srcStat=fv(row,'src_status');
     var finraCur=fv(row,'FINRA_CURRENT_FIRM'), finraPri=fv(row,'FINRA_PRIOR_FIRM');
     var finraEnd=fv(row,'FINRA_PRIOR_FIRM_END_DATE'), finraB=fv(row,'finra_bucket');
-    var ngEmail=fv(row,'NG_EMAIL'), ngPhone=fv(row,'NG_PHONE');
-    var isRel=fv(row,'IS_RELEVANT'), isAct=fv(row,'HAS_ACTIVITY');
-    var routing=fv(row,'routing'), isMM=(routing==='mismatch');
+    var ngEmail =fv(row,'NG_EMAIL'), ngPhone=fv(row,'NG_PHONE');
+    var ngSrc   =fv(row,'SOURCES_BACKING_NG');
+    var isRel   =fv(row,'IS_RELEVANT'), isAct=fv(row,'HAS_ACTIVITY');
+    var routing =fv(row,'routing'), isMM=(routing==='mismatch');
 
     var h='<div class="card">';
+
+    /* Header row */
     h+='<div class="card-top">';
     h+='<span class="crd-tag">CRD '+esc(crd)+'</span>';
     if(ngId) h+='<span class="crd-tag" style="color:var(--text-3)">xDM '+esc(ngId)+'</span>';
@@ -522,28 +525,32 @@ function renderSourceCards(rows, container){
     if(isAct==='Y') h+='<span class="bchip bchip-ok" style="margin-left:2px">Active</span>';
     h+='</div>';
 
-    /* Grey comparison boxes */
+    /* Primary comparison: Source vs FINRA */
     h+='<div class="vs-row">';
+
     h+='<div class="side">';
-    h+='<div class="lbl">'+esc(srcLabel)+' Source<span style="font-weight:400;text-transform:none;letter-spacing:0"> ('+esc(subSrc)+')</span></div>';
+    h+='<div class="lbl">'+esc(srcLabel)+'<span style="font-weight:400;text-transform:none;letter-spacing:0"> ('+esc(subSrc)+')</span></div>';
     h+='<div class="firm-name">'+(srcFirm?esc(srcFirm):'<span class="muted">(no firm)</span>')+'</div>';
     if(srcFirmC) h+='<div class="meta2">Firm CRD <strong>'+esc(srcFirmC)+'</strong></div>';
     h+='<div style="margin-top:6px">'+bucketChip(srcB,isMM)+'</div>';
     h+='</div>';
+
     h+='<div class="vs-arrow">&#8594;</div>';
+
     h+='<div class="side">';
-    h+='<div class="lbl">NextGen</div>';
-    h+='<div class="firm-name">'+(ngFirm?esc(ngFirm):'<span class="muted">(no firm)</span>')+'</div>';
-    if(ngFirmC) h+='<div class="meta2">Firm CRD <strong>'+esc(ngFirmC)+'</strong></div>';
-    h+='<div style="margin-top:6px">'+bucketChip(ngB,false)+'</div>';
-    h+='</div>';
+    h+='<div class="lbl">FINRA / IAPD</div>';
+    h+='<div class="firm-name">'+(finraCur?esc(finraCur):'<span class="muted">(no FINRA firm)</span>')+'</div>';
+    if(finraPri) h+='<div class="meta2">Prior: '+esc(finraPri)+(finraEnd?' ('+esc(finraEnd.slice(0,10))+')')+'</div>';
+    h+='<div style="margin-top:6px">'+bucketChip(finraB,isMM)+'</div>';
     h+='</div>';
 
-    /* Three information panels */
+    h+='</div>'; /* vs-row */
+
+    /* Three info panels */
     h+='<div class="panels-row">';
 
-    /* Panel 1: Market Profile (source indic data) */
-    h+='<div class="panel"><div class="panel-hdr">'+esc(srcLabel)+' Market Profile</div>';
+    /* Panel 1: Source contact details */
+    h+='<div class="panel"><div class="panel-hdr">'+esc(srcLabel)+' contact data</div>';
     var mp=[];
     if(srcEmail) mp.push(['Email',srcEmail]);
     if(srcPhone) mp.push(['Phone',srcPhone]);
@@ -556,32 +563,35 @@ function renderSourceCards(rows, container){
       mp.forEach(function(r){
         h+='<div class="prow"><span class="plbl">'+esc(r[0])+'</span><span class="pval">'+esc(r[1])+'</span></div>';
       });
-    } else { h+='<div class="muted" style="font-size:12px">No data</div>'; }
+    } else { h+='<div class="muted" style="font-size:12px">No contact data</div>'; }
     h+='</div>';
 
-    /* Panel 2: FINRA / IAPD */
-    h+='<div class="panel"><div class="panel-hdr">FINRA / IAPD</div>';
-    if(finraCur){
-      h+='<div class="prow"><span class="plbl">Current</span><span class="pval">'+esc(finraCur)+'</span></div>';
-      if(finraB) h+='<div style="margin:2px 0 4px">'+bucketChip(finraB,isMM)+'</div>';
-    } else { h+='<div class="muted" style="font-size:12px">No FINRA firm</div>'; }
-    if(finraPri){
-      h+='<div class="prow" style="margin-top:4px"><span class="plbl">Prior</span><span class="pval">'+esc(finraPri)+'</span></div>';
-      if(finraEnd) h+='<div class="prow"><span class="plbl">End</span><span class="pval">'+esc(finraEnd.slice(0,10))+'</span></div>';
-    }
-    h+='</div>';
-
-    /* Panel 3: Apollo Golden Profile */
-    h+='<div class="panel"><div class="panel-hdr">Apollo Golden Profile</div>';
-    var ap=[];
-    if(ngEmail) ap.push(['Email',ngEmail]);
-    if(ngPhone) ap.push(['Phone',ngPhone]);
-    if(ngFirm) ap.push(['Firm',ngFirm]);
-    if(ap.length){
-      ap.forEach(function(r){
+    /* Panel 2: NextGen golden */
+    h+='<div class="panel"><div class="panel-hdr">NextGen golden</div>';
+    var np=[];
+    if(ngFirm) np.push(['Firm', ngFirm+(ngFirmC?' (CRD '+ngFirmC+')':'')]);
+    if(ngB)    np.push(['Bucket', ngB]);
+    if(ngEmail) np.push(['Email', ngEmail]);
+    if(ngPhone) np.push(['Phone', ngPhone]);
+    if(ngSrc)  np.push(['Sources', ngSrc]);
+    if(np.length){
+      np.forEach(function(r){
         h+='<div class="prow"><span class="plbl">'+esc(r[0])+'</span><span class="pval">'+esc(r[1])+'</span></div>';
       });
     } else { h+='<div class="muted" style="font-size:12px">No NG data</div>'; }
+    h+='</div>';
+
+    /* Panel 3: Routing note */
+    h+='<div class="panel"><div class="panel-hdr">Classification</div>';
+    var routeDesc={
+      match:      'Source bucket matches FINRA',
+      mismatch:   'Source bucket differs from FINRA',
+      no_finra:   'Source has firm; FINRA firm not in a tracked bucket',
+      no_source:  'CRD not found in this source',
+      unclassified:'Source firm present but not in a tracked bucket',
+    };
+    h+='<div class="prow"><span class="plbl">Route</span><span class="pval">'+esc(routing)+'</span></div>';
+    h+='<div style="margin-top:4px;font-size:12px;color:var(--text-2)">'+esc(routeDesc[routing]||routing)+'</div>';
     h+='</div>';
 
     h+='</div></div>'; /* panels-row + card */
