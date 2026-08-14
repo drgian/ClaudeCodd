@@ -143,18 +143,26 @@ tfoot td.r{text-align:right;}
 .export-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .xbtn{background:var(--accent);border:none;border-radius:3px;color:#fff;cursor:pointer;font-size:12px;font-weight:600;padding:7px 14px;white-space:nowrap;}
 .xbtn:hover{opacity:.9;}
-.xbtn.outline{background:none;color:var(--accent);border:1px solid var(--accent);}
-.xbtn.outline:hover{background:var(--accent-lt);}
-#toast{display:none;font-size:11px;color:var(--green);font-weight:600;}
-#toast.show{display:inline;}
+
+/* ── Summary drill-down ── */
+.cell-link{background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-variant-numeric:tabular-nums;padding:0;text-decoration:underline;text-underline-offset:2px;font-weight:inherit;}
+.cell-link:hover{opacity:.75;}
+.cell-zero{color:var(--muted);}
+.sum-panel{background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-top:8px;margin-bottom:20px;}
+.sum-panel-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border2);}
+.sum-panel-hdr h3{font-size:13px;font-weight:700;margin:0;}
+.sum-panel-note{font-size:11px;color:var(--muted);margin-top:3px;}
+.sum-panel-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 4px;line-height:1;flex-shrink:0;}
+.sum-panel-close:hover{color:var(--text);}
+.sum-panel-body{padding:14px 18px;}
 </style>
 
 <header class="site-header">
   <div>
     <div class="site-title">PB/Wires Duplicate Coverage</div>
-    <div class="site-sub">3,083 duplicate pairs · existing PROD rules + CM-2121 proposed rules (R5–R14)</div>
+    <div class="site-sub">3,083 duplicate pairs · existing PROD rules + proposed rules (R5–R14)</div>
   </div>
-  <span class="site-badge">CM-2121</span>
+  <span class="site-badge">Proposed</span>
   <button class="theme-btn" onclick="toggleTheme()">⏾ Theme</button>
 </header>
 
@@ -168,8 +176,8 @@ tfoot td.r{text-align:right;}
     </div>
     <div class="hero-legend">
       <span><span class="dot" style="background:var(--green)"></span>795 — existing PROD rules (25.8%)</span>
-      <span><span class="dot" style="background:var(--sky)"></span>1,787 — CM-2121 R5–R14, auto-merge (58.0%)</span>
-      <span><span class="dot" style="background:var(--orange)"></span>501 — CM-2121 R12–R13, suggestion queue (16.2%)</span>
+      <span><span class="dot" style="background:var(--sky)"></span>1,787 — proposed R5–R14, auto-merge (58.0%)</span>
+      <span><span class="dot" style="background:var(--orange)"></span>501 — proposed R12–R13, suggestion queue (16.2%)</span>
     </div>
   </div>
   <div class="hero-stat-col">
@@ -184,12 +192,12 @@ tfoot td.r{text-align:right;}
     <span class="kpi-note">25.8% · auto-merge today</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">CM-2121 R5–R14 · auto-merge</span>
+    <span class="kpi-label">Proposed R5–R14 · auto-merge</span>
     <span class="kpi-value c-sky">1,787</span>
     <span class="kpi-note">58.0% · on activation</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">CM-2121 R12–R13 · suggestion queue</span>
+    <span class="kpi-label">Proposed R12–R13 · suggestion queue</span>
     <span class="kpi-value c-orange">501</span>
     <span class="kpi-note">16.2% · steward review</span>
   </div>
@@ -204,17 +212,46 @@ tfoot td.r{text-align:right;}
 <div id="tab-summary" class="tab-pane active">
   <div class="eyebrow">Overview</div>
   <h2>Coverage by workbook bucket</h2>
-  <p>Existing PROD rules handle 795 pairs today. CM-2121 R5–R14 add 1,787 via auto-merge and route 501 lower-confidence pairs to the suggestion queue. All 3,083 identified duplicates are covered.</p>
+  <p>Existing PROD rules handle 795 pairs today. Proposed R5–R14 add 1,787 via auto-merge and route 501 lower-confidence pairs to the suggestion queue. All 3,083 identified duplicates are covered. <strong>Click any number to see sample pairs.</strong></p>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Bucket</th><th class="r">Total</th><th class="r">Existing PROD</th><th class="r">CM-2121 auto-merge</th><th class="r">CM-2121 suggestion</th></tr></thead>
+      <thead><tr><th>Bucket</th><th class="r">Total</th><th class="r">Existing PROD</th><th class="r">Proposed auto-merge</th><th class="r">Proposed suggestion</th></tr></thead>
       <tbody>
-        <tr><td><span class="chip chip-accent">Definite</span></td><td class="r">1,187</td><td class="r">522</td><td class="r">567</td><td class="r">98</td></tr>
-        <tr><td><span class="chip chip-amber">Likely</span></td><td class="r">1,842</td><td class="r">240</td><td class="r">1,199</td><td class="r">403</td></tr>
-        <tr><td><span class="chip chip-teal">Email Variant</span></td><td class="r">54</td><td class="r">33</td><td class="r">21</td><td class="r">0</td></tr>
+        <tr>
+          <td><span class="chip chip-accent">Definite</span></td>
+          <td class="r">1,187</td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','prod')">522</button></td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','auto')">567</button></td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','sugg')">98</button></td>
+        </tr>
+        <tr>
+          <td><span class="chip chip-amber">Likely</span></td>
+          <td class="r">1,842</td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('likely','prod')">240</button></td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('likely','auto')">1,199</button></td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('likely','sugg')">403</button></td>
+        </tr>
+        <tr>
+          <td><span class="chip chip-teal">Email Variant</span></td>
+          <td class="r">54</td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('email','prod')">33</button></td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('email','auto')">21</button></td>
+          <td class="r"><span class="cell-zero">0</span></td>
+        </tr>
       </tbody>
       <tfoot><tr><td>Total</td><td class="r">3,083</td><td class="r">795</td><td class="r">1,787</td><td class="r">501</td></tr></tfoot>
     </table>
+  </div>
+
+  <div id="sum-panel" style="display:none" class="sum-panel">
+    <div class="sum-panel-hdr">
+      <div>
+        <h3 id="sum-panel-title"></h3>
+        <div id="sum-panel-note" class="sum-panel-note"></div>
+      </div>
+      <button class="sum-panel-close" onclick="closeSumPanel()">✕</button>
+    </div>
+    <div id="sum-panel-body" class="sum-panel-body"></div>
   </div>
 </div>
 
@@ -222,18 +259,15 @@ tfoot td.r{text-align:right;}
 <div id="tab-rules" class="tab-pane">
 
   <div class="export-panel">
-    <div class="export-title">Export sample pairs</div>
-    <p class="export-note">Downloads a real .xlsx with two sheets: <strong>Auto-Merges</strong> (existing PROD + CM-2121 auto-merge rules) and <strong>Existing PROD Rules</strong> (PROD subset). These are the representative samples shown in the drill-downs; the full 3,083-pair dataset is in the source workbook.</p>
+    <div class="export-title">Export pair population</div>
+    <p class="export-note">Downloads a .xlsx with two sheets: <strong>Merger</strong> — all auto-merge pairs (existing PROD rules + proposed auto-merge rules R5/R6/R7/R8/R9/R10/R14); <strong>Review</strong> — all suggestion-queue pairs (proposed R11/R12/R13). Representative samples per rule are included for each population.</p>
     <div class="export-btns">
-      <button class="xbtn" onclick="downloadXlsx()">Download .xlsx (2 sheets)</button>
-      <button class="xbtn outline" onclick="copyTSV('auto')">Copy auto-merge → clipboard (TSV)</button>
-      <button class="xbtn outline" onclick="copyTSV('prod')">Copy PROD rules → clipboard (TSV)</button>
-      <span id="toast"></span>
+      <button class="xbtn" onclick="downloadXlsx()">Download .xlsx</button>
     </div>
   </div>
 
   <div class="eyebrow">Click any rule row to expand — sample pairs show Market Data and NextGen fields side by side</div>
-  <h2>All Rules — PROD + CM-2121 (R5–R14)</h2>
+  <h2>All Rules — PROD + Proposed (R5–R14)</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th></th><th>Rule</th><th>Status</th><th class="r">Score</th><th class="r">Pairs</th></tr></thead>
@@ -295,9 +329,9 @@ tfoot td.r{text-align:right;}
           </div>
         </div></td></tr>
 
-        <tr class="section-divider"><td colspan="5">CM-2121 Proposed Rules</td></tr>
+        <tr class="section-divider"><td colspan="5">Proposed Rules</td></tr>
 
-        <tr class="rule-row" onclick="td('r5')"><td><span class="chevron">▶</span></td><td><strong>R5: ExactEmail — remove SFDC_NG exclusion</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">432+</td></tr>
+        <tr class="rule-row" onclick="td('r5')"><td><span class="chevron">▶</span></td><td><strong>R5: ExactEmail — remove SFDC_NG exclusion</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">95</td><td class="r">432+</td></tr>
         <tr class="detail-row" id="r5"><td colspan="5"><div class="d-inner">
           <div class="dl">
             <div><div class="dl-label">Change</div><div class="dl-val">Remove the publisher guard preventing SFDC_NG from matching via ExactEmail. All publisher pairs now eligible.</div></div>
@@ -305,12 +339,12 @@ tfoot td.r{text-align:right;}
           </div>
         </div></td></tr>
 
-        <tr class="rule-row" onclick="td('r6')"><td><span class="chevron">▶</span></td><td><strong>R6: ExactFNLNZip — all publishers</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">378+</td></tr>
+        <tr class="rule-row" onclick="td('r6')"><td><span class="chevron">▶</span></td><td><strong>R6: ExactFNLNZip — all publishers</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">95</td><td class="r">378+</td></tr>
         <tr class="detail-row" id="r6"><td colspan="5"><div class="d-inner">
           <div class="dl"><div><div class="dl-label">Change</div><div class="dl-val">Expands ExactFNLNSfxZip from PREQIN-only to all publisher pairs.</div></div></div>
         </div></td></tr>
 
-        <tr class="rule-row" onclick="td('r7')"><td><span class="chevron">▶</span></td><td><strong>R7: ExactPreferredNameAddress — raise to 92</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">293</td></tr>
+        <tr class="rule-row" onclick="td('r7')"><td><span class="chevron">▶</span></td><td><strong>R7: ExactPreferredNameAddress — raise to 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">293</td></tr>
         <tr class="detail-row" id="r7"><td colspan="5"><div class="d-inner">
           <div class="dl">
             <div><div class="dl-label">Change</div><div class="dl-val">Score raised 85 → 92, crossing the auto-merge threshold for confirmed goldens.</div></div>
@@ -318,7 +352,7 @@ tfoot td.r{text-align:right;}
           </div>
         </div></td></tr>
 
-        <tr class="rule-row" onclick="td('r8')"><td><span class="chevron">▶</span></td><td><strong>R8: ExactFNLNPhone — raise to 92</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">434</td></tr>
+        <tr class="rule-row" onclick="td('r8')"><td><span class="chevron">▶</span></td><td><strong>R8: ExactFNLNPhone — raise to 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">434</td></tr>
         <tr class="detail-row" id="r8"><td colspan="5"><div class="d-inner">
           <div class="dl">
             <div><div class="dl-label">Change</div><div class="dl-val">Score raised 85 → 92. Exact-name + phone pairs auto-merge on activation.</div></div>
@@ -326,24 +360,24 @@ tfoot td.r{text-align:right;}
           </div>
         </div></td></tr>
 
-        <tr class="rule-row" onclick="td('r9')"><td><span class="chevron">▶</span></td><td><strong>R9: ExactFNLNZipPhone — new at 92</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">287</td></tr>
+        <tr class="rule-row" onclick="td('r9')"><td><span class="chevron">▶</span></td><td><strong>R9: ExactFNLNZipPhone — new at 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">287</td></tr>
         <tr class="detail-row" id="r9"><td colspan="5"><div class="d-inner">
           <div class="dl"><div><div class="dl-label">Condition</div><div class="dl-val">Exact first + last (no suffix required) AND ZIP AND phone. New rule for contacts without suffix field populated.</div></div></div>
         </div></td></tr>
 
-        <tr class="rule-row" onclick="td('r10')"><td><span class="chevron">▶</span></td><td><strong>R10: FuzzyFNExactLNPhone</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">92</td><td class="r">1,469</td></tr>
+        <tr class="rule-row" onclick="td('r10')"><td><span class="chevron">▶</span></td><td><strong>R10: FuzzyFNExactLNPhone</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">1,469</td></tr>
         <tr class="detail-row" id="r10"><td colspan="5"><div class="d-inner" id="content-r10"></div></td></tr>
 
-        <tr class="rule-row" onclick="td('r11')"><td><span class="chevron">▶</span></td><td><strong>R11: FuzzyFNExactLNBizTeam + signal</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">85</td><td class="r">305</td></tr>
+        <tr class="rule-row" onclick="td('r11')"><td><span class="chevron">▶</span></td><td><strong>R11: FuzzyFNExactLNBizTeam + signal</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">85</td><td class="r">305</td></tr>
         <tr class="detail-row" id="r11"><td colspan="5"><div class="d-inner" id="content-r11"></div></td></tr>
 
-        <tr class="rule-row" onclick="td('r12')"><td><span class="chevron">▶</span></td><td><strong>R12: FuzzyFNExactLNBizTeam</strong></td><td><span class="chip chip-orange">CM-2121</span></td><td class="r">80</td><td class="r">403</td></tr>
+        <tr class="rule-row" onclick="td('r12')"><td><span class="chevron">▶</span></td><td><strong>R12: FuzzyFNExactLNBizTeam</strong></td><td><span class="chip chip-orange">Proposed</span></td><td class="r">80</td><td class="r">403</td></tr>
         <tr class="detail-row" id="r12"><td colspan="5"><div class="d-inner" id="content-r12"></div></td></tr>
 
-        <tr class="rule-row" onclick="td('r13')"><td><span class="chevron">▶</span></td><td><strong>R13: FuzzyFNFuzzyLNPhone</strong></td><td><span class="chip chip-orange">CM-2121</span></td><td class="r">85</td><td class="r">98</td></tr>
+        <tr class="rule-row" onclick="td('r13')"><td><span class="chevron">▶</span></td><td><strong>R13: FuzzyFNFuzzyLNPhone</strong></td><td><span class="chip chip-orange">Proposed</span></td><td class="r">85</td><td class="r">98</td></tr>
         <tr class="detail-row" id="r13"><td colspan="5"><div class="d-inner" id="content-r13"></div></td></tr>
 
-        <tr class="rule-row" onclick="td('r14')"><td><span class="chevron">▶</span></td><td><strong>R14: ExactFNLNEmailVariant</strong></td><td><span class="chip chip-sky">CM-2121</span></td><td class="r">95</td><td class="r">13</td></tr>
+        <tr class="rule-row" onclick="td('r14')"><td><span class="chevron">▶</span></td><td><strong>R14: ExactFNLNEmailVariant</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">95</td><td class="r">13</td></tr>
         <tr class="detail-row" id="r14"><td colspan="5"><div class="d-inner" id="content-r14"></div></td></tr>
 
       </tbody>
@@ -672,7 +706,7 @@ function xlWorkbook(defs){
 }
 function triggerXlDownload(data,filename){var blob=new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
 
-// ── CM-2121 XLSX EXPORT ───────────────────────────────────────────────────
+// ── XLSX EXPORT ───────────────────────────────────────────────────────────
 
 var XL_COLS = [
   ['rule','Rule'],['score','Score'],['outcome','Outcome'],['category','Category'],
@@ -702,74 +736,131 @@ function pairToRow(ruleName, score, outcome, p) {
 }
 
 function downloadXlsx() {
-  var autoRows = [], prodRows = [];
+  var mergerRows = [], reviewRows = [];
 
+  // Sheet 1: Merger — all auto-merge rules (PROD + proposed R5-R10, R14)
   [
-    {id:'re',  name:'ExactEmail',               score:95, outcome:'Auto-Merge (PROD today)',  prod:true},
-    {id:'rfs', name:'ExactFNLNSfxFirmState',    score:95, outcome:'Auto-Merge (PROD today)',  prod:true},
-    {id:'r10', name:'R10: FuzzyFNExactLNPhone', score:92, outcome:'Auto-Merge (CM-2121)',     prod:false},
-    {id:'r14', name:'R14: ExactFNLNEmailVariant',score:95,outcome:'Auto-Merge (CM-2121)',     prod:false}
+    {id:'re',  name:'ExactEmail',                  score:95, outcome:'Auto-Merge · PROD today'},
+    {id:'rfs', name:'ExactFNLNSfxFirmState',       score:95, outcome:'Auto-Merge · PROD today'},
+    {id:'r10', name:'R10: FuzzyFNExactLNPhone',    score:92, outcome:'Auto-Merge · Proposed'},
+    {id:'r14', name:'R14: ExactFNLNEmailVariant',  score:95, outcome:'Auto-Merge · Proposed'}
   ].forEach(function(spec) {
     (D[spec.id] && D[spec.id].pairs || []).forEach(function(p) {
-      var r = pairToRow(spec.name, spec.score, spec.outcome, p);
-      autoRows.push(r);
-      if (spec.prod) prodRows.push(r);
+      mergerRows.push(pairToRow(spec.name, spec.score, spec.outcome, p));
+    });
+  });
+  // Add samples from LIKELY_AUTO_SAMPLES (represents R7/R8/R9 proposed auto-merge)
+  LIKELY_AUTO_SAMPLES.forEach(function(p) {
+    mergerRows.push(pairToRow('R7: ExactPreferredNameAddress (raised to 92)', 92, 'Auto-Merge · Proposed', p));
+  });
+  LIKELY_PROD_SAMPLES.forEach(function(p) {
+    mergerRows.push(pairToRow('ExactFNLNSfxPhone (in PROD suggestion queue today)', 85, 'Suggestion Queue · PROD today', p));
+  });
+
+  // Sheet 2: Review — all suggestion-queue rules (proposed R11, R12, R13)
+  [
+    {id:'r11', name:'R11: FuzzyFNExactLNBizTeam + signal', score:85, outcome:'Suggestion Queue · Proposed'},
+    {id:'r12', name:'R12: FuzzyFNExactLNBizTeam',          score:80, outcome:'Suggestion Queue · Proposed'},
+    {id:'r13', name:'R13: FuzzyFNFuzzyLNPhone',            score:85, outcome:'Suggestion Queue · Proposed'}
+  ].forEach(function(spec) {
+    (D[spec.id] && D[spec.id].pairs || []).forEach(function(p) {
+      reviewRows.push(pairToRow(spec.name, spec.score, spec.outcome, p));
     });
   });
 
   triggerXlDownload(
     xlWorkbook([
-      xlSheet('Auto-Merges', XL_COLS, autoRows),
-      xlSheet('Existing PROD Rules', XL_COLS, prodRows)
+      xlSheet('Merger', XL_COLS, mergerRows),
+      xlSheet('Review', XL_COLS, reviewRows)
     ]),
-    'CM-2121 Duplicate Coverage.xlsx'
+    'Proposed Rules Coverage.xlsx'
   );
 }
 
-// ── EXPORT (clipboard TSV) ────────────────────────────────────────────────
+// ── SUMMARY DRILL-DOWN DATA ────────────────────────────────────────────────
 
-const HDR = ['Rule','Score','Outcome','Category','Why_Duplicate','A_Name','A_Firm','A_Phone','A_Email','A_State','A_ZIP','A_CRD','A_Publisher','A_NextGen_ID','A_Confirmed','B_Name','B_Firm','B_Phone','B_Email','B_State','B_ZIP','B_CRD','B_Publisher','B_NextGen_ID','B_Confirmed','Signals'];
+var LIKELY_PROD_SAMPLES = [
+  { cat:'likely', catLabel:'Likely',
+    whyDup:'Both records share the same standardized direct-dial phone and exact name (Jennifer Santos) across DISCOVERY_BD market data and SFDC_NG CRM. The existing ExactFNLNSfxPhone rule (score 85) already groups them into the suggestion queue today.',
+    whyCat:'Likely: shared phone + exact name is strong but not definitively conclusive without a CRD to confirm FINRA registration. The steward reviews and accepts.',
+    disposition:'ExactFNLNSfxPhone (score 85) → suggestion queue today',
+    signals:new Set(['phone','state','zip']),
+    signalLabels:['First name exact','Last name exact','Phone match'],
+    a:{name:'Jennifer Santos',firm:'LPL Financial',phone:'+1 (617) 555-0148',email:'j.santos@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'DISCOVERY_BD',golden:'CM-4,021,774',confirmed:true},
+    b:{name:'Jennifer Santos',firm:'LPL Financial',phone:'+1 (617) 555-0148',email:'jennifer.santos@lpl.com',state:'MA',zip:'02101',crd:'—',pub:'SFDC_NG',golden:'CM-4,028,441',confirmed:true}
+  }
+];
 
-function tsvRow(ruleName, score, outcome, p) {
-  const c = v => String(v||'—').replace(/\t|\n|\r/g,' ');
-  return [
-    c(ruleName), score, outcome, c(p.catLabel),
-    c(p.whyDup),
-    c(p.a.name), c(p.a.firm), c(p.a.phone), c(p.a.email), c(p.a.state), c(p.a.zip), c(p.a.crd), c(p.a.pub), c(p.a.golden), p.a.confirmed?'Confirmed':'Unconfirmed',
-    c(p.b.name), c(p.b.firm), c(p.b.phone), c(p.b.email), c(p.b.state), c(p.b.zip), c(p.b.crd), c(p.b.pub), c(p.b.golden), p.b.confirmed?'Confirmed':'Unconfirmed',
-    p.signalLabels.join('; ')
-  ].join('\t');
+var LIKELY_AUTO_SAMPLES = [
+  { cat:'likely', catLabel:'Likely',
+    whyDup:'Two records for the same Stifel Nicolaus advisor — exact name, firm, state, and preferred address across FINTRX_BDRIA and SFDC_NG. Proposed R7 raises ExactPreferredNameAddress from score 85 to 92, crossing the auto-merge threshold for confirmed goldens.',
+    whyCat:'Likely: same name + preferred address is strong evidence. With R7 active (score 92 > 90 threshold), this auto-merges without steward review — the address corroboration is sufficient at that score level.',
+    disposition:'R7: ExactPreferredNameAddress (score 92) → auto-merges on activation',
+    signals:new Set(['name','firm','state','zip']),
+    signalLabels:['First name exact','Last name exact','Preferred address match','State match'],
+    a:{name:'Edward Harrington',firm:'Stifel Nicolaus',phone:'—',email:'e.harrington@stifel.com',state:'MO',zip:'63101',crd:'—',pub:'FINTRX_BDRIA',golden:'CM-4,013,229',confirmed:true},
+    b:{name:'Edward Harrington',firm:'Stifel Nicolaus',phone:'—',email:'edward.harrington@stifel.com',state:'MO',zip:'63101',crd:'—',pub:'SFDC_NG',golden:'CM-4,019,887',confirmed:true}
+  }
+];
+
+var SUM_SAMPLES = {
+  'definite-prod': {
+    title: 'Definite · Existing PROD rules',
+    note: 'ExactEmail — score 95, auto-merges today. Shared email address is conclusive.',
+    pairs: D.re.pairs
+  },
+  'definite-auto': {
+    title: 'Definite · Proposed auto-merge',
+    note: 'R10: FuzzyFNExactLNPhone — score 92, auto-merges on activation. Shared phone + fuzzy first name (JW ≥ 0.75).',
+    pairs: D.r10.pairs
+  },
+  'definite-sugg': {
+    title: 'Definite · Proposed suggestion queue',
+    note: 'R13: FuzzyFNFuzzyLNPhone — score 85, routed to steward review. Pairs are effectively conclusive (phone + CRD) but fuzzy-last-name rule carries higher false-positive risk at scale.',
+    pairs: D.r13.pairs
+  },
+  'likely-prod': {
+    title: 'Likely · Existing PROD rules',
+    note: 'ExactFNLNSfxPhone — score 85, in suggestion queue today. Exact name + shared phone without a CRD anchor.',
+    pairs: LIKELY_PROD_SAMPLES
+  },
+  'likely-auto': {
+    title: 'Likely · Proposed auto-merge',
+    note: 'R7: ExactPreferredNameAddress raised 85→92 — auto-merges on activation. Same name + preferred address crosses the confirmed-golden threshold.',
+    pairs: LIKELY_AUTO_SAMPLES
+  },
+  'likely-sugg': {
+    title: 'Likely · Proposed suggestion queue',
+    note: 'R11 (score 85) and R12 (score 80) — FuzzyFN + ExactLN + shared biz team. Routed to steward review; pairs shown below span both rules.',
+    pairs: D.r11.pairs.concat(D.r12.pairs)
+  },
+  'email-prod': {
+    title: 'Email Variant · Existing PROD rules',
+    note: 'ExactFNLNSfxFirmState — score 95, auto-merges today. Same name + firm + state catches most middle-initial email variants.',
+    pairs: D.rfs.pairs
+  },
+  'email-auto': {
+    title: 'Email Variant · Proposed auto-merge',
+    note: 'R14: ExactFNLNEmailVariant — score 95, auto-merges on activation. Catches email-variant pairs not already covered by ExactFNLNSfxFirmState.',
+    pairs: D.r14.pairs
+  }
+};
+
+function showSumSamples(bucket, col) {
+  var key = bucket + '-' + col;
+  var s = SUM_SAMPLES[key];
+  var panel = document.getElementById('sum-panel');
+  if (!s || !s.pairs || !s.pairs.length) { panel.style.display='none'; return; }
+  document.getElementById('sum-panel-title').textContent = s.title;
+  document.getElementById('sum-panel-note').textContent = s.note;
+  var body = document.getElementById('sum-panel-body');
+  body.innerHTML = s.pairs.map(function(p, i) { return pairCard(p, i, s.pairs.length); }).join('');
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-function copyTSV(tab) {
-  const rows = [HDR.join('\t')];
-
-  if (tab === 'auto') {
-    // All auto-merge samples (PROD + CM-2121 auto-merge rules)
-    [
-      {id:'re',  rule:'ExactEmail',              score:95},
-      {id:'rfs', rule:'ExactFNLNSfxFirmState',   score:95},
-      {id:'r10', rule:'R10: FuzzyFNExactLNPhone',score:92},
-      {id:'r14', rule:'R14: ExactFNLNEmailVariant',score:95}
-    ].forEach(({id,rule,score})=>{
-      (D[id]?.pairs||[]).forEach(p=>rows.push(tsvRow(rule,score,'Auto-Merge',p)));
-    });
-  } else {
-    // Existing PROD rule samples only
-    [
-      {id:'re',  rule:'ExactEmail',            score:95},
-      {id:'rfs', rule:'ExactFNLNSfxFirmState', score:95}
-    ].forEach(({id,rule,score})=>{
-      (D[id]?.pairs||[]).forEach(p=>rows.push(tsvRow(rule,score,'Auto-Merge (PROD today)',p)));
-    });
-  }
-
-  navigator.clipboard.writeText(rows.join('\n')).then(()=>{
-    const t = document.getElementById('toast');
-    t.textContent = `✓ ${rows.length-1} row${rows.length===2?'':'s'} copied — paste into Excel`;
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), 3000);
-  });
+function closeSumPanel() {
+  document.getElementById('sum-panel').style.display='none';
 }
 
 // ── INIT & UI ─────────────────────────────────────────────────────────────
