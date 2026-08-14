@@ -341,13 +341,13 @@ function refreshMainSource(){
       nf=fc.no_finra||0, ns=fc.no_source||0, uc=fc.unclassified||0;
   var tot=ma+mm+nf+ns+uc;
   var classified=ma+mm;
-  var pctAgree=classified>0?Math.round(1000*ma/classified)/10:0; /* one decimal */
+  var pctAgree=classified>0?(10000*ma/classified|0)/100:0; /* two extra decimal places ? toFixed(3) */
 
   document.getElementById('kpi-mkt').style.display='none';
   document.getElementById('kpi-src').style.display='grid';
 
   document.getElementById('src-total').textContent=fmt(tot);
-  document.getElementById('src-rate').textContent=pctAgree.toFixed(1)+'%';
+  document.getElementById('src-rate').textContent=pctAgree.toFixed(3)+'%';
   document.getElementById('src-rate-sub').textContent=fmt(ma)+' of '+fmt(classified)+' bucketed agree';
   document.getElementById('src-match').textContent=fmt(ma);
   document.getElementById('src-mm').textContent=fmt(mm);
