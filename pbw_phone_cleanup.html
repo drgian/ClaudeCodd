@@ -1349,6 +1349,13 @@ var SUMMARY_COLS = [
   ["f10","Proposed phone"],
   ["f11","NG primary phone"],["f12","NG mobile"]
 ];
+var OVERRIDE_COLS = [
+  ["f0","CRD"],["f2","NextGen SF ID"],
+  ["f6","First name"],["f7","Last name"],
+  ["f8","Compare type"],
+  ["f11","NG primary phone"],["f12","NG mobile"],
+  ["f10","Proposed phone"]
+];
 
 function downloadAllCategories() {
   var ao = [], keep = [], nr = [], fill = [];
@@ -1360,7 +1367,7 @@ function downloadAllCategories() {
     else if (rt === "fill") { fill.push(r); }
   });
   var sheets = [
-    xlSheet("Override",      SUMMARY_COLS, ao),
+    xlSheet("Override",      OVERRIDE_COLS, ao),
     xlSheet("Keep",          SUMMARY_COLS, keep),
     xlSheet("Needs Review",  SUMMARY_COLS, nr)
   ];
