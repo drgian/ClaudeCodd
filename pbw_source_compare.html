@@ -531,7 +531,7 @@ function renderMarketCards(rows, container){
 
     var h='<div class="card">';
     h+='<div class="card-top">';
-    h+='<a class="crd-tag" href="https://brokercheck.finra.org/individual/summary/'+esc(crd)+'" target="_blank" rel="noopener" style="text-decoration:none">CRD '+esc(crd)+'</a>';
+    h+='<a class="crd-tag" href="https://brokercheck.finra.org/individual/summary/'+esc(crd)+'" target="_blank" rel="noopener" style="text-decoration:none">BrokerCheck ('+esc(crd)+')</a>';
     if(xdmId) h+='<a class="crd-tag" href="https://semarchy-prod-ng.apollo.com/semarchy/mdm-app/ClientMasterNGDL/ClientMaster/browsing/Contact/'+esc(xdmId)+'" target="_blank" rel="noopener" style="text-decoration:none;color:var(--text-3)">xDM ('+esc(xdmId)+')</a>';
     if(ngId) h+='<a class="crd-tag" href="https://apollonextgencrm.lightning.force.com/lightning/r/Contact/'+esc(ngId)+'/view" target="_blank" rel="noopener" style="text-decoration:none;color:var(--text-3)">NextGen ('+esc(ngId)+')</a>';
     if(isRel==='Y') h+='<span class="bchip bchip-tl" style="margin-left:4px">Relevant</span>';
@@ -587,7 +587,7 @@ function renderSourceCards(rows, container){
 
     /* Header row */
     h+='<div class="card-top">';
-    h+='<a class="crd-tag" href="https://brokercheck.finra.org/individual/summary/'+esc(crd)+'" target="_blank" rel="noopener" style="text-decoration:none">CRD '+esc(crd)+'</a>';
+    h+='<a class="crd-tag" href="https://brokercheck.finra.org/individual/summary/'+esc(crd)+'" target="_blank" rel="noopener" style="text-decoration:none">BrokerCheck ('+esc(crd)+')</a>';
     if(xdmId) h+='<a class="crd-tag" href="https://semarchy-prod-ng.apollo.com/semarchy/mdm-app/ClientMasterNGDL/ClientMaster/browsing/Contact/'+esc(xdmId)+'" target="_blank" rel="noopener" style="text-decoration:none;color:var(--text-3)">xDM ('+esc(xdmId)+')</a>';
     if(ngId) h+='<a class="crd-tag" href="https://apollonextgencrm.lightning.force.com/lightning/r/Contact/'+esc(ngId)+'/view" target="_blank" rel="noopener" style="text-decoration:none;color:var(--text-3)">NextGen ('+esc(ngId)+')</a>';
     if(name) h+='<span style="font-weight:600;margin-left:6px">'+esc(name)+'</span>';
