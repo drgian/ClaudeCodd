@@ -224,7 +224,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <button class="back" onclick="backToMain()">&#8592; Back</button>
       <span id="ex-title" style="font-weight:600;font-size:15px"></span>
       <span class="cnt" id="ex-count"></span>
-      <button class="dl-btn" id="dl-btn" onclick="downloadXLSX()">Download .xlsx</button>
+      <button class="dl-btn" id="dl-btn" onclick="downloadXLSX()">Download .csv</button>
     </div>
     <div id="subflt-bar" style="display:none;margin-bottom:12px;gap:6px;align-items:center;flex-wrap:wrap;">
       <span class="flt-lbl">Show:</span>
@@ -476,7 +476,7 @@ function refreshDrill(){
   document.getElementById('ex-count').textContent=
     'Showing '+rows.length.toLocaleString()+' of '+(drillCtx.total||0).toLocaleString();
   document.getElementById('dl-btn').textContent=
-    'Download '+rows.length.toLocaleString()+' rows as .xlsx';
+    'Download '+rows.length.toLocaleString()+' rows as .csv';
   renderCards(rows);
 }
 
@@ -522,7 +522,7 @@ function renderMarketCards(rows, container){
 
     var h='<div class="card">';
     h+='<div class="card-top">';
-    h+='<span class="crd-tag">CRD '+esc(crd)+'</span>';
+    h+='<a class="crd-tag" href="https://brokercheck.finra.org/individual/summary/'+esc(crd)+'" target="_blank" rel="noopener" style="text-decoration:none">CRD '+esc(crd)+'</a>';
     if(ngId) h+='<span class="crd-tag" style="color:var(--text-3)">xDM '+esc(ngId)+'</span>';
     if(isRel==='Y') h+='<span class="bchip bchip-tl" style="margin-left:4px">Relevant</span>';
     if(isAct==='Y') h+='<span class="bchip bchip-ok" style="margin-left:2px">Active</span>';
@@ -577,7 +577,7 @@ function renderSourceCards(rows, container){
 
     /* Header row */
     h+='<div class="card-top">';
-    h+='<span class="crd-tag">CRD '+esc(crd)+'</span>';
+    h+='<a class="crd-tag" href="https://brokercheck.finra.org/individual/summary/'+esc(crd)+'" target="_blank" rel="noopener" style="text-decoration:none">CRD '+esc(crd)+'</a>';
     if(ngId) h+='<span class="crd-tag" style="color:var(--text-3)">xDM '+esc(ngId)+'</span>';
     if(name) h+='<span style="font-weight:600;margin-left:6px">'+esc(name)+'</span>';
     if(isRel==='Y') h+='<span class="bchip bchip-tl" style="margin-left:4px">Relevant</span>';
@@ -692,12 +692,15 @@ function downloadXLSX(){
   var cols=ff.filter(function(c){return c!=='routing';});
   var idxs=cols.map(function(c){return ff.indexOf(c);});
   var drows=rows.map(function(r){return idxs.map(function(j){return String(r[j]||'');});});
-  var xlsx=makeXLSX(cols,drows);
-  var blob=new Blob([xlsx],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  function cc(s){return '"'+s.replace(/"/g,'""')+'"';}
+  var lines=[cols.map(cc).join(',')];
+  drows.forEach(function(row){lines.push(row.map(cc).join(','));});
+  var csv='\uFEFF'+lines.join('\r\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
   var lbl=drillCtx.a?(drillCtx.a+'_vs_'+drillCtx.b).replace(/[^a-zA-Z0-9]/g,'_'):drillCtx.key;
-  a.href=url; a.download='pbw_'+activeTab+'_'+lbl+'.xlsx';
+  a.href=url; a.download='pbw_'+activeTab+'_'+lbl+'.csv';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
