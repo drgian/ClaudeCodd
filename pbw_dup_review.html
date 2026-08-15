@@ -819,17 +819,15 @@ function pairCard(p, i, total) {
   const sigs = p.signals;
   const a = p.a, b = p.b;
   const aId = rawId(a.golden), bId = rawId(b.golden);
-  const aSfdc = contactSfdcId(a), bSfdc = contactSfdcId(b);
   return `
 <div class="pair-card">
   <div class="pair-hdr">
     <span class="pnum">Pair ${i+1} of ${total}</span>
     <span class="chip chip-${cc}">${p.catLabel}</span>
     <div class="rec-links">
-      <a href="${SEM_BASE}${aId}${SEM_SUFFIX}" target="_blank" class="rec-link">A: Semarchy ↗</a>
-      ${aSfdc ? `<a href="${SFDC_BASE}${aSfdc}${SFDC_SUFFIX}" target="_blank" class="rec-link">A: SFDC ↗</a>` : ''}
-      <a href="${SEM_BASE}${bId}${SEM_SUFFIX}" target="_blank" class="rec-link">B: Semarchy ↗</a>
-      ${bSfdc ? `<a href="${SFDC_BASE}${bSfdc}${SFDC_SUFFIX}" target="_blank" class="rec-link">B: SFDC ↗</a>` : ''}
+      <a href="${SEM_BASE}${aId}${SEM_SUFFIX}" target="_blank" class="rec-link">A: xDM ↗</a>
+      <a href="${SEM_BASE}${bId}${SEM_SUFFIX}" target="_blank" class="rec-link">B: xDM ↗</a>
+      ${(a.sfdc||b.sfdc) ? `<a href="${SFDC_BASE}${a.sfdc||b.sfdc}${SFDC_SUFFIX}" target="_blank" class="rec-link">NextGen ↗</a>` : ''}
     </div>
     <span class="disp-chip">${p.disposition}</span>
   </div>
@@ -855,7 +853,7 @@ function pairCard(p, i, total) {
         ${row('CRD', a.crd, b.crd, sigs.has('crd'))}
         <tr class="sec-row"><td colspan="3">NextGen</td></tr>
         ${row('Golden ID', aId, bId, false)}
-        ${row('NextGen ID', aSfdc||'—', bSfdc||'—', false)}
+        ${row('NextGen ID', a.sfdc||'—', b.sfdc||'—', false)}
         ${row('Status', confBadge(a.confirmed), confBadge(b.confirmed), false)}
       </tbody>
     </table>
