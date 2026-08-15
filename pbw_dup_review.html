@@ -172,7 +172,7 @@ tfoot td.r{text-align:right;}
 <header class="site-header">
   <div>
     <div class="site-title">PB/Wires Duplicate Coverage</div>
-    <div class="site-sub">4,986 duplicate pairs · existing PROD rules (updated email) + proposed rules (R5–R18)</div>
+    <div class="site-sub">4,986 duplicate pairs · existing PROD rules + proposed rules (R5–R18)</div>
   </div>
   <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
 </header>
@@ -192,7 +192,7 @@ tfoot td.r{text-align:right;}
     </div>
   </div>
   <div class="hero-stat-col">
-    <div class="hero-headline">We independently found 4,986 duplicate contacts currently in NextGen. 4,986/4,986 are covered by existing (2,698) or proposed (2,288) match rules. Updated email rules (domain-normalized + cross-field) account for +1,903 additional pairs vs prior analysis.</div>
+    <div class="hero-headline">We independently found 4,986 duplicate contacts currently in NextGen. 4,986/4,986 are covered by existing (2,698) or proposed (2,288) match rules.</div>
   </div>
 </div>
 
@@ -380,7 +380,7 @@ tfoot td.r{text-align:right;}
 
 const D = {
   re: {
-    condTitle: 'ExactEmail · score 95 · auto-merges today (updated: domain-normalized, primary ↔ secondary)',
+    condTitle: 'ExactEmail · score 95 · auto-merges today · domain-normalized, primary ↔ secondary',
     cond: 'Email addresses match across publishers — domain-normalized (apollo.com = apollolp.com = apollo-advisors.com; ms.com = morganstanley.com, etc.) and compared across all four field combinations: primary↔primary, primary↔secondary, secondary↔primary, secondary↔secondary. R5 also removes the SFDC_NG exclusion.',
     cat: 'definite', catColor: 'sky',
     catDesc: 'A shared email address is an unambiguous individual identifier. Two separate people would never share a single login address at the same firm.',
@@ -974,11 +974,11 @@ function downloadXlsx() {
     {id:'rzp', name:'ExactFNLNSfxZipPhone',                   score:97, outcome:'Auto-Merge · PROD today'},
     {id:'rfs', name:'ExactFNLNSfxFirmState',                  score:95, outcome:'Auto-Merge · PROD today'},
     {id:'rz',  name:'ExactFNLNSfxZip (PREQIN pairs)',         score:95, outcome:'Auto-Merge · PROD today'},
-    {id:'r5',  name:'R5: ExactEmail (SFDC_NG now eligible)',  score:95, outcome:'Auto-Merge · Proposed'},
+    {id:'r5',  name:'R5: ExactEmail (SFDC_NG eligible)',      score:95, outcome:'Auto-Merge · Proposed'},
     {id:'r6',  name:'R6: ExactFNLNZip all publishers',        score:95, outcome:'Auto-Merge · Proposed'},
     {id:'r7',  name:'R7: ExactPreferredNameAddress (→92)',     score:92, outcome:'Auto-Merge · Proposed'},
     {id:'r8',  name:'R8: ExactFNLNPhone (→92)',               score:92, outcome:'Auto-Merge · Proposed'},
-    {id:'r9',  name:'R9: ExactFNLNZipPhone (new at 92)',      score:92, outcome:'Auto-Merge · Proposed'},
+    {id:'r9',  name:'R9: ExactFNLNZipPhone (score 92)',        score:92, outcome:'Auto-Merge · Proposed'},
     {id:'r10', name:'R10: FuzzyFNExactLNPhone',               score:92, outcome:'Auto-Merge · Proposed'},
     {id:'r14', name:'R14: ExactFNLNEmailVariant',             score:95, outcome:'Auto-Merge · Proposed'},
     {id:'r15', name:'R15: FuzzyFNEmailPrefixBizTeamSignal',   score:92, outcome:'Auto-Merge · Proposed'}
@@ -1100,7 +1100,7 @@ function getSumPairs(key) {
 }
 
 var KPI_SAMPLES_META = {
-  'prod': { title:'795 · Existing PROD rules — in effect today', note:'These pairs auto-merge under existing production rules before any new rules are added. Coverage spans ExactEmail (432 pairs), ExactFNLNSfxFirmState (364), ExactFNLNSfxZip (287), and others.' },
+  'prod': { title:'2,698 · Existing PROD rules', note:'These pairs auto-merge under existing production rules. Coverage spans ExactEmail (2,335 pairs), ExactFNLNSfxFirmState (364), ExactFNLNSfxZip (287), and others.' },
   'auto': { title:'1,787 · Proposed auto-merge — on activation of R5–R14', note:'These pairs will auto-merge when proposed rules are activated. Samples span R10 (FuzzyFNExactLNPhone), R14 (ExactFNLNEmailVariant), R7/R8/R9 (score raises), and R15 (email-prefix name variant).' },
   'sugg': { title:'501 · Proposed suggestion queue — steward review', note:'These pairs will be routed to the steward queue under R11/R12/R13. A steward reviews each proposed merge and accepts or rejects.' }
 };
@@ -1133,7 +1133,7 @@ D.r18 = {
 };
 
 D.rle = {
-  condTitle: 'ExactLastNameEmail · score 95 · auto-merges today (updated: domain-normalized, primary ↔ secondary)',
+  condTitle: 'ExactLastNameEmail · score 95 · auto-merges today · domain-normalized, primary ↔ secondary',
   cond: 'Exact last name AND shared email (domain-normalized, all four field combinations). Catches cases where the same email appears with a name variant across publishers, including when the email is stored as primary in one system and secondary in another.',
   cat: 'definite', catColor: 'sky',
   catDesc: 'A shared email is an unambiguous individual identifier. The last-name anchor prevents matching two people who merely share an email domain.',
@@ -1258,7 +1258,7 @@ D.r5 = {
     { cat:'definite', catLabel:'Definite',
       whyDup:'Wells Fargo advisor — same cleansed email (mweston@wfa.com) across DISCOVERY_BD and SFDC_NG. ExactEmail currently excludes this pair because one contact is SFDC_NG. R5 removes that restriction.',
       whyCat:'Email is conclusive. The SFDC_NG restriction was a conservative guard; R5 removes it since shared-email pairs are reliably the same individual regardless of publisher.',
-      disposition:'R5: ExactEmail (score 95, SFDC_NG now eligible) → auto-merges on activation',
+      disposition:'R5: ExactEmail (score 95, SFDC_NG eligible) → auto-merges on activation',
       signals:new Set(['email','phone','state','crd']),
       signalLabels:['Email exact match','CRD match','Phone match'],
       a:{name:'Michael Weston',firm:'Wells Fargo Advisors',phone:'+1 (704) 555-0177',email:'mweston@wfa.com',state:'NC',zip:'28202',crd:'1122334',pub:'DISCOVERY_BD',golden:'CM-4,131,447',confirmed:true},
@@ -1267,7 +1267,7 @@ D.r5 = {
     { cat:'definite', catLabel:'Definite',
       whyDup:'Fidelity advisor — a.nguyen@fidelity.com shared between FINTRX_BDRIA and SFDC_NG. Currently blocked by the SFDC_NG exclusion in ExactEmail.',
       whyCat:'Email is conclusive. R5 makes this pair eligible for auto-merge without changing any other rule logic.',
-      disposition:'R5: ExactEmail (score 95, SFDC_NG now eligible) → auto-merges on activation',
+      disposition:'R5: ExactEmail (score 95, SFDC_NG eligible) → auto-merges on activation',
       signals:new Set(['email','state','zip','crd']),
       signalLabels:['Email exact match','CRD match'],
       a:{name:'Andrew Nguyen',firm:'Fidelity Investments',phone:'+1 (617) 555-0144',email:'a.nguyen@fidelity.com',state:'MA',zip:'02110',crd:'2233445',pub:'FINTRX_BDRIA',golden:'CM-4,127,881',confirmed:true},
@@ -1276,7 +1276,7 @@ D.r5 = {
     { cat:'definite', catLabel:'Definite',
       whyDup:'Morgan Stanley advisor — same email rmccarthy@mssb.com across PREQIN and SFDC_NG. Currently blocked because ExactEmail excludes SFDC_NG pairs. CRD also matches.',
       whyCat:'Email across PREQIN and SFDC_NG is conclusive — the PREQIN record has a real inbox, confirmed by the matching CRD.',
-      disposition:'R5: ExactEmail (score 95, SFDC_NG now eligible) → auto-merges on activation',
+      disposition:'R5: ExactEmail (score 95, SFDC_NG eligible) → auto-merges on activation',
       signals:new Set(['email','state','crd']),
       signalLabels:['Email exact match','CRD match'],
       a:{name:'Robert McCarthy',firm:'Morgan Stanley',phone:'—',email:'rmccarthy@mssb.com',state:'NY',zip:'10036',crd:'5566778',pub:'PREQIN',golden:'CM-4,142,774',confirmed:false},
