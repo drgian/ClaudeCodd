@@ -540,7 +540,7 @@ function renderSourceCards(rows, container){
     h+='<div class="side">';
     h+='<div class="lbl">FINRA / IAPD</div>';
     h+='<div class="firm-name">'+(finraCur?esc(finraCur):'<span class="muted">(no FINRA firm)</span>')+'</div>';
-    if(finraPri) h+='<div class="meta2">Prior: '+esc(finraPri)+(finraEnd?' ('+esc(finraEnd.slice(0,10))+')')+'</div>';
+    if(finraPri) h+='<div class="meta2">Prior: '+esc(finraPri)+(finraEnd?' ('+esc(finraEnd.slice(0,10))+')':'')+' </div>';
     h+='<div style="margin-top:6px">'+bucketChip(finraB,isMM)+'</div>';
     h+='</div>';
 
