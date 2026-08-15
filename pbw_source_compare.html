@@ -107,6 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <h2>PB/Wires &mdash; Firm Analysis</h2>
       <div class="meta" id="tab-subtitle">Market data vs. NextGen bucket comparison</div>
     </div>
+    <button id="theme-btn" onclick="(function(){var r=document.documentElement,cur=r.getAttribute('data-theme'),next=cur==='dark'?'light':cur==='light'?'dark':(window.matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark');r.setAttribute('data-theme',next);document.getElementById('theme-btn').textContent=next==='dark'?'?':'?';})()" style="font-family:inherit;font-size:18px;background:none;border:none;cursor:pointer;padding:4px 8px;color:var(--text-2);" title="Toggle dark/light mode">?</button>
   </div>
 
   <!-- Tab bar -->
