@@ -191,6 +191,9 @@ tfoot td.r{text-align:right;}
       <span><span class="dot" style="background:var(--orange)"></span>501 — proposed R12–R13, suggestion queue (10.1%)</span>
     </div>
   </div>
+  <div class="hero-stat-col">
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;">We independently found 4,986 duplicate contacts currently in NextGen. 4,986/4,986 are covered by existing (2,698) or proposed (2,288) match rules.</div>
+  </div>
 </div>
 
 <div class="kpi-row">
@@ -235,7 +238,6 @@ tfoot td.r{text-align:right;}
 <div id="tab-summary" class="tab-pane active">
   <div class="eyebrow">Overview</div>
   <h2>Coverage by workbook bucket</h2>
-  <p>Updated email rules (domain-normalized + cross-field primary/secondary comparison) bring existing PROD rule coverage to 2,698 pairs — +1,903 vs prior analysis. Proposed R5–R18 add 1,787 via auto-merge and 501 via steward review. All 4,986 identified duplicates are covered. <strong>Click any number to see sample pairs.</strong> The <em>Proposed: review queue</em> column shows pairs where the proposed rule scores only 80–85 — below the strict &gt;90 threshold for auto-merge — so a steward reviews before they merge, even when we know from independent analysis they are the same person.</p>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>Bucket</th><th class="r">Total</th><th class="r">Existing PROD</th><th class="r">Proposed auto-merge</th><th class="r" title="Proposed rules score 80–85 — below the >90 auto-merge threshold. Goes to steward review queue.">Proposed: review queue</th></tr></thead>
