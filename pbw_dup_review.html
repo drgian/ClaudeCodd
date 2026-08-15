@@ -245,17 +245,17 @@ tfoot td.r{text-align:right;}
       <tbody>
         <tr>
           <td><span class="chip chip-accent">Definite</span></td>
-          <td class="r">3,090</td>
+          <td class="r">2,992</td>
           <td class="r"><button class="cell-link" onclick="showSumSamples('definite','prod')">2,425</button></td>
           <td class="r"><button class="cell-link" onclick="showSumSamples('definite','auto')">567</button></td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','sugg')">98</button></td>
+          <td class="r"><span class="cell-zero">0</span></td>
         </tr>
         <tr>
           <td><span class="chip chip-amber">Likely</span></td>
-          <td class="r">1,842</td>
+          <td class="r">1,940</td>
           <td class="r"><button class="cell-link" onclick="showSumSamples('likely','prod')">240</button></td>
           <td class="r"><button class="cell-link" onclick="showSumSamples('likely','auto')">1,199</button></td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('likely','sugg')">403</button></td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('likely','sugg')">501</button></td>
         </tr>
         <tr>
           <td><span class="chip chip-teal">Email Variant</span></td>
@@ -670,8 +670,8 @@ const D = {
   r13: {
     condTitle: 'R13: FuzzyFNFuzzyLNPhone · score 85 · suggestion queue',
     cond: 'JW(first) ≥ 0.75 AND JW(last) ≥ 0.75 AND shared phone. Catches spelling variants where last names are similar but not identical — data-entry differences, maiden/married name transitions.',
-    cat: 'definite', catColor: 'sky',
-    catDesc: 'Pairs with a shared phone are Definite by signal strength, but the fuzzy-last-name rule carries higher false-positive risk at scale. Score 85 routes to suggestion queue so a steward can confirm before merging.',
+    cat: 'likely', catColor: 'amber',
+    catDesc: 'A shared phone is a strong corroborating signal, but fuzzy first and last name together carry higher false-positive risk than exact-last-name rules. Score 85 routes to suggestion queue so a steward can confirm before merging.',
     pairs: [
       { cat:'definite', catLabel:'Definite',
         whyDup:'Same UBS advisor — phone and CRD match. Last-name difference (Bergman vs Bergmann) is a common German-name spelling variant (one vs two n\'s). First name: Steven vs Steve, JW = 0.91.',
@@ -1077,10 +1077,9 @@ var LIKELY_AUTO_SAMPLES = [
 var SUM_SAMPLES_META = {
   'definite-prod': { title:'Definite · Existing PROD rules', note:'ExactEmail (95), ExactLastNameEmail (95), ExactFNLNSfxZipPhone (97) — all auto-merge today. Shared email or name+ZIP+phone is conclusive.' },
   'definite-auto': { title:'Definite · Proposed auto-merge', note:'R5 (ExactEmail SFDC_NG eligible), R6 (ExactFNLNZip all publishers), R10 (FuzzyFNExactLNPhone at 92) — all auto-merge on activation.' },
-  'definite-sugg': { title:'Definite · Proposed suggestion queue', note:'R13: FuzzyFNFuzzyLNPhone — score 85, routed to steward review.' },
   'likely-prod': { title:'Likely · Existing PROD rules', note:'ExactFNLNSfxPhone (85) / ExactPreferredNameAddress (85) / ExactFNLNSfxZip PREQIN (95) — suggestion queue today.' },
-  'likely-auto': { title:'Likely · Proposed auto-merge', note:'R7 (ExactPreferredNameAddress 85→92) / R8 (ExactFNLNPhone 85→92) / R9 (ExactFNLNZipPhone new at 92) — auto-merges on activation.' },
-  'likely-sugg': { title:'Likely · Proposed suggestion queue', note:'R11 (score 85) and R12 (score 80) — FuzzyFN + ExactLN + shared biz team. Routed to steward review.' },
+  'likely-auto': { title:'Likely · Proposed auto-merge', note:'R7 (ExactPreferredNameAddress 85→92) / R8 (ExactFNLNPhone 85→92) / R9 (ExactFNLNZipPhone score 92) — auto-merges on activation.' },
+  'likely-sugg': { title:'Likely · Proposed suggestion queue', note:'R11/R12 (FuzzyFN + ExactLN + biz team, scores 80–85) and R13 (FuzzyFN + FuzzyLN + phone, score 85). Routed to steward review.' },
   'email-prod': { title:'Email Variant · Existing PROD rules', note:'ExactFNLNSfxFirmState — score 95, auto-merges today.' },
   'email-auto': { title:'Email Variant · Proposed auto-merge', note:'R14: ExactFNLNEmailVariant — score 95, auto-merges on activation.' }
 };
@@ -1089,10 +1088,9 @@ function getSumPairs(key) {
   var m = {
     'definite-prod': g('re').concat(g('rle')).concat(g('rzp')),
     'definite-auto': g('r10').concat(g('r5')).concat(g('r6')),
-    'definite-sugg': g('r13'),
     'likely-prod':   g('rp85').concat(g('ra85')).concat(g('rz')),
     'likely-auto':   g('r7').concat(g('r8')).concat(g('r9')),
-    'likely-sugg':   g('r11').concat(g('r12')),
+    'likely-sugg':   g('r11').concat(g('r12')).concat(g('r13')),
     'email-prod':    g('rfs'),
     'email-auto':    g('r14')
   };
