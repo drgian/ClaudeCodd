@@ -174,6 +174,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
     </div>
 
+    <!-- Market mismatch download bar -->
+    <div id="mkt-dl-bar" style="display:none;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+      <span style="font-size:13px;color:var(--text-2)"><strong id="mkt-dl-count">0</strong> advisors with bucket mismatch, one-side, or unclassified</span>
+      <button class="dl-btn" style="margin-left:0" onclick="downloadAllMismatches()">Download all as .xlsx</button>
+    </div>
+
     <!-- Source research tab KPIs (hidden until tab switch) -->
     <div class="kpi-grid" id="kpi-src" style="display:none">
       <div class="kpi nc">
@@ -331,12 +337,14 @@ function refreshMainMarket(){
 
   document.getElementById('kpi-mkt').style.display='grid';
   document.getElementById('kpi-src').style.display='none';
+  document.getElementById('mkt-dl-bar').style.display='flex';
 
   document.getElementById('mkt-total').textContent=fmt(tot);
   document.getElementById('mkt-crd').textContent=fmt(cm);
   document.getElementById('mkt-bm').textContent=fmt(bm);
   document.getElementById('mkt-mm').textContent=fmt(mm);
   document.getElementById('mkt-os').textContent=fmt(os+uc);
+  document.getElementById('mkt-dl-count').textContent=(mm+os+uc).toLocaleString();
 
   var pairs=D().FPAIRS[ck]||[];
   renderPairsTable(pairs, mm,
@@ -356,6 +364,7 @@ function refreshMainSource(){
 
   document.getElementById('kpi-mkt').style.display='none';
   document.getElementById('kpi-src').style.display='grid';
+  document.getElementById('mkt-dl-bar').style.display='none';
 
   document.getElementById('src-total').textContent=fmt(tot);
   document.getElementById('src-rate').textContent=pctAgree.toFixed(3)+'%';
@@ -662,7 +671,7 @@ function renderSourceCards(rows, container){
 (function(){
   var _T=(function(){var t=[];for(var i=0;i<256;i++){var c=i;for(var j=0;j<8;j++)c=c&1?(0xEDB88320^(c>>>1)):(c>>>1);t[i]=c>>>0;}return t;})();
   function _crc(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=(_T[(c^b[i])&0xFF]^(c>>>8))>>>0;return(c^0xFFFFFFFF)>>>0;}
-  function _sb(s){var b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i)&0xFF;return b;}
+  function _sb(s){if(typeof TextEncoder!=='undefined'){return new TextEncoder().encode(s);}var b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i)&0xFF;return b;}
   function _le2(n){return[(n>>>0)&0xFF,(n>>8)&0xFF];}
   function _le4(n){var x=n>>>0;return[x&0xFF,(x>>8)&0xFF,(x>>16)&0xFF,(x>>24)&0xFF];}
   function _cat(a){var n=0;for(var i=0;i<a.length;i++)n+=a[i].length;var o=new Uint8Array(n),p=0;for(var i=0;i<a.length;i++){o.set(a[i],p);p+=a[i].length;}return o;}
@@ -701,6 +710,25 @@ function downloadXLSX(){
   var a=document.createElement('a');
   var lbl=drillCtx.a?(drillCtx.a+'_vs_'+drillCtx.b).replace(/[^a-zA-Z0-9]/g,'_'):drillCtx.key;
   a.href=url; a.download='pbw_'+activeTab+'_'+lbl+'.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+function downloadAllMismatches(){
+  if(!isMarket()) return;
+  var d=D();
+  var idxs=(d.SAMPLES['mismatch']||[]).concat(d.SAMPLES['one_side']||[]).concat(d.SAMPLES['unclassified']||[]);
+  var allRows=idxs.map(function(i){return d.ROWS[i];});
+  var rows=filterRows(allRows);
+  var ff=F();
+  var cols=ff.filter(function(c){return c!=='routing';});
+  var ci=cols.map(function(c){return ff.indexOf(c);});
+  var drows=rows.map(function(r){return ci.map(function(j){return String(r[j]||'');});});
+  var xlsx=makeXLSX(cols,drows);
+  var blob=new Blob([xlsx],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download='pbw_market_mismatches.xlsx';
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
