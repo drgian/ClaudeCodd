@@ -643,5 +643,6 @@ function downloadXLSX(){
   document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 
-window.addEventListener('DOMContentLoaded', function(){ refreshMain(); });
+// DOM elements precede this script block, so call directly
+refreshMain();
 </script>
