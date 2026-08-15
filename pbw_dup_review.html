@@ -172,45 +172,45 @@ tfoot td.r{text-align:right;}
 <header class="site-header">
   <div>
     <div class="site-title">PB/Wires Duplicate Coverage</div>
-    <div class="site-sub">3,083 duplicate pairs · existing PROD rules + proposed rules (R5–R14)</div>
+    <div class="site-sub">4,986 duplicate pairs · existing PROD rules (updated email) + proposed rules (R5–R18)</div>
   </div>
   <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
 </header>
 
 <div class="hero">
   <div class="hero-bar-col">
-    <div class="hero-bar-label">Coverage — 3,083 pairs</div>
+    <div class="hero-bar-label">Coverage — 4,986 pairs</div>
     <div class="hero-bar">
-      <div style="width:25.8%;background:var(--green)"></div>
-      <div style="width:58.0%;background:var(--sky)"></div>
-      <div style="width:16.2%;background:var(--orange)"></div>
+      <div style="width:54.1%;background:var(--green)"></div>
+      <div style="width:35.8%;background:var(--sky)"></div>
+      <div style="width:10.1%;background:var(--orange)"></div>
     </div>
     <div class="hero-legend">
-      <span><span class="dot" style="background:var(--green)"></span>795 — existing PROD rules (25.8%)</span>
-      <span><span class="dot" style="background:var(--sky)"></span>1,787 — proposed R5–R14, auto-merge (58.0%)</span>
-      <span><span class="dot" style="background:var(--orange)"></span>501 — proposed R12–R13, suggestion queue (16.2%)</span>
+      <span><span class="dot" style="background:var(--green)"></span>2,698 — existing PROD rules (54.1%)</span>
+      <span><span class="dot" style="background:var(--sky)"></span>1,787 — proposed R5–R18, auto-merge (35.8%)</span>
+      <span><span class="dot" style="background:var(--orange)"></span>501 — proposed R12–R13, suggestion queue (10.1%)</span>
     </div>
   </div>
   <div class="hero-stat-col">
-    <div class="hero-headline">We independently found 3,083 duplicate contacts currently in NextGen. 3,083/3,083 are covered by existing (795) or proposed (2,288) match rules.</div>
+    <div class="hero-headline">We independently found 4,986 duplicate contacts currently in NextGen. 4,986/4,986 are covered by existing (2,698) or proposed (2,288) match rules. Updated email rules (domain-normalized + cross-field) account for +1,903 additional pairs vs prior analysis.</div>
   </div>
 </div>
 
 <div class="kpi-row">
   <div class="kpi">
     <span class="kpi-label">Existing PROD rules</span>
-    <span class="kpi-value c-green"><button class="kpi-link" onclick="showKpiSamples('prod')">795</button></span>
-    <span class="kpi-note">25.8% · auto-merge today · click to see samples</span>
+    <span class="kpi-value c-green"><button class="kpi-link" onclick="showKpiSamples('prod')">2,698</button></span>
+    <span class="kpi-note">54.1% · auto-merge today · click to see samples</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">Proposed R5–R14 · auto-merge</span>
+    <span class="kpi-label">Proposed R5–R18 · auto-merge</span>
     <span class="kpi-value c-sky"><button class="kpi-link" onclick="showKpiSamples('auto')">1,787</button></span>
-    <span class="kpi-note">58.0% · on activation · click to see samples</span>
+    <span class="kpi-note">35.8% · on activation · click to see samples</span>
   </div>
   <div class="kpi">
     <span class="kpi-label">Proposed R11–R13 · suggestion queue</span>
     <span class="kpi-value c-orange"><button class="kpi-link" onclick="showKpiSamples('sugg')">501</button></span>
-    <span class="kpi-note">16.2% · steward review · click to see samples</span>
+    <span class="kpi-note">10.1% · steward review · click to see samples</span>
   </div>
 </div>
 
@@ -238,15 +238,15 @@ tfoot td.r{text-align:right;}
 <div id="tab-summary" class="tab-pane active">
   <div class="eyebrow">Overview</div>
   <h2>Coverage by workbook bucket</h2>
-  <p>Existing PROD rules handle 795 pairs today. Proposed R5–R14 add 1,787 via auto-merge and 501 via the steward review queue. All 3,083 identified duplicates are covered. <strong>Click any number to see sample pairs.</strong> The <em>Proposed: review queue</em> column shows pairs where the proposed rule scores only 80–85 — below the strict &gt;90 threshold for auto-merge — so a steward reviews before they merge, even when we know from independent analysis they are the same person.</p>
+  <p>Updated email rules (domain-normalized + cross-field primary/secondary comparison) bring existing PROD rule coverage to 2,698 pairs — +1,903 vs prior analysis. Proposed R5–R18 add 1,787 via auto-merge and 501 via steward review. All 4,986 identified duplicates are covered. <strong>Click any number to see sample pairs.</strong> The <em>Proposed: review queue</em> column shows pairs where the proposed rule scores only 80–85 — below the strict &gt;90 threshold for auto-merge — so a steward reviews before they merge, even when we know from independent analysis they are the same person.</p>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>Bucket</th><th class="r">Total</th><th class="r">Existing PROD</th><th class="r">Proposed auto-merge</th><th class="r" title="Proposed rules score 80–85 — below the >90 auto-merge threshold. Goes to steward review queue.">Proposed: review queue</th></tr></thead>
       <tbody>
         <tr>
           <td><span class="chip chip-accent">Definite</span></td>
-          <td class="r">1,187</td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','prod')">522</button></td>
+          <td class="r">3,090</td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','prod')">2,425</button></td>
           <td class="r"><button class="cell-link" onclick="showSumSamples('definite','auto')">567</button></td>
           <td class="r"><button class="cell-link" onclick="showSumSamples('definite','sugg')">98</button></td>
         </tr>
@@ -265,7 +265,7 @@ tfoot td.r{text-align:right;}
           <td class="r"><span class="cell-zero">0</span></td>
         </tr>
       </tbody>
-      <tfoot><tr><td>Total</td><td class="r">3,083</td><td class="r">795</td><td class="r">1,787</td><td class="r">501</td></tr></tfoot>
+      <tfoot><tr><td>Total</td><td class="r">4,986</td><td class="r">2,698</td><td class="r">1,787</td><td class="r">501</td></tr></tfoot>
     </table>
   </div>
 
@@ -309,10 +309,10 @@ tfoot td.r{text-align:right;}
           </div>
         </div></td></tr>
 
-        <tr class="rule-row" onclick="td('re')"><td><span class="chevron">▶</span></td><td><strong>ExactEmail</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">432</td></tr>
+        <tr class="rule-row" onclick="td('re')"><td><span class="chevron">▶</span></td><td><strong>ExactEmail</strong> <span style="font-size:10px;font-weight:400;color:var(--muted)">(+ domain-norm, cross-field)</span></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">2,335</td></tr>
         <tr class="detail-row" id="re"><td colspan="5"><div class="d-inner" id="content-re"></div></td></tr>
 
-        <tr class="rule-row" onclick="td('rle')"><td><span class="chevron">▶</span></td><td><strong>ExactLastNameEmail</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">298</td></tr>
+        <tr class="rule-row" onclick="td('rle')"><td><span class="chevron">▶</span></td><td><strong>ExactLastNameEmail</strong> <span style="font-size:10px;font-weight:400;color:var(--muted)">(+ domain-norm, cross-field)</span></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">867</td></tr>
         <tr class="detail-row" id="rle"><td colspan="5"><div class="d-inner" id="content-rle"></div></td></tr>
 
         <tr class="rule-row" onclick="td('rzp')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">97</td><td class="r">287</td></tr>
@@ -365,6 +365,9 @@ tfoot td.r{text-align:right;}
         <tr class="rule-row" onclick="td('r15')"><td><span class="chevron">▶</span></td><td><strong>R15: FuzzyFNEmailPrefixBizTeamSignal</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">~est.</td></tr>
         <tr class="detail-row" id="r15"><td colspan="5"><div class="d-inner" id="content-r15"></div></td></tr>
 
+        <tr class="rule-row" onclick="td('r18')"><td><span class="chevron">▶</span></td><td><strong>R18: CrossFieldEmail — domain-normalized</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">142</td></tr>
+        <tr class="detail-row" id="r18"><td colspan="5"><div class="d-inner" id="content-r18"></div></td></tr>
+
       </tbody>
     </table>
   </div>
@@ -377,8 +380,8 @@ tfoot td.r{text-align:right;}
 
 const D = {
   re: {
-    condTitle: 'ExactEmail · score 95 · auto-merges today',
-    cond: 'Cleansed primary emails match exactly across publishers. Currently excludes SFDC_NG — R5 removes this restriction.',
+    condTitle: 'ExactEmail · score 95 · auto-merges today (updated: domain-normalized, primary ↔ secondary)',
+    cond: 'Email addresses match across publishers — domain-normalized (apollo.com = apollolp.com = apollo-advisors.com; ms.com = morganstanley.com, etc.) and compared across all four field combinations: primary↔primary, primary↔secondary, secondary↔primary, secondary↔secondary. R5 also removes the SFDC_NG exclusion.',
     cat: 'definite', catColor: 'sky',
     catDesc: 'A shared email address is an unambiguous individual identifier. Two separate people would never share a single login address at the same firm.',
     pairs: [
@@ -1112,9 +1115,27 @@ function getKpiPairs(bucket) {
 
 // ── ADDITIONAL RULE DATA (added after LIKELY_* arrays are defined) ──────────
 
+D.r18 = {
+  condTitle: 'R18: CrossFieldEmail — domain-normalized · score 92 · auto-merges on activation',
+  cond: 'Primary email of contact A matches secondary email of contact B (or vice versa), after domain normalization. Catches the case where one publisher stores the email as primary and another stores it as secondary — a common cross-system discrepancy for PB/Wires advisors. 142 pairs are caught exclusively by cross-field comparison (not already matched primary-to-primary or secondary-to-secondary).',
+  cat: 'definite', catColor: 'sky',
+  catDesc: 'A shared email is conclusive regardless of which field stores it. Primary/secondary distinction is a publisher artifact, not a meaningful identifier difference.',
+  pairs: [
+    { cat:'definite', catLabel:'Definite',
+      whyDup:'Same advisor at UBS — primary email in SFDC_NG (jsmith@ubs.com) matches secondary email in DISCOVERY_BD. Different field placement; same address.',
+      whyCat:'Email match across primary/secondary fields is still conclusive. Two advisors do not share an email regardless of how each system classifies it.',
+      disposition:'R18 (score 92) → auto-merges on activation',
+      signals:new Set(['email','name','firm']),
+      signalLabels:['Email cross-field (domain-normalized)','Last name exact','Same firm'],
+      a:{name:'John Smith',firm:'UBS Financial Services',phone:'',email:'jsmith@ubs.com',state:'NY',zip:'10019',crd:'',pub:'SFDC_NG',golden:'',confirmed:true},
+      b:{name:'Jonathan Smith',firm:'UBS',phone:'',email:'',state:'NY',zip:'10019',crd:'',pub:'DISCOVERY_BD',golden:'',confirmed:true}
+    }
+  ]
+};
+
 D.rle = {
-  condTitle: 'ExactLastNameEmail · score 95 · auto-merges today',
-  cond: 'Exact last name AND shared cleansed email. Catches cases where the same email appears with a name variant (first name, suffix) across publishers.',
+  condTitle: 'ExactLastNameEmail · score 95 · auto-merges today (updated: domain-normalized, primary ↔ secondary)',
+  cond: 'Exact last name AND shared email (domain-normalized, all four field combinations). Catches cases where the same email appears with a name variant across publishers, including when the email is stored as primary in one system and secondary in another.',
   cat: 'definite', catColor: 'sky',
   catDesc: 'A shared email is an unambiguous individual identifier. The last-name anchor prevents matching two people who merely share an email domain.',
   pairs: [
