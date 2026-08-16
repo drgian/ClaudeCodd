@@ -140,7 +140,7 @@ tfoot td.r{text-align:right;}
 /* ── Signals bar ── */
 .sig-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 10px;border-top:1px solid var(--border2);background:var(--surface2);}
 .sig-label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);}
-.sig-pill{font-size:10px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:2px 7px;}
+.sig-pill{font-size:10px;font-weight:600;background:var(--green-bg);border:1px solid color-mix(in srgb,var(--green) 30%,transparent);color:var(--green);border-radius:10px;padding:2px 9px;}
 
 /* ── Export panel ── */
 .export-panel{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 20px;margin-bottom:22px;}
@@ -860,7 +860,7 @@ function pairCard(p, i, total) {
     </table>
   </div>
   <div class="sig-bar">
-    <span class="sig-label">Signals</span>
+    <span class="sig-label">🚩 Signals</span>
     ${p.signalLabels.map(s=>`<span class="sig-pill">${s}</span>`).join('')}
   </div>
 </div>`;
