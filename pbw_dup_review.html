@@ -815,6 +815,12 @@ function confBadge(confirmed) {
     : '<span style="color:var(--amber)">Unconfirmed</span>';
 }
 
+function filterMerged(pairs) {
+  return (pairs||[]).filter(function(p) {
+    return !(p.a && p.b && p.a.golden && p.b.golden && p.a.golden === p.b.golden);
+  });
+}
+
 function pairCard(p, i, total) {
   const catColors = {definite:'sky', likely:'amber', 'email-variant':'teal'};
   const cc = catColors[p.cat] || 'muted';
@@ -889,8 +895,9 @@ function renderContent(id) {
 </div>
 `;
   if (d.pairs && d.pairs.length) {
-    const n = d.pairs.length;
-    const ph = d.pairs.map((p, i) => pairCard(p, i, n)).join('');
+    const fp = filterMerged(d.pairs);
+    const n = fp.length;
+    const ph = fp.map((p, i) => pairCard(p, i, n)).join('');
     html += `<div class="samples-toggle"><button class="samples-btn" onclick="toggleRuleSamples(this)">View ${n} sample pair${n===1?'':'s'}</button><div class="samples-cards" style="display:none">${ph}</div></div>`;
   }
   el.innerHTML = html;
@@ -1435,8 +1442,9 @@ function showKpiSamples(bucket) {
   if (!pairs.length) { wrap.style.display = 'none'; return; }
   document.getElementById('kpi-panel-title').textContent = meta.title;
   document.getElementById('kpi-panel-note').textContent = meta.note;
-  document.getElementById('kpi-panel-body').innerHTML = pairs.slice(0, 10).map(function(p, i) {
-    return pairCard(p, i, 10);
+  var kpiFp = filterMerged(pairs).slice(0, 10);
+  document.getElementById('kpi-panel-body').innerHTML = kpiFp.map(function(p, i) {
+    return pairCard(p, i, kpiFp.length);
   }).join('');
   wrap.style.display = 'block';
   wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
@@ -1454,7 +1462,7 @@ function showSumSamples(bucket, col) {
   if (!meta || !pairs.length) { panel.style.display='none'; return; }
   document.getElementById('sum-panel-title').textContent = meta.title;
   document.getElementById('sum-panel-note').textContent = meta.note;
-  var shown = pairs.slice(0, 10);
+  var shown = filterMerged(pairs).slice(0, 10);
   document.getElementById('sum-panel-body').innerHTML = shown.map(function(p, i) { return pairCard(p, i, shown.length); }).join('');
   panel.style.display = 'block';
   panel.scrollIntoView({behavior:'smooth', block:'nearest'});
