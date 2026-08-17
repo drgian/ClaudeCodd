@@ -1,493 +1,592 @@
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'><circle cx='10' cy='9' r='5' fill='%23000000' opacity='0.45'/><path d='M0 30 C0 21 5 17 10 17 C15 17 18 20 20 23 L20 30 Z' fill='%23000000' opacity='0.45'/><circle cx='22' cy='12' r='6' fill='%23000000'/><path d='M10 30 C11 23 16 20 22 20 C28 20 32 23 32 30 Z' fill='%23000000'/></svg>">
-<title>NextGen Contact Duplicates</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PBW Duplicate Analysis</title>
 <style>
+/* ─── TOKENS ─────────────────────────────────────────── */
 :root {
-  --bg:#F0F4FB; --surface:#FFF; --surface2:#E8EEF8; --border:#C9D4ED;
-  --text:#111827; --text2:#4B5563; --text3:#6B7280;
-  --accent:#1A56DB; --accent-bg:#EFF4FF;
-  --red:#DC2626; --red-bg:#FEF2F2; --red-border:#FECACA;
-  --green:#059669; --green-bg:#ECFDF5; --green-border:#A7F3D0;
-  --amber:#B45309; --amber-bg:#FFFBEB; --amber-border:#FDE68A;
-  --mono:'Consolas','Menlo','Monaco',monospace;
-  --radius:10px;
+  --bg:      #f8fafc;
+  --bg2:     #f1f5f9;
+  --surface: #ffffff;
+  --border:  #e2e8f0;
+  --accent:  #2563eb;
+  --a-dim:   #dbeafe;
+  --good:    #16a34a;
+  --g-dim:   #dcfce7;
+  --warn:    #b45309;
+  --w-dim:   #fef3c7;
+  --danger:  #dc2626;
+  --d-dim:   #fee2e2;
+  --purple:  #7c3aed;
+  --p-dim:   #ede9fe;
+  --text:    #0f172a;
+  --sub:     #475569;
+  --muted:   #94a3b8;
+  --mono:    ui-monospace,'Cascadia Code','Fira Code',monospace;
+  --sans:    -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0F172A; --surface:#1E293B; --surface2:#263349; --border:#334155;
-  --text:#F1F5F9; --text2:#94A3B8; --text3:#64748B;
-  --accent:#60A5FA; --accent-bg:#1E3A5F;
-  --red:#F87171; --red-bg:#450A0A; --red-border:#7F1D1D;
-  --green:#34D399; --green-bg:#022C22; --green-border:#065F46;
-  --amber:#FCD34D; --amber-bg:#1C1400; --amber-border:#78350F;
-}}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1117;--bg2:#161b27;--surface:#1e2637;--border:#2d3b55;
+    --accent:#60a5fa;--a-dim:#1e3a5f;
+    --good:#4ade80;--g-dim:#14532d;
+    --warn:#fbbf24;--w-dim:#451a03;
+    --danger:#f87171;--d-dim:#450a0a;
+    --purple:#c4b5fd;--p-dim:#2e1065;
+    --text:#e2e8f0;--sub:#94a3b8;--muted:#64748b;
+  }
+}
 :root[data-theme="dark"]{
-  --bg:#0F172A; --surface:#1E293B; --surface2:#263349; --border:#334155;
-  --text:#F1F5F9; --text2:#94A3B8; --text3:#64748B;
-  --accent:#60A5FA; --accent-bg:#1E3A5F;
-  --red:#F87171; --red-bg:#450A0A; --red-border:#7F1D1D;
-  --green:#34D399; --green-bg:#022C22; --green-border:#065F46;
-  --amber:#FCD34D; --amber-bg:#1C1400; --amber-border:#78350F;
+  --bg:#0d1117;--bg2:#161b27;--surface:#1e2637;--border:#2d3b55;
+  --accent:#60a5fa;--a-dim:#1e3a5f;
+  --good:#4ade80;--g-dim:#14532d;
+  --warn:#fbbf24;--w-dim:#451a03;
+  --danger:#f87171;--d-dim:#450a0a;
+  --purple:#c4b5fd;--p-dim:#2e1065;
+  --text:#e2e8f0;--sub:#94a3b8;--muted:#64748b;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;}
 
-.page{max-width:1120px;margin:0 auto;padding:32px 20px 64px;}
+/* ─── RESET ──────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;padding-bottom:56px;}
 
-/* Header */
-.header{margin-bottom:28px;}
-.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;
-  letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-bg);
-  padding:3px 10px;border-radius:20px;margin-bottom:12px;}
-.header h1{font-size:24px;font-weight:700;line-height:1.25;text-wrap:balance;}
-.header p{margin-top:8px;color:var(--text2);font-size:13.5px;max-width:720px;line-height:1.6;}
-.header-meta{margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;}
-.meta-pill{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:4px;}
+/* ─── HEADER ─────────────────────────────────────────── */
+header{background:var(--surface);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100;}
+.hdr{max-width:1120px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.hdr h1{font-size:18px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:10px;}
+.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--a-dim);color:var(--accent);letter-spacing:.04em;}
+.hdr-meta{font-size:12px;color:var(--muted);margin-top:2px;display:flex;gap:16px;flex-wrap:wrap;}
+.hdr-right{font-size:12px;color:var(--sub);text-align:right;}
+.hdr-right strong{display:block;font-size:20px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;}
 
-/* Alert */
-.alert{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius);
-  padding:11px 14px;margin-bottom:22px;display:flex;gap:9px;align-items:flex-start;
-  color:var(--red);font-size:13px;line-height:1.5;}
-.alert code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,.06);
-  padding:1px 4px;border-radius:3px;}
+/* ─── LAYOUT ─────────────────────────────────────────── */
+.page{max-width:1120px;margin:0 auto;padding:24px 24px 0;}
+.sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:28px 0 10px;}
+.sec:first-child{margin-top:0;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:720px){.kgrid{grid-template-columns:repeat(2,1fr)!important;}.two{grid-template-columns:1fr;}.hdr-right{display:none;}}
 
-/* KPI grid */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:6px;}
-@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
-.kpi{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);
-  padding:16px 18px;cursor:pointer;transition:border-color .15s,box-shadow .15s;
-  user-select:none;position:relative;}
-.kpi:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
-.kpi.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
-.kpi.active::after{content:'▲';position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
-  font-size:12px;color:var(--accent);}
-.kpi-val{font-size:28px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;}
-.kpi-val.red{color:var(--red);}
-.kpi-val.blue{color:var(--accent);}
-.kpi-val.purple{color:#7C3AED;}
-.kpi-val.gray{color:var(--text3);}
-.kpi-label{font-size:12px;color:var(--text3);margin-top:5px;line-height:1.4;}
-.kpi-hint{font-size:11px;color:var(--accent);margin-top:6px;opacity:.8;}
+/* ─── KPIs ───────────────────────────────────────────── */
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px 16px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ks,var(--border));}
+.kpi-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.kpi-num{font-size:36px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--kc,var(--text));}
+.kpi-sub{font-size:12px;color:var(--sub);margin-top:6px;}
 
-/* Drill-down panel */
-.drill-panel{margin-bottom:28px;display:none;}
-.drill-panel.open{display:block;}
-.drill-header{background:var(--accent-bg);border:1px solid var(--accent);border-radius:var(--radius) var(--radius) 0 0;
-  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-.drill-title{font-size:13px;font-weight:700;color:var(--accent);}
-.drill-note{font-size:12px;color:var(--text2);}
-.drill-close{font-size:11px;color:var(--accent);cursor:pointer;border:1px solid var(--accent);
-  border-radius:20px;padding:2px 10px;background:transparent;}
-.drill-close:hover{background:var(--accent);color:#fff;}
-.drill-body{border:1px solid var(--accent);border-top:none;border-radius:0 0 var(--radius) var(--radius);
-  padding:16px;background:var(--surface);}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;}
+/* ─── CARD ───────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;}
+.card-h{font-size:13px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 
-/* Pair cards */
-.pair-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;
-  font-size:12.5px;}
-.pair-card-head{padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  border-bottom:1px solid var(--border);}
-.pair-name{font-weight:700;color:var(--text);}
-.pair-crd{font-family:var(--mono);font-size:11px;color:var(--text3);}
-.pair-card-body{display:grid;grid-template-columns:1fr 1fr;}
-.pair-col{padding:10px 12px;}
-.pair-col+.pair-col{border-left:1px solid var(--border);}
-.pair-col-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--text3);margin-bottom:7px;}
-.pair-field{margin-bottom:5px;line-height:1.35;}
-.pair-field-label{font-size:10px;color:var(--text3);margin-bottom:1px;}
-.pair-field-val{font-family:var(--mono);font-size:11px;word-break:break-all;}
-.pair-field-val.match{color:var(--green);font-weight:600;}
-.pair-field-val.diff{color:var(--amber);}
-.pair-field-val.empty{color:var(--text3);font-style:italic;}
-.pair-card-foot{padding:8px 12px;border-top:1px solid var(--border);
-  font-size:11.5px;color:var(--text2);background:var(--surface);}
-.pair-card-foot strong{color:var(--green);}
+/* ─── BAR ROWS ───────────────────────────────────────── */
+.br{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.br:last-of-type{margin-bottom:0;}
+.bl{width:168px;flex-shrink:0;}
+.bl-m{font-size:12px;font-weight:500;}
+.bl-s{font-size:11px;color:var(--muted);}
+.bt{flex:1;height:10px;background:var(--bg2);border-radius:99px;overflow:hidden;}
+.bf{height:100%;border-radius:99px;}
+.bc{width:72px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--sub);}
+.bpct{color:var(--muted);font-size:11px;}
+.bar-note{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.6;}
 
-/* Match tags */
-.match-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.04em;
-  padding:1px 7px;border-radius:11px;}
-.t-email{background:#DBEAFE;color:#1D4ED8;}
-.t-phone{background:#EDE9FE;color:#6D28D9;}
-.t-zip{background:#CFFAFE;color:#0E7490;}
-.t-crd{background:var(--surface2);color:var(--text3);}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .t-email{background:#1E3A5F;color:#93C5FD;}
-  :root:not([data-theme="light"]) .t-phone{background:#2E1065;color:#C084FC;}
-  :root:not([data-theme="light"]) .t-zip{background:#083344;color:#67E8F9;}}
-:root[data-theme="dark"] .t-email{background:#1E3A5F;color:#93C5FD;}
-:root[data-theme="dark"] .t-phone{background:#2E1065;color:#C084FC;}
-:root[data-theme="dark"] .t-zip{background:#083344;color:#67E8F9;}
+/* ─── FLAGS ──────────────────────────────────────────── */
+.flag{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);}
+.flag:last-child{border-bottom:none;padding-bottom:0;}
+.fli{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:1px;}
+.flb{flex:1;}
+.flt{font-size:13px;font-weight:600;margin-bottom:3px;}
+.fld{font-size:12px;color:var(--sub);line-height:1.5;}
+.flc{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;flex-shrink:0;align-self:center;}
 
-/* Section */
-.section{margin-bottom:34px;}
-.section-head{display:flex;align-items:baseline;justify-content:space-between;
-  margin-bottom:12px;flex-wrap:wrap;gap:8px;}
-.section-title{font-size:15px;font-weight:700;}
-.section-note{font-size:12px;color:var(--text3);}
+/* ─── PILL ───────────────────────────────────────────── */
+.pill{display:inline-flex;align-items:center;padding:1px 7px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap;}
+.pg{background:var(--g-dim);color:var(--good);}
+.pw{background:var(--w-dim);color:var(--warn);}
+.pd{background:var(--d-dim);color:var(--danger);}
+.pn{background:var(--bg2);color:var(--muted);}
+.pa{background:var(--a-dim);color:var(--accent);}
+.pp{background:var(--p-dim);color:var(--purple);}
 
-/* Cause grid */
-.cause-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:640px){.cause-grid{grid-template-columns:1fr;}}
-.cause-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:15px 17px;}
-.cause-card h3{font-size:13px;font-weight:600;margin-bottom:5px;}
-.cause-card p{font-size:13px;color:var(--text2);line-height:1.5;}
-.cause-card code{font-family:var(--mono);font-size:11px;background:var(--surface2);
-  padding:1px 4px;border-radius:3px;color:var(--accent);}
+/* ─── EXPAND ─────────────────────────────────────────── */
+.exp{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;}
+.exp-hdr{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;user-select:none;}
+.exp-hdr:hover{background:var(--bg2);}
+.exp-left{flex:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.exp-t{font-size:13px;font-weight:600;}
+.exp-s{font-size:12px;color:var(--sub);}
+.chev{font-size:10px;color:var(--muted);transition:transform .2s;flex-shrink:0;display:inline-block;}
+.exp.open .chev{transform:rotate(180deg);}
+.exp-body{display:none;border-top:1px solid var(--border);overflow-x:auto;}
+.exp.open .exp-body{display:block;}
 
-/* Breakdown */
-.breakdown-wrap{background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:18px 20px;}
-.breakdown-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-bottom:12px;}
-.breakdown-seg{height:100%;}
-.breakdown-legend{display:flex;gap:18px;flex-wrap:wrap;}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);}
-.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.legend-count{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;}
+/* ─── TABLE ──────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{padding:8px 14px;background:var(--bg2);color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-align:left;white-space:nowrap;}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg2);}
+.mono{font-family:var(--mono);font-size:11px;}
+.diff-val{color:var(--warn);}
+.faint{color:var(--muted);}
+.np{display:flex;flex-direction:column;gap:1px;}
+.np-a{font-weight:600;}
+.np-b{color:var(--sub);font-size:11px;}
 
-/* Fix grid */
-.fix-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-@media(max-width:700px){.fix-grid{grid-template-columns:1fr;}}
-.fix-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:15px 17px;}
-.fix-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
-  padding:2px 7px;border-radius:11px;}
-.badge-auto{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
-.badge-pipe{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
-.fix-card-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.fix-card h3{font-size:13px;font-weight:700;}
-.fix-count{font-size:24px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;}
-.fix-sub{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5;}
-.fix-sub code{font-family:var(--mono);font-size:11px;background:var(--surface2);
-  padding:1px 4px;border-radius:3px;color:var(--accent);}
-
-/* UAT */
-.uat-box{background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius);
-  padding:17px 20px;display:flex;gap:22px;flex-wrap:wrap;align-items:center;}
-.uat-stat{text-align:center;min-width:80px;}
-.uat-stat-val{font-size:20px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;}
-.uat-stat-label{font-size:10.5px;color:var(--text2);margin-top:2px;}
-.uat-text{flex:1;min-width:200px;font-size:13px;color:var(--text2);line-height:1.6;}
-.uat-text strong{color:var(--text);}
-
-/* Search */
-.search-row{margin-bottom:10px;display:flex;gap:8px;align-items:center;}
-.search-row input{flex:1;padding:7px 11px;border-radius:7px;border:1px solid var(--border);
-  background:var(--surface);color:var(--text);font-size:13px;outline:none;}
-.search-row input:focus{border-color:var(--accent);}
-.search-row label{font-size:12px;color:var(--text3);white-space:nowrap;}
-
-/* Table */
-.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-thead th{background:var(--surface2);color:var(--text2);font-weight:600;font-size:11px;
-  letter-spacing:.05em;text-transform:uppercase;text-align:left;padding:8px 12px;
-  border-bottom:1px solid var(--border);white-space:nowrap;}
-tbody tr{border-bottom:1px solid var(--border);background:var(--surface);}
-tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:var(--surface2);}
-td{padding:8px 12px;vertical-align:top;}
-.td-name{font-weight:600;white-space:nowrap;}
-.td-mono{font-family:var(--mono);font-size:11.5px;color:var(--accent);}
-.td-small{font-size:12px;color:var(--text2);max-width:180px;word-break:break-all;}
-.rule-score{font-weight:600;color:var(--green);}
-
-/* Footer */
-.footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--border);
-  font-size:12px;color:var(--text3);display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;}
-.footer a{color:var(--accent);text-decoration:none;}
-.footer a:hover{text-decoration:underline;}
+/* ─── INFO BOX ───────────────────────────────────────── */
+.infobox{border-radius:8px;padding:14px 18px;margin-bottom:12px;font-size:13px;border:1px solid var(--accent);background:var(--a-dim);}
+.infobox b{color:var(--accent);}
 </style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div>
+      <h1>PBW Duplicate Analysis <span class="tag">SFDC_NG</span></h1>
+      <div class="hdr-meta">
+        <span>CONTACT_FORMULA_VW · account.business_group LIKE 'PB/Wires%' · crd_number IS NOT NULL</span>
+        <span>CRD-anchored + LLM pair review · 2026-08-17</span>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <strong>216,611</strong>
+      contacts analyzed
+    </div>
+  </div>
+</header>
 
 <div class="page">
 
-<!-- Header -->
-<div class="header">
-  <div class="eyebrow">NextGen Data Quality · Client Master</div>
-  <h1>559 contacts are recorded as two separate people in NextGen today</h1>
-  <p>Each person appears in both SFDC_GWM (Salesforce Global Wealth) and SFDC_NG (Salesforce NextGen) as separate golden records — same CRD, different identities. CM-2121 rule changes, validated in UAT (CM-2141), would resolve all 559 pairs.</p>
-  <div class="header-meta">
-    <span class="meta-pill">Source: DI_PRD.DWH_MASTER_DATA_NG.CM_MD_CONTACT</span>
-    <span class="meta-pill">August 2026</span>
-    <span class="meta-pill">Jira: CM-2121 · CM-2141</span>
+  <div class="sec">Summary</div>
+  <div class="kgrid">
+    <div class="kpi" style="--ks:var(--accent);">
+      <div class="kpi-lbl">Same-Person Pairs Found</div>
+      <div class="kpi-num" style="--kc:var(--accent);">391</div>
+      <div class="kpi-sub">Confirmed by matching FINRA CRD number</div>
+    </div>
+    <div class="kpi" style="--ks:var(--good);">
+      <div class="kpi-lbl">Resolved in xDM</div>
+      <div class="kpi-num" style="--kc:var(--good);">391</div>
+      <div class="kpi-sub"><strong>100%</strong> · ExactCRD rule correctly merged all</div>
+    </div>
+    <div class="kpi" style="--ks:var(--warn);">
+      <div class="kpi-lbl">CRD-Only Coverage</div>
+      <div class="kpi-num" style="--kc:var(--warn);">47</div>
+      <div class="kpi-sub">Pairs with <strong>no backup rule</strong> if CRD data degrades</div>
+    </div>
+    <div class="kpi" style="--ks:var(--danger);">
+      <div class="kpi-lbl">SFDC Data Flags</div>
+      <div class="kpi-num" style="--kc:var(--danger);">12</div>
+      <div class="kpi-sub">6 placeholder CRD · 6 suspected wrong CRD assignment</div>
+    </div>
   </div>
-</div>
 
-<!-- Alert -->
-<div class="alert">
-  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style="flex-shrink:0;margin-top:1px"><path d="M7.5 1L14 13H1L7.5 1Z" stroke="currentColor" stroke-linejoin="round"/><path d="M7.5 5.5v4M7.5 11v.5" stroke="currentColor" stroke-linecap="round"/></svg>
-  <div><strong>None of these are merging today.</strong> The ExactEmail rule has a guard clause <code>Record1.PublisherID &lt;&gt; 'SFDC_NG'</code> that explicitly excludes the primary CRM. Click any tile below to drill into sample pairs.</div>
-</div>
+  <div class="sec">Rule Coverage &amp; Data Quality</div>
+  <div class="two">
 
-<!-- KPI tiles -->
-<div class="kpi-grid">
-  <div class="kpi" id="kpi-all" onclick="toggleDrill('all')">
-    <div class="kpi-val red">559</div>
-    <div class="kpi-label">Total duplicate pairs — same CRD, two separate golden records</div>
-    <div class="kpi-hint">↓ click to explore</div>
-  </div>
-  <div class="kpi" id="kpi-email" onclick="toggleDrill('email')">
-    <div class="kpi-val blue">152</div>
-    <div class="kpi-label">Identical email on both sides — caught by ExactEmail R5</div>
-    <div class="kpi-hint">↓ click to explore</div>
-  </div>
-  <div class="kpi" id="kpi-phone" onclick="toggleDrill('phone')">
-    <div class="kpi-val purple">245</div>
-    <div class="kpi-label">Phone or ZIP match only — caught by name+location rules</div>
-    <div class="kpi-hint">↓ click to explore</div>
-  </div>
-  <div class="kpi" id="kpi-crd" onclick="toggleDrill('crd')">
-    <div class="kpi-val gray">162</div>
-    <div class="kpi-label">CRD only — need CRD to flow from GWM to xDM for ExactCRD to fire</div>
-    <div class="kpi-hint">↓ click to explore</div>
-  </div>
-</div>
+    <div class="card">
+      <div class="card-h">
+        How the 391 pairs are covered
+        <span class="pill pn">beyond ExactCRD</span>
+      </div>
 
-<!-- Drill-down panel -->
-<div class="drill-panel" id="drill-panel">
-  <div class="drill-header">
-    <div>
-      <div class="drill-title" id="drill-title"></div>
-      <div class="drill-note" id="drill-note"></div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Name + ZIP</div><div class="bl-s">score 95 · existing rule</div></div>
+        <div class="bt"><div class="bf" style="width:62%;background:var(--good);"></div></div>
+        <div class="bc">241 <span class="bpct">62%</span></div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Name + Phone</div><div class="bl-s">score 85 · existing rule</div></div>
+        <div class="bt"><div class="bf" style="width:48%;background:var(--accent);"></div></div>
+        <div class="bc">189 <span class="bpct">48%</span></div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Exact Email</div><div class="bl-s">score 95 · R5 proposed only</div></div>
+        <div class="bt"><div class="bf" style="width:2%;background:var(--purple);"></div></div>
+        <div class="bc">7 <span class="bpct">2%</span></div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Any backup rule</div><div class="bl-s">name+zip or name+phone</div></div>
+        <div class="bt"><div class="bf" style="width:70%;background:var(--sub);opacity:.4;"></div></div>
+        <div class="bc">273 <span class="bpct">70%</span></div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">CRD only — no backup</div><div class="bl-s">miss these without ExactCRD</div></div>
+        <div class="bt"><div class="bf" style="width:12%;background:var(--warn);"></div></div>
+        <div class="bc">47 <span class="bpct">12%</span></div>
+      </div>
+      <div class="bar-note">
+        Categories overlap — a pair can satisfy multiple rules simultaneously. ExactEmail (R5) is currently
+        blocked for SFDC_NG↔SFDC_NG by a publisher guard; CM-2121 R5 removes that guard. The 7 email-covered
+        pairs are already merged via ExactCRD — R5 adds no net new merges for PBW.
+      </div>
     </div>
-    <button class="drill-close" onclick="closeDrill()">✕ close</button>
-  </div>
-  <div class="drill-body">
-    <div class="cards-grid" id="drill-cards"></div>
-  </div>
-</div>
 
-<!-- Distribution -->
-<div class="section" style="margin-top:14px;">
-  <div class="section-head">
-    <span class="section-title">Distribution by corroborating signal</span>
-    <span class="section-note">All 559 confirmed same person via CRD (definitive FINRA identity)</span>
-  </div>
-  <div class="breakdown-wrap">
-    <div class="breakdown-bar">
-      <div class="breakdown-seg" style="width:27.2%;background:#1A56DB;"></div>
-      <div class="breakdown-seg" style="width:43.8%;background:#7C3AED;"></div>
-      <div class="breakdown-seg" style="width:29%;background:#9CA3AF;"></div>
-    </div>
-    <div class="breakdown-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#1A56DB;"></div>Email match<span class="legend-count">152</span><span style="color:var(--text3)">→ ExactEmail R5 (score 95) · auto-merge</span></div>
-      <div class="legend-item"><div class="legend-dot" style="background:#7C3AED;"></div>Phone / ZIP match<span class="legend-count">245</span><span style="color:var(--text3)">→ FuzzyFN+LN+Phone or ZIP rules · auto-merge</span></div>
-      <div class="legend-item"><div class="legend-dot" style="background:#9CA3AF;"></div>CRD only<span class="legend-count">162</span><span style="color:var(--text3)">→ ExactCRD (score 100) once CRD flows from GWM</span></div>
-    </div>
-  </div>
-</div>
+    <div class="card">
+      <div class="card-h">SFDC Data Quality Flags</div>
 
-<!-- Why they exist -->
-<div class="section">
-  <div class="section-head"><span class="section-title">Why these duplicates exist</span></div>
-  <div class="cause-grid">
-    <div class="cause-card">
-      <h3>Two Salesforce instances, one person</h3>
-      <p>SFDC_GWM (Global Wealth Management) and SFDC_NG (Next Gen) both track the same advisor. Each Salesforce has its own contact record — same CRD, email, and phone — but xDM creates two separate golden records instead of merging them.</p>
-    </div>
-    <div class="cause-card">
-      <h3>ExactEmail rule excludes SFDC_NG</h3>
-      <p>The current ExactEmail match rule has a guard clause: <code>Record1.PublisherID &lt;&gt; 'SFDC_NG'</code>. This blocks email-based matching for the primary CRM, so GWM and NG records with identical email addresses never match.</p>
-    </div>
-    <div class="cause-card">
-      <h3>CRD not flowing from GWM to xDM</h3>
-      <p>ExactCRD (score 100) would auto-merge any two masters with the same CRD. The 559 unmerged pairs suggest CRD is not being populated for SFDC_GWM master records in xDM, even though it appears in the Snowflake enriched view.</p>
-    </div>
-    <div class="cause-card">
-      <h3>Every pair is definitively the same person</h3>
-      <p>FINRA CRD numbers are unique lifetime identifiers. Two records with the same non-null CRD are the same individual — no exceptions. 152 of the 559 pairs also have identical email, phone, and ZIP on both sides.</p>
+      <div class="flag">
+        <div class="fli" style="background:var(--d-dim);">⚠️</div>
+        <div class="flb">
+          <div class="flt">Placeholder CRD 6953398 in SFDC</div>
+          <div class="fld">
+            4 completely different people (Eckberg, Ramirez, Pardue, Lilly — all UBS) share this known-bad
+            CRD in SFDC_NG. xDM correctly did <em>not</em> merge them — separate goldens. Fix: correct CRD in
+            Salesforce. This CRD is already in the xDM exclusion list.
+          </div>
+        </div>
+        <div class="flc" style="color:var(--danger);">4</div>
+      </div>
+
+      <div class="flag">
+        <div class="fli" style="background:var(--w-dim);">🔍</div>
+        <div class="flb">
+          <div class="flt">Same email, different CRD — likely bad CRD assignment</div>
+          <div class="fld">
+            31 pairs share an email but carry different CRDs. LLM review: <strong>6 likely same person</strong>
+            with an incorrect CRD on one record. E.g. Gerald Hannah (WFA Meridian MS) — same name, firm,
+            phone, ZIP, but CRDs 6076491 vs 4700076. Ashley Matthews (RJ) — CRD 7335535 vs 735535,
+            probable dropped leading digit. Not fixable by xDM rule changes — requires SFDC CRD correction.
+          </div>
+        </div>
+        <div class="flc" style="color:var(--warn);">6</div>
+      </div>
+
+      <div class="flag">
+        <div class="fli" style="background:var(--bg2);">≈</div>
+        <div class="flb">
+          <div class="flt">Same email, different CRD — ambiguous</div>
+          <div class="fld">
+            14 same-email/different-CRD pairs where names match but CRDs are genuinely distinct registered
+            individuals (e.g. two Christopher Boyds at different Morgan Stanley OH branches). SFDC account
+            owner investigation needed — not resolvable by rule.
+          </div>
+        </div>
+        <div class="flc" style="color:var(--muted);">14</div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- CM-2121 fix -->
-<div class="section">
-  <div class="section-head"><span class="section-title">How CM-2121 fixes this</span></div>
-  <div class="fix-grid">
-    <div class="fix-card">
-      <div class="fix-card-header"><span class="fix-badge badge-auto">Auto-merge</span><h3>R5 · ExactEmail</h3></div>
-      <div class="fix-count">152</div>
-      <div class="fix-sub">Removes <code>PublisherID &lt;&gt; 'SFDC_NG'</code>. Score 95 &gt; 90 threshold → confirmed goldens auto-merge on next load. All 152 pairs share identical email, phone, and ZIP.</div>
+  <div class="sec">Why 47 Pairs Have No Backup Signal</div>
+
+  <div class="infobox">
+    These are confirmed same-person pairs (identical CRD = same FINRA individual) where every other matchable
+    field differs between the two records. <b>ExactCRD is their only safety net.</b> No existing or CM-2121 proposed
+    rule would catch them if CRD data quality degraded.
+  </div>
+
+  <div class="two" style="margin-bottom:0;">
+    <div class="card" style="padding:16px 20px;">
+      <div class="card-h">Breakdown by reason</div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Nickname / preferred name</div><div class="bl-s">Tom/Thomas · Steve/Stephen · Joe/Joseph · Sandy/Sandra · Trip/Mabry</div></div>
+        <div class="bt"><div class="bf" style="width:43%;background:var(--accent);"></div></div>
+        <div class="bc">~20</div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Married / legal name change</div><div class="bl-s">Hill→Moore · Nunez→Mackie · Miller→Mundie · Powell→Williams</div></div>
+        <div class="bt"><div class="bf" style="width:32%;background:var(--purple);"></div></div>
+        <div class="bc">~15</div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Different email addresses</div><div class="bl-s">firm email vs personal consulting domain; different email format</div></div>
+        <div class="bt"><div class="bf" style="width:25%;background:var(--warn);"></div></div>
+        <div class="bc">~12</div>
+      </div>
     </div>
-    <div class="fix-card">
-      <div class="fix-card-header"><span class="fix-badge badge-auto">Auto-merge</span><h3>New · FuzzyFN+LN+Phone / R6 ZIP</h3></div>
-      <div class="fix-count">~245</div>
-      <div class="fix-sub">New FuzzyFN+ExactLN+Phone rule (score 92) and R6 ExactFNLNSfxZip cross-publisher (score 95). Catches pairs where email isn't present or differs but phone or ZIP matches.</div>
-    </div>
-    <div class="fix-card">
-      <div class="fix-card-header"><span class="fix-badge badge-pipe">Pipeline fix</span><h3>ExactCRD · All 559</h3></div>
-      <div class="fix-count">162</div>
-      <div class="fix-sub">ExactCRD (score 100) already exists. Fix: ensure CRD flows from SFDC_GWM staging into xDM's MD_CONTACT. Once populated, ExactCRD fires and all same-CRD goldens merge — same result as CM-2141 UAT.</div>
+
+    <div class="card" style="padding:16px 20px;">
+      <div class="card-h">CM-2121 impact on PBW</div>
+      <p style="font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:10px;">
+        <strong style="color:var(--text);">R5</strong> (remove SFDC_NG guard from ExactEmail) would add email
+        coverage for <strong style="color:var(--text);">7 pairs</strong> — all already merged via ExactCRD.
+        Zero net change in resolution rate for PBW.
+      </p>
+      <p style="font-size:13px;color:var(--sub);line-height:1.7;">
+        The 47 CRD-only pairs (nickname, name-change, and email-split cases) are <strong style="color:var(--text);">not addressable
+        by any proposed rule</strong>. Their records differ on name, email, phone, and ZIP simultaneously.
+        ExactCRD is and will remain their sole match path.
+      </p>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);">
+        CM-2121's primary PBW value is cross-publisher matching (SFDC_NG ↔ DISCOVERY_BD etc.), not within
+        SFDC_NG where CRD data is nearly complete.
+      </div>
     </div>
   </div>
-</div>
 
-<!-- UAT -->
-<div class="section">
-  <div class="section-head"><span class="section-title">UAT validation — CM-2141</span></div>
-  <div class="uat-box">
-    <div class="uat-stat"><div class="uat-stat-val">170→0</div><div class="uat-stat-label">Dup-CRD goldens (−100%)</div></div>
-    <div class="uat-stat"><div class="uat-stat-val">−96%</div><div class="uat-stat-label">Cross-golden DU pairs (7,228→314)</div></div>
-    <div class="uat-stat"><div class="uat-stat-val">0</div><div class="uat-stat-label">Multi-CRD false merges</div></div>
-    <div class="uat-text"><strong>CM-2141 field-tested CM-2121 rules in UAT.</strong> All 170 duplicate-CRD golden records resolved to 1. Cross-golden DU match pairs dropped 96%. Zero false merges — no case where records with different CRDs were incorrectly merged. Recommendation: promote to PROD via incremental load.</div>
+  <!-- DRILL-DOWN -->
+  <div class="sec">Drill-Down</div>
+
+  <div class="exp open" id="e1">
+    <div class="exp-hdr" onclick="tog('e1')">
+      <div class="exp-left">
+        <span class="exp-t">CRD-only pairs — sample (15 of 47)</span>
+        <span class="pill pw">no backup rule fires</span>
+        <span class="exp-s">Same CRD = same person · every other matchable field differs</span>
+      </div>
+      <span class="chev">▼</span>
+    </div>
+    <div class="exp-body">
+      <table>
+        <thead>
+          <tr><th>CRD</th><th>Record A · Name / Email</th><th>Record B · Name / Email</th><th>Why no rule fires</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="mono">1211066</span></td>
+            <td><div class="np"><span class="np-a">Thomas Lee</span><span class="np-b">leets@stifel.com</span></div></td>
+            <td><div class="np"><span class="np-a">Tom Lee</span><span class="np-b">thomas.lee@stifel.com</span></div></td>
+            <td><span class="pill pa">Nickname</span> Thomas ≠ Tom; different email prefix</td></tr>
+          <tr><td><span class="mono">2703318</span></td>
+            <td><div class="np"><span class="np-a">Stephen Ethridge</span><span class="np-b">steve@guardinv.com · CA</span></div></td>
+            <td><div class="np"><span class="np-a">Steve Ethridge</span><span class="np-b">steve.ethridge@morganstanley.com · CA</span></div></td>
+            <td><span class="pill pa">Nickname</span> Stephen ≠ Steve; different email domains</td></tr>
+          <tr><td><span class="mono">2311336</span></td>
+            <td><div class="np"><span class="np-a">Joseph Hoffmeier</span><span class="np-b">joseph.hoffmeier@morganstanley.com</span></div></td>
+            <td><div class="np"><span class="np-a">Joe Hoffmeier</span><span class="np-b">j.b.hoffmeier@morganstanley.com</span></div></td>
+            <td><span class="pill pa">Nickname</span> Joseph ≠ Joe; different email format</td></tr>
+          <tr><td><span class="mono">3045999</span></td>
+            <td><div class="np"><span class="np-a">Sandra Cunningham</span><span class="np-b">sandra.cunningham@ubs.com · DC</span></div></td>
+            <td><div class="np"><span class="np-a">Sandy Cunningham</span><span class="np-b">sandy.cunningham@ubs.com · DC</span></div></td>
+            <td><span class="pill pa">Nickname</span> Sandra ≠ Sandy; different email prefix despite same domain</td></tr>
+          <tr><td><span class="mono">1968939</span></td>
+            <td><div class="np"><span class="np-a">Mabry Phillips</span><span class="np-b">mabry.phillips@raymondjames.com · AL</span></div></td>
+            <td><div class="np"><span class="np-a">Trip Phillips</span><span class="np-b">trip.phillips@raymondjames.com · AL</span></div></td>
+            <td><span class="pill pa">Nickname</span> Mabry ≠ Trip (preferred name); different email</td></tr>
+          <tr><td><span class="mono">1259020</span></td>
+            <td><div class="np"><span class="np-a">Victoria Hill</span><span class="np-b">victoria.hill@morganstanley.com · CO</span></div></td>
+            <td><div class="np"><span class="np-a">Victoria Moore</span><span class="np-b">victoria.moore@morganstanley.com · GA</span></div></td>
+            <td><span class="pill pp">Name change</span> Hill→Moore; relocated CO→GA; no shared signals</td></tr>
+          <tr><td><span class="mono">2974174</span></td>
+            <td><div class="np"><span class="np-a">Jessica Miller</span><span class="np-b">jessica.b.miller@morganstanley.com · TX</span></div></td>
+            <td><div class="np"><span class="np-a">Jessica Mundie</span><span class="np-b">jessica.mundie@morganstanley.com · NY</span></div></td>
+            <td><span class="pill pp">Name change</span> Miller→Mundie; different offices and email</td></tr>
+          <tr><td><span class="mono">3054504</span></td>
+            <td><div class="np"><span class="np-a">Diana Nunez</span><span class="np-b">diana.nunez@morganstanley.com · TX</span></div></td>
+            <td><div class="np"><span class="np-a">Diana Mackie</span><span class="np-b">diana.mackie@morganstanley.com · TX</span></div></td>
+            <td><span class="pill pp">Name change</span> Nunez→Mackie; same branch/phone/ZIP but name+email differ</td></tr>
+          <tr><td><span class="mono">1893549</span></td>
+            <td><div class="np"><span class="np-a">Melissa Powell</span><span class="np-b">melissa.powell@raymondjames.com · TN</span></div></td>
+            <td><div class="np"><span class="np-a">Lisa Williams</span><span class="np-b">lisa.williams@raymondjames.com · TN</span></div></td>
+            <td><span class="pill pd">Major change</span> First + last both changed; CRD is the only link</td></tr>
+          <tr><td><span class="mono">1985218</span></td>
+            <td><div class="np"><span class="np-a">Gary Handler</span><span class="np-b">gary.handler@raymondjames.com · CA</span></div></td>
+            <td><div class="np"><span class="np-a">Gary Handler</span><span class="np-b">garyhandler@dhconsultinggroup.com · CA</span></div></td>
+            <td><span class="pill pw">Diff email</span> Same name; RJ email vs personal consulting firm email</td></tr>
+          <tr><td><span class="mono">2638329</span></td>
+            <td><div class="np"><span class="np-a">Peter Prunty</span><span class="np-b">peter.prunty@indexcapitalconsultants.com · NJ</span></div></td>
+            <td><div class="np"><span class="np-a">Peter Prunty</span><span class="np-b">peter.prunty@morganstanley.com · NY</span></div></td>
+            <td><span class="pill pw">Diff email</span> Consulting firm email vs MS email; different ZIP</td></tr>
+          <tr><td><span class="mono">2415365</span></td>
+            <td><div class="np"><span class="np-a">Lisa Schuhmacher</span><span class="np-b">lisa.schuhmacher@wellsfargoadvisors.com · MA</span></div></td>
+            <td><div class="np"><span class="np-a">Lisa Schumacher</span><span class="np-b">lisa.j.schumacher@wfa.com · MA</span></div></td>
+            <td><span class="pill pw">Diff email</span> Name spelling typo + different email format</td></tr>
+          <tr><td><span class="mono">1357308</span></td>
+            <td><div class="np"><span class="np-a">Laura Martin</span><span class="np-b">laura.martin@raymondjames.com · ZIP 30305</span></div></td>
+            <td><div class="np"><span class="np-a">Laura Martin</span><span class="np-b">laura.j.martin@raymondjames.com · ZIP 60481</span></div></td>
+            <td><span class="pill pw">Diff email</span> Same name/firm; different email variant and ZIP</td></tr>
+          <tr><td><span class="mono">2762026</span></td>
+            <td><div class="np"><span class="np-a">James Albano</span><span class="np-b">james.albano@raymondjames.com · VA</span></div></td>
+            <td><div class="np"><span class="np-a">Mike Albano</span><span class="np-b">mike@trinitaswealthmanagement.com · VA</span></div></td>
+            <td><span class="pill pd">Unusual</span> James vs Mike; different email domains; CRD is sole link</td></tr>
+          <tr><td><span class="mono">1363852</span></td>
+            <td><div class="np"><span class="np-a">Donna Bailey</span><span class="np-b">donna.s.bailey@morganstanley.com · ZIP 55391</span></div></td>
+            <td><div class="np"><span class="np-a">Donna Bailey</span><span class="np-b">donna.bailey@morganstanley.com · ZIP 10036</span></div></td>
+            <td><span class="pill pw">Diff email</span> Same name; different email variant + different office ZIP</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 
-<div class="footer">
-  <span>Data: Snowflake DI_PRD.DWH_MASTER_DATA_NG · August 2026</span>
-  <span>Jira: <a href="#">CM-2121</a> · <a href="#">CM-2141</a> · Apollo Client Master</span>
-</div>
+  <div class="exp" id="e2">
+    <div class="exp-hdr" onclick="tog('e2')">
+      <div class="exp-left">
+        <span class="exp-t">Same-email, different-CRD pairs (all 31)</span>
+        <span class="pill pw">6 likely bad CRD data</span>
+        <span class="pill pn">14 ambiguous</span>
+        <span class="pill pn">11 different people</span>
+        <span class="exp-s">LLM verdict on each · requires SFDC investigation, not xDM rule changes</span>
+      </div>
+      <span class="chev">▼</span>
+    </div>
+    <div class="exp-body">
+      <table>
+        <thead>
+          <tr><th>Email</th><th>Record A · Name / CRD</th><th>Record B · Name / CRD</th><th>Location</th><th>Verdict</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="faint">alexander.w.king@ml.com</td>
+            <td><div class="np"><span class="np-a">Alexander King</span><span class="mono diff-val">6339359</span></div></td>
+            <td><div class="np"><span class="np-a">William King</span><span class="mono diff-val">1432593</span></div></td>
+            <td class="faint">NY · NY</td><td><span class="pill pn">Diff people</span></td>
+            <td>Name mismatch; shared ML team email</td></tr>
+          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
+            <td class="faint">ashley.matthews@raymondjames.com</td>
+            <td><div class="np"><span class="np-a">Ashley Matthews</span><span class="mono diff-val">7335535</span></div></td>
+            <td><div class="np"><span class="np-a">Ashley Matthews</span><span class="mono diff-val">735535</span></div></td>
+            <td class="faint">FL · FL · same ZIP</td><td><span class="pill pw">Likely same</span></td>
+            <td>CRD 735535 ≈ 7335535 — probable dropped leading digit</td></tr>
+          <tr><td class="faint">blake.schmidt@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Blake Schmidt</span><span class="mono diff-val">6706046</span></div></td>
+            <td><div class="np"><span class="np-a">Karolyn Bradley</span><span class="mono diff-val">2393394</span></div></td>
+            <td class="faint">CA · CA</td><td><span class="pill pn">Diff people</span></td>
+            <td>Completely different names; shared office email</td></tr>
+          <tr><td class="faint">chris.boyd@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Christopher Boyd</span><span class="mono diff-val">6857034</span></div></td>
+            <td><div class="np"><span class="np-a">Christopher Boyd</span><span class="mono diff-val">4735900</span></div></td>
+            <td class="faint">OH Columbus · OH Columbus</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/city/firm; different CRDs — two separate advisors</td></tr>
+          <tr><td class="faint">christopher.lambert@raymondjames.com</td>
+            <td><div class="np"><span class="np-a">Christopher Lambert</span><span class="mono diff-val">7368352</span></div></td>
+            <td><div class="np"><span class="np-a">Christopher Lambert</span><span class="mono diff-val">2336186</span></div></td>
+            <td class="faint">TX · IL</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different states and CRDs</td></tr>
+          <tr><td class="faint">christopher.rocha@jpmorgan.com</td>
+            <td><div class="np"><span class="np-a">Christopher Rocha</span><span class="mono diff-val">6315068</span></div></td>
+            <td><div class="np"><span class="np-a">Christopher Rocha</span><span class="mono diff-val">6126372</span></div></td>
+            <td class="faint">IL · TX</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different states and CRDs</td></tr>
+          <tr><td class="faint">corey.engelhard@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Jerome Engelhard</span><span class="mono diff-val">861718</span></div></td>
+            <td><div class="np"><span class="np-a">Corey Engelhard</span><span class="mono diff-val">2788550</span></div></td>
+            <td class="faint">FL · FL same branch</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Name mismatch; same branch — possible middle name / father-son</td></tr>
+          <tr><td class="faint">drew.t.johnson@ml.com</td>
+            <td><div class="np"><span class="np-a">Ann Cirullo</span><span class="mono diff-val">4400687</span></div></td>
+            <td><div class="np"><span class="np-a">Drew Johnson</span><span class="mono diff-val">7179644</span></div></td>
+            <td class="faint">MN · MN</td><td><span class="pill pn">Diff people</span></td>
+            <td>Completely different names; SFDC data entry error on Cirullo's email</td></tr>
+          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
+            <td class="faint">elliott.gruber@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Elliott Gruber</span><span class="mono diff-val">6104781</span></div></td>
+            <td><div class="np"><span class="np-a">Elliott Gruber</span><span class="mono diff-val">610478</span></div></td>
+            <td class="faint">TN · MS same firm</td><td><span class="pill pw">Likely same</span></td>
+            <td>CRD 610478 ≈ 6104781 — probable trailing digit dropped</td></tr>
+          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
+            <td class="faint">gerald.hannah@wellsfargoadvisors.com</td>
+            <td><div class="np"><span class="np-a">Gerald Hannah</span><span class="mono diff-val">6076491</span></div></td>
+            <td><div class="np"><span class="np-a">Gerald Hannah</span><span class="mono diff-val">4700076</span></div></td>
+            <td class="faint">MS · MS same branch+phone+ZIP</td><td><span class="pill pw">Likely same</span></td>
+            <td>Everything matches except CRD — classic bad CRD assignment in SFDC</td></tr>
+          <tr><td class="faint">gilbertm@stifel.com</td>
+            <td><div class="np"><span class="np-a">Michael Gilbert</span><span class="mono diff-val">2889240</span></div></td>
+            <td><div class="np"><span class="np-a">Megan Gilbert</span><span class="mono diff-val">5576203</span></div></td>
+            <td class="faint">MD · MO</td><td><span class="pill pn">Diff people</span></td>
+            <td>Name mismatch; likely family sharing Stifel mailbox</td></tr>
+          <tr><td class="faint">ginger.murray@wellsfargoadvisors.com</td>
+            <td><div class="np"><span class="np-a">Amy Schmitz</span><span class="mono diff-val">5923039</span></div></td>
+            <td><div class="np"><span class="np-a">Ginger Murray</span><span class="mono diff-val">1161158</span></div></td>
+            <td class="faint">IL · IL same branch</td><td><span class="pill pn">Diff people</span></td>
+            <td>Completely different names; SFDC email data entry error on Schmitz</td></tr>
+          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
+            <td class="faint">irvin_david@ml.com</td>
+            <td><div class="np"><span class="np-a">Irvin David</span><span class="mono diff-val">4810984</span></div></td>
+            <td><div class="np"><span class="np-a">Irvin David</span><span class="mono diff-val">862717</span></div></td>
+            <td class="faint">LA · LA same branch+ZIP</td><td><span class="pill pw">Likely same</span></td>
+            <td>Same name/firm/ZIP; only CRD differs — bad CRD on one record</td></tr>
+          <tr><td class="faint">james.k.cronin@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Michael Weitman</span><span class="mono diff-val">3050620</span></div></td>
+            <td><div class="np"><span class="np-a">James Cronin</span><span class="mono diff-val">2106986</span></div></td>
+            <td class="faint">FL · IL</td><td><span class="pill pn">Diff people</span></td>
+            <td>Completely different names; placeholder phone on Weitman record</td></tr>
+          <tr><td class="faint">jonesg@stifel.com</td>
+            <td><div class="np"><span class="np-a">Ginger Jones</span><span class="mono diff-val">2688656</span></div></td>
+            <td><div class="np"><span class="np-a">Gregory Jones</span><span class="mono diff-val">1291974</span></div></td>
+            <td class="faint">AL · MO</td><td><span class="pill pn">Diff people</span></td>
+            <td>Name mismatch; Stifel shared mailbox pattern</td></tr>
+          <tr><td class="faint">justin.v.smith@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Justin Smith</span><span class="mono diff-val">7632271</span></div></td>
+            <td><div class="np"><span class="np-a">Justin Smith</span><span class="mono diff-val">3034605</span></div></td>
+            <td class="faint">FL · CA same phone</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/phone/email; different states and CRDs</td></tr>
+          <tr><td class="faint">keith.r.robinson@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Keith Robinson</span><span class="mono diff-val">2382963</span></div></td>
+            <td><div class="np"><span class="np-a">Keith Robinson</span><span class="mono diff-val">1456540</span></div></td>
+            <td class="faint">CO · FL same ZIP</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different states and CRDs</td></tr>
+          <tr><td class="faint">kenneth.moorefield@raymondjames.com</td>
+            <td><div class="np"><span class="np-a">Kenneth Moorefield</span><span class="mono diff-val">6206386</span></div></td>
+            <td><div class="np"><span class="np-a">Kenneth Moorefield</span><span class="mono diff-val">1689765</span></div></td>
+            <td class="faint">VA · FL</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different states and CRDs</td></tr>
+          <tr><td class="faint">kimberly.morse@wellsfargoadvisors.com</td>
+            <td><div class="np"><span class="np-a">Kimberly Morse</span><span class="mono diff-val">4334640</span></div></td>
+            <td><div class="np"><span class="np-a">Kimberly Morse</span><span class="mono diff-val">3120153</span></div></td>
+            <td class="faint">CO · IN</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different states/firms and CRDs</td></tr>
+          <tr><td class="faint">kramers@stifel.com</td>
+            <td><div class="np"><span class="np-a">Sherri Kramer</span><span class="mono diff-val">2362652</span></div></td>
+            <td><div class="np"><span class="np-a">Sheldon Kramer</span><span class="mono diff-val">274897</span></div></td>
+            <td class="faint">MO · NY</td><td><span class="pill pn">Diff people</span></td>
+            <td>Name mismatch; Stifel shared mailbox pattern</td></tr>
+          <tr><td class="faint">lisa.di.piazza@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Lisa Di Piazza</span><span class="mono diff-val">6084406</span></div></td>
+            <td><div class="np"><span class="np-a">Lisa Piazza</span><span class="mono diff-val">2071299</span></div></td>
+            <td class="faint">WI · CA</td><td><span class="pill pn">Diff people</span></td>
+            <td>Different CRDs + different states; name variation insufficient without other signals</td></tr>
+          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
+            <td class="faint">matthew.eckberg@ubs.com</td>
+            <td><div class="np"><span class="np-a">Matthew Eckberg</span><span class="mono diff-val">6953398 ⚠</span></div></td>
+            <td><div class="np"><span class="np-a">Matthew Eckberg</span><span class="mono diff-val">7198630</span></div></td>
+            <td class="faint">MN UBS · MN ML</td><td><span class="pill pw">Likely same</span></td>
+            <td>CRD 6953398 is a known placeholder; 7198630 is the real CRD for this person</td></tr>
+          <tr><td class="faint">michael.lacroix@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Michael Lacroix</span><span class="mono diff-val">5689347</span></div></td>
+            <td><div class="np"><span class="np-a">Robert Lacroix</span><span class="mono diff-val">1244093</span></div></td>
+            <td class="faint">CA · CA same branch</td><td><span class="pill pn">Diff people</span></td>
+            <td>Name mismatch; likely family sharing branch email</td></tr>
+          <tr><td class="faint">michael.r.white@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Michael White</span><span class="mono diff-val">2411286</span></div></td>
+            <td><div class="np"><span class="np-a">Michael White</span><span class="mono diff-val">3144990</span></div></td>
+            <td class="faint">OK · SC</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/phone/email; different states and CRDs</td></tr>
+          <tr><td class="faint">mike.mccarthy@ml.com</td>
+            <td><div class="np"><span class="np-a">Michael McCarthy</span><span class="mono diff-val">6907416</span></div></td>
+            <td><div class="np"><span class="np-a">Michael McCarthy</span><span class="mono diff-val">1067348</span></div></td>
+            <td class="faint">IL · IL</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different IL ZIP codes and CRDs</td></tr>
+          <tr><td class="faint">miranda.cabrelli@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Marie Gabriele</span><span class="mono diff-val">1904150</span></div></td>
+            <td><div class="np"><span class="np-a">Miranda Cabrelli</span><span class="mono diff-val">5588710</span></div></td>
+            <td class="faint">PA · PA same branch+phone</td><td><span class="pill pn">Diff people</span></td>
+            <td>Different names; shared branch phone; SFDC data entry error on Gabriele's email</td></tr>
+          <tr><td class="faint">renee.johnson@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Renee Johnson</span><span class="mono diff-val">2296294</span></div></td>
+            <td><div class="np"><span class="np-a">Renee Johnson</span><span class="mono diff-val">4757621</span></div></td>
+            <td class="faint">CA MS · NJ UBS</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different firms and CRDs</td></tr>
+          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
+            <td class="faint">richard.k.maurer@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Richard Maurer</span><span class="mono diff-val">4141982</span></div></td>
+            <td><div class="np"><span class="np-a">Richard Maurer</span><span class="mono diff-val">846485</span></div></td>
+            <td class="faint">FL · FL same branch+ZIP</td><td><span class="pill pw">Likely same</span></td>
+            <td>Same name/firm/branch/ZIP; two CRDs assigned to one person in SFDC</td></tr>
+          <tr><td class="faint">richard.tanner@wellsfargoadvisors.com</td>
+            <td><div class="np"><span class="np-a">Richard Tanner</span><span class="mono diff-val">6849559</span></div></td>
+            <td><div class="np"><span class="np-a">Richard Tanner</span><span class="mono diff-val">4474093</span></div></td>
+            <td class="faint">CT · FL</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different states and CRDs</td></tr>
+          <tr><td class="faint">ryan.c.young@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Ryan Young</span><span class="mono diff-val">7341972</span></div></td>
+            <td><div class="np"><span class="np-a">Ryan Young</span><span class="mono diff-val">6338812</span></div></td>
+            <td class="faint">PA · MD</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/email; different states and CRDs</td></tr>
+          <tr><td class="faint">scott.lewis@morganstanley.com</td>
+            <td><div class="np"><span class="np-a">Scott Lewis</span><span class="mono diff-val">4169826</span></div></td>
+            <td><div class="np"><span class="np-a">Scott Lewis</span><span class="mono diff-val">4140566</span></div></td>
+            <td class="faint">MI · GA</td><td><span class="pill pn">Ambiguous</span></td>
+            <td>Same name/phone/email; different states — CRDs close numerically but distinct</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <script>
-// ── Data ──────────────────────────────────────────────────────────────────────
-var EMAIL = [
-  {n:"Thomas Alley",      crd:"711288",  gid:"003f200002fvRRkAAM", nid:"003Dp00000IPlJWIA1", gem:"thomas.alley@morganstanley.com", nem:"thomas.alley@morganstanley.com", gph:"+1 303-925-9705", nph:"+1 303-925-9705", gzip:"80111", nzip:"80111", sig:"email"},
-  {n:"Rocio Ortega",      crd:"4285252", gid:"003f200002fuUofAAE", nid:"003Dp00000IQ4QSIA1", gem:"rocio.ortega@wefamilyoffices.com", nem:"rocio.ortega@wefamilyoffices.com", gph:"+1 305-825-2225", nph:"+1 305-825-2225", gzip:"33134", nzip:"33134", sig:"email"},
-  {n:"Michael Mancuso",   crd:"1566874", gid:"003f200002fuOJoAAM", nid:"003Uk00000gtkvKIAQ", gem:"michael_mancuso@ml.com", nem:"michael_mancuso@ml.com", gph:"+1 913-906-5261", nph:"+1 913-906-5261", gzip:"66211", nzip:"66211", sig:"email"},
-  {n:"Bryan Sullivan",    crd:"5243267", gid:"003f200002fuvY3AAI", nid:"003Dp00000J4h12IAB", gem:"bryan@epiqwest.com", nem:"bryan@epiqwest.com", gph:"+1 303-442-3670", nph:"+1 303-442-3670", gzip:"80021", nzip:"80021", sig:"email"},
-  {n:"Daniel Cianci",     crd:"4518652", gid:"0038W00001fUPS2QAO", nid:"003Dp00000K4G2DIAV", gem:"dcianci@athene.com", nem:"dcianci@athene.com", gph:"+1 515-342-4616", nph:"+1 515-342-4616", gzip:"50266", nzip:"50266", sig:"email"},
-  {n:"Weston Burress",    crd:"5623140", gid:"0035w00003VaVygAAF", nid:"003Dp00000K4G2NIAV", gem:"wburress@apollo.com", nem:"wburress@apollo.com", gph:"+1 866-788-8614", nph:"+1 866-788-8614", gzip:"85143", nzip:"85143", sig:"email"},
-  {n:"Aaron Jones",       crd:"5827702", gid:"0038W00001fUPT6QAO", nid:"003Dp00000K4G2BIAV", gem:"aaron.jones@athene.com", nem:"aaron.jones@athene.com", gph:"+1 515-342-4616", nph:"+1 515-342-4616", gzip:"50266", nzip:"50266", sig:"email"},
-  {n:"Zachary Forman",    crd:"5628793", gid:"0038W00001mcWmKQAU", nid:"003Dp00000K4G2AIAV", gem:"zforman@apollo.com", nem:"zforman@apollo.com", gph:"+1 949-270-9325", nph:"+1 949-270-9325", gzip:"85255", nzip:"85255", sig:"email"},
-  {n:"Grant Wesely",      crd:"5004823", gid:"003f200002fvIYdAAM", nid:"003Dp00000K4G2zIAF", gem:"gwesely@athene.com", nem:"gwesely@athene.com", gph:"+1 515-342-4616", nph:"+1 515-342-4616", gzip:"50266", nzip:"50266", sig:"email"},
-  {n:"Nancy Wilson",      crd:"2297100", gid:"003f200002fu0h2AAA", nid:"003Uk00000gL4ouIAC", gem:"nancy.m.wilson@morganstanley.com", nem:"nancy.m.wilson@morganstanley.com", gph:"+1 603-422-8953", nph:"+1 603-422-8953", gzip:"03801", nzip:"03801", sig:"email"},
-  {n:"Christopher Miller",crd:"4145117", gid:"003f200002hQ4ILAA0", nid:"003Dp00000IRDuJIAX", gem:"christopherh.miller@lpl.com", nem:"christopherh.miller@lpl.com", gph:"+1 301-639-0850", nph:"+1 301-639-0850", gzip:"21704", nzip:"21704", sig:"email"},
-  {n:"John Crawford",     crd:"1966363", gid:"003f200002hPxKJAA0", nid:"003Dp00000J4wqWIAR", gem:"j4crawford@crawfordinvestment.com", nem:"j4crawford@crawfordinvestment.com", gph:"+1 770-859-0045", nph:"+1 770-859-0045", gzip:"30339", nzip:"30339", sig:"email"},
-  {n:"Robert Lybbert",    crd:"4418112", gid:"003f200002hQFi6AAG", nid:"003Uk00000gweN6IAI", gem:"rob.lybbert@edwardjones.com", nem:"rob.lybbert@edwardjones.com", gph:"+1 509-754-7188", nph:"+1 509-754-7188", gzip:"98823", nzip:"98823", sig:"email"},
-  {n:"Nirmal Patel",      crd:"6517457", gid:"0038W00002BGDBeQAP", nid:"003Dp00000J4EfAIAV", gem:"nirmal.patel@jpmorgan.com", nem:"nirmal.patel@jpmorgan.com", gph:"+1 312-732-1164", nph:"+1 312-732-1164", gzip:"60603", nzip:"60603", sig:"email"},
-  {n:"Peter Matson",      crd:"3096179", gid:"0038W00001fUSvGQAW", nid:"003Dp00000K4G2UIAV", gem:"pmatson@apollo.com", nem:"pmatson@apollo.com", gph:"+1 866-788-8614", nph:"+1 866-788-8614", gzip:"27617", nzip:"27617", sig:"email"},
-  {n:"Brian Cohen",       crd:"1435347", gid:"0035w00003OxQJtAAN", nid:"003Dp00000J4kowIAB", gem:"brian@landmarkwealthmgmt.com", nem:"brian@landmarkwealthmgmt.com", gph:"+1 631-923-2487", nph:"+1 631-923-2487", gzip:"11747", nzip:"11747", sig:"email"},
-  {n:"Sean Preston",      crd:"151478",  gid:"003f200002fvBN3AAM", nid:"003Dp00000IPo4VIAT", gem:"sean@glassmanwealth.com", nem:"sean@glassmanwealth.com", gph:"+1 703-534-4444", nph:"+1 703-534-4444", gzip:"22182", nzip:"22182", sig:"email"},
-  {n:"Randy Anderson",    crd:"6108120", gid:"0038W000029EQ1vQAG", nid:"003Dp00000K4G2oIAF", gem:"randerson@griffincapital.com", nem:"randerson@griffincapital.com", gph:"+1 212-515-3200", nph:"+1 212-515-3200", gzip:"90245", nzip:"90245", sig:"email"},
-  {n:"William Witte",     crd:"5064513", gid:"0038W00001fUSvAQAW", nid:"003Dp00000K4G31IAF", gem:"bwitte@griffincapital.com", nem:"bwitte@griffincapital.com", gph:"+1 480-327-4660", nph:"+1 480-327-4660", gzip:"85016", nzip:"85016", sig:"email"},
-  {n:"John Straus",       crd:"5158258", gid:"003f200002hQJgNAAW", nid:"003Dp00000IPq0BIAT", gem:"jstrausjr@newedgecg.com", nem:"jstrausjr@newedgecg.com", gph:"+1 412-391-7077", nph:"+1 412-391-7077", gzip:"06902", nzip:"06902", sig:"email"},
-];
-
-var PHONE = [
-  {n:"Antony Geyelin",    crd:"4605388", gid:"0038W00001hLsXxQAK", nid:"003Dp00000K4G2EIAV", gem:null, nem:null, gph:"+1 484-530-4800", nph:"+1 484-530-4800", gzip:"19103", nzip:"19103", sig:"phone+zip"},
-  {n:"Frederick Schiller",crd:"718987",  gid:"003f200002fua61AAA", nid:"003Dp00000IPzNpIAL", gem:"frederick.a.schiller@morganstanley.com", nem:"christine.m.schroeder@morganstanley.com", gph:"+1 973-267-4545", nph:"+1 973-267-4545", gzip:"07960", nzip:"07960", sig:"phone+zip"},
-  {n:"Michael Kazma",     crd:"7378729", gid:"0038W000029EUqBQAW", nid:"003Dp00000IPbQGIA1", gem:null, nem:"mikek@amzak.com", gph:"+1 305-901-6050", nph:"+1 305-901-6050", gzip:"33134", nzip:"33134", sig:"phone+zip"},
-  {n:"Christopher Vogel", crd:"4401579", gid:"0038W00001kPvlrQAC", nid:"003Dp00000J3xK7IAJ", gem:null, nem:"christopher.vogel@tdsecurities.com", gph:"+1 212-827-7000", nph:"+1 212-827-7000", gzip:"10017", nzip:"10017", sig:"phone+zip"},
-  {n:"William Martin",    crd:"2954156", gid:"0038W00001eP1SsQAK", nid:"003Dp00000J395GIAR", gem:null, nem:"william.martin@texascapitalbank.com", gph:"+1 214-932-6671", nph:"+1 214-932-6671", gzip:"75201", nzip:"75201", sig:"phone+zip"},
-  {n:"Daniel Hutner",     crd:"5121499", gid:"003f200002fu3vGAAQ", nid:"003Uk00000gyocEIAQ", gem:null, nem:"danhutner@hutnercapital.com", gph:"+1 802-366-8157", nph:"+1 802-366-8157", gzip:"05254", nzip:"05254", sig:"phone+zip"},
-  {n:"Johannes Worsoe",   crd:"4414707", gid:"0038W00001iyes8QAA", nid:"003Dp00000K4G2JIAV", gem:null, nem:null, gph:"+1 212-515-3200", nph:"+1 212-515-3200", gzip:"10019", nzip:"10019", sig:"phone+zip"},
-  {n:"Jose Gutierrez",    crd:"1801444", gid:"003f200002fuzzYAAQ", nid:"003Dp00000IPbY7IAL", gem:null, nem:"joe.gutierrez@wefamilyoffices.com", gph:"+1 305-825-2225", nph:"+1 305-825-2225", gzip:"33131", nzip:"33131", sig:"phone+zip"},
-  {n:"Brady Gallagher",   crd:"4400526", gid:"0038W00001fUSvBQAW", nid:"003Dp00000J5JfhIAF", gem:"brgallagher@apollo.com", nem:"bgallagher@leoncapitalgroup.com", gph:"+1 866-788-8614", nph:"+1 866-788-8614", gzip:"85016", nzip:"85016", sig:"phone+zip"},
-  {n:"Paul Stanley",      crd:"7384221", gid:"0038W00001mePb0QAE", nid:"003Dp00000IQfz5IAD", gem:null, nem:"paul.stanley@wellsfargo.com", gph:"+1 212-214-7713", nph:"+1 212-214-7713", gzip:"10001", nzip:"10001", sig:"phone+zip"},
-  {n:"Donald Miller",     crd:"6680420", gid:"0038W00001eMNGmQAO", nid:"003Dp00000IQELcIAP", gem:null, nem:"donnie.miller@morganstanley.com", gph:"+1 212-761-4000", nph:"+1 212-761-4000", gzip:"10036", nzip:"10036", sig:"phone+zip"},
-  {n:"John Irby",         crd:"7520157", gid:"0038W00001sAi0QQAS", nid:"003Dp00000IQtvKIAT", gem:null, nem:"jpirby@janney.com", gph:"+1 919-791-3828", nph:"+1 919-791-3828", gzip:"27612", nzip:"27612", sig:"phone+zip"},
-];
-
-var CRD_ONLY = [
-  {n:"Eric Davison",      crd:"2997080", gid:"003f200002fvSGfAAM", nid:"003Dp00000J3pRSIAZ", gem:"edavison@apollo.com", nem:null, gph:"+1 949-647-4559", nph:"+1 207-553-7110", gzip:"92612", nzip:"04101", sig:"crd"},
-  {n:"Richard Longener",  crd:"1062157", gid:"0035w00003Z1O8lAAF", nid:"003Dp00000J5GPbIAN", gem:null, nem:null, gph:"+1 660-582-5600", nph:"+1 816-364-7678", gzip:"64468", nzip:"64501", sig:"crd"},
-  {n:"David Friedman",    crd:"7314926", gid:"0035w00003Z2wnwAAB", nid:"003Dp00000J4zviIAB", gem:null, nem:null, gph:"+1 917-830-3469", nph:null, gzip:"10036", nzip:null, sig:"crd"},
-  {n:"Jeffrey Ady",       crd:"7864881", gid:"0038W00002W12gfQAB", nid:"003Dp00000J584ZIAR", gem:null, nem:"jeff.ady@northfront.com", gph:null, nph:"+1 403-571-8960", gzip:null, nzip:null, sig:"crd"},
-  {n:"David Lee",         crd:"1093481", gid:"0038W00001hMuj6QAC", nid:"003Dp00000IPnipIAD", gem:null, nem:"david.lee@imcoinvest.com", gph:"+1 612-671-3662", nph:"+1 661-664-6900", gzip:"55402", nzip:"93311", sig:"crd"},
-  {n:"David Long",        crd:"3204746", gid:"003f200002hPuXZAA0", nid:"003Uk00000gyocNIAQ", gem:null, nem:"david.long@raymondjames.com", gph:"+1 508-365-1050", nph:"+1 727-567-8711", gzip:"01608", nzip:"33716", sig:"crd"},
-  {n:"Jon Gadberry",      crd:"6576530", gid:"003f200002fv9NkAAI", nid:"003Dp00000J4sOqIAJ", gem:"jack.gadberry@orgelwealth.com", nem:"jack.gadberry@ampf.com", gph:"+1 612-381-3861", nph:"+1 605-601-8211", gzip:"54720", nzip:null, sig:"crd"},
-  {n:"Daniel McCleary",   crd:"824187",  gid:"0038W00001pY8D0QAK", nid:"003Dp00000J668eIAB", gem:null, nem:null, gph:"+1 713-622-0192", nph:"+1 281-220-2700", gzip:"77833", nzip:"77056", sig:"crd"},
-  {n:"Rachel Kane",       crd:"5303266", gid:"0035w00003YXXAdAAP", nid:"003Dp00000J5ETWIA3", gem:null, nem:null, gph:"+1 985-646-3500", nph:"+1 985-898-3920", gzip:"70458", nzip:"70471", sig:"crd"},
-  {n:"Federico Avendano", crd:"5512831", gid:"0038W00001pXY1MQAW", nid:"003Dp00000J614wIAB", gem:null, nem:null, gph:"+1 805-495-8166", nph:"+1 888-885-8101", gzip:"91362", nzip:null, sig:"crd"},
-];
-
-// ── Render ────────────────────────────────────────────────────────────────────
-function fval(v, match) {
-  if (!v) return '<div class="pair-field-val empty">—</div>';
-  var cls = match === true ? 'match' : match === false ? 'diff' : '';
-  return '<div class="pair-field-val ' + cls + '">' + v + (match === true ? ' ✓' : '') + '</div>';
-}
-
-function sigTag(sig) {
-  if (sig === 'email') return '<span class="match-tag t-email">Email · Phone · ZIP</span>';
-  if (sig === 'phone+zip') return '<span class="match-tag t-phone">Phone · ZIP</span>';
-  if (sig === 'phone') return '<span class="match-tag t-phone">Phone</span>';
-  if (sig === 'zip')   return '<span class="match-tag t-zip">ZIP</span>';
-  return '<span class="match-tag t-crd">CRD only</span>';
-}
-
-function ruleText(sig) {
-  if (sig === 'email')    return '<strong>ExactEmail R5</strong> (score 95) · auto-merge on CM-2121 activation';
-  if (sig.includes('phone') || sig.includes('zip'))
-                          return '<strong>FuzzyFN+LN+Phone / R6 ZIP</strong> (score 92–95) · auto-merge on CM-2121 activation';
-  return '<strong>ExactCRD</strong> (score 100) · auto-merge once CRD flows from SFDC_GWM to xDM';
-}
-
-function makeCard(p) {
-  var em = p.gem && p.nem && p.gem.toLowerCase() === p.nem.toLowerCase();
-  var ph = p.gph && p.nph && p.gph === p.nph;
-  var zp = p.gzip && p.nzip && p.gzip.substring(0,5) === p.nzip.substring(0,5);
-
-  return '<div class="pair-card">'
-    + '<div class="pair-card-head">'
-    + '<span class="pair-name">' + p.n + '</span>'
-    + '<span class="pair-crd">CRD ' + p.crd + '</span>'
-    + sigTag(p.sig)
-    + '</div>'
-    + '<div class="pair-card-body">'
-    + '<div class="pair-col">'
-    + '<div class="pair-col-label">SFDC_GWM</div>'
-    + '<div class="pair-field"><div class="pair-field-label">Salesforce ID</div>' + fval(p.gid) + '</div>'
-    + '<div class="pair-field"><div class="pair-field-label">Email</div>' + fval(p.gem, em ? true : (p.gem ? false : null)) + '</div>'
-    + '<div class="pair-field"><div class="pair-field-label">Phone</div>' + fval(p.gph, ph ? true : (p.gph && p.nph ? false : null)) + '</div>'
-    + '<div class="pair-field"><div class="pair-field-label">ZIP</div>' + fval(p.gzip, zp ? true : (p.gzip && p.nzip ? false : null)) + '</div>'
-    + '</div>'
-    + '<div class="pair-col">'
-    + '<div class="pair-col-label">SFDC_NG</div>'
-    + '<div class="pair-field"><div class="pair-field-label">Salesforce ID</div>' + fval(p.nid) + '</div>'
-    + '<div class="pair-field"><div class="pair-field-label">Email</div>' + fval(p.nem, em ? true : (p.nem ? false : null)) + '</div>'
-    + '<div class="pair-field"><div class="pair-field-label">Phone</div>' + fval(p.nph, ph ? true : (p.gph && p.nph ? false : null)) + '</div>'
-    + '<div class="pair-field"><div class="pair-field-label">ZIP</div>' + fval(p.nzip, zp ? true : (p.gzip && p.nzip ? false : null)) + '</div>'
-    + '</div>'
-    + '</div>'
-    + '<div class="pair-card-foot">' + ruleText(p.sig) + '</div>'
-    + '</div>';
-}
-
-// ── Drill logic ───────────────────────────────────────────────────────────────
-var currentDrill = null;
-
-var DRILL_META = {
-  all:   { title:'All 559 duplicate pairs — sample across all categories',
-           note:'Showing a representative mix of email-match, phone/ZIP-match, and CRD-only pairs.',
-           data: function() { return EMAIL.slice(0,5).concat(PHONE.slice(0,4)).concat(CRD_ONLY.slice(0,4)); } },
-  email: { title:'152 pairs · Identical email on both sides — ExactEmail R5',
-           note:'Same email, phone, and ZIP on both sides. Score 95 > 90 threshold → auto-merge when CM-2121 activates.',
-           data: function() { return EMAIL; } },
-  phone: { title:'245 pairs · Phone or ZIP match — FuzzyFN+LN+Phone and R6 ZIP rules',
-           note:'Email absent or differs. Phone and/or ZIP match confirmed same person alongside CRD. Auto-merge on CM-2121.',
-           data: function() { return PHONE; } },
-  crd:   { title:'162 pairs · CRD only — ExactCRD fires once GWM CRD flows to xDM',
-           note:'Different phones and ZIPs — advisor may have changed firms or locations. CRD is the definitive identity anchor.',
-           data: function() { return CRD_ONLY; } },
-};
-
-function toggleDrill(key) {
-  var panel = document.getElementById('drill-panel');
-  if (currentDrill === key && panel.classList.contains('open')) {
-    closeDrill();
-    return;
-  }
-  // deactivate all tiles
-  ['all','email','phone','crd'].forEach(function(k) {
-    document.getElementById('kpi-'+k).classList.remove('active');
-  });
-  currentDrill = key;
-  document.getElementById('kpi-'+key).classList.add('active');
-  var meta = DRILL_META[key];
-  document.getElementById('drill-title').textContent = meta.title;
-  document.getElementById('drill-note').textContent = meta.note;
-  document.getElementById('drill-cards').innerHTML = meta.data().map(makeCard).join('');
-  panel.classList.add('open');
-  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
-function closeDrill() {
-  document.getElementById('drill-panel').classList.remove('open');
-  ['all','email','phone','crd'].forEach(function(k) {
-    document.getElementById('kpi-'+k).classList.remove('active');
-  });
-  currentDrill = null;
-}
+function tog(id){document.getElementById(id).classList.toggle('open');}
 </script>
+</body>
+</html>
