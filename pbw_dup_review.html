@@ -172,45 +172,43 @@ tfoot td.r{text-align:right;}
 <header class="site-header">
   <div>
     <div class="site-title">PB/Wires Duplicate Coverage</div>
-    <div class="site-sub">4,986 duplicate pairs · existing PROD rules + proposed rules (R5–R18)</div>
+    <div class="site-sub">2,898 duplicate pairs · existing PROD rules + suggestion queue (R11–R13)</div>
   </div>
   <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
 </header>
 
 <div class="hero">
   <div class="hero-bar-col">
-    <div class="hero-bar-label">Coverage — 4,986 pairs</div>
+    <div class="hero-bar-label">Coverage — 2,898 pairs</div>
     <div class="hero-bar">
-      <div style="width:54.1%;background:var(--green)"></div>
-      <div style="width:35.8%;background:var(--sky)"></div>
-      <div style="width:10.1%;background:var(--orange)"></div>
+      <div style="width:82.7%;background:var(--green)"></div>
+      <div style="width:17.3%;background:var(--orange)"></div>
     </div>
     <div class="hero-legend">
-      <span><span class="dot" style="background:var(--green)"></span>2,698 — existing PROD rules (54.1%)</span>
-      <span><span class="dot" style="background:var(--sky)"></span>1,787 — proposed R5–R18, auto-merge (35.8%)</span>
-      <span><span class="dot" style="background:var(--orange)"></span>501 — proposed R12–R13, suggestion queue (10.1%)</span>
+      <span><span class="dot" style="background:var(--green)"></span>2,397 — existing PROD rules (82.7%)</span>
+      <span><span class="dot" style="background:var(--orange)"></span>501 — suggestion queue (17.3%)</span>
     </div>
   </div>
   <div class="hero-stat-col">
-    <div style="font-size:13px;color:var(--muted);line-height:1.6;">We independently found 4,986 duplicate contacts currently in NextGen. 4,986/4,986 are covered by existing (2,698) or proposed (2,288) match rules.</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;">We independently found 2,898 duplicate pairs in NextGen. All are covered by existing PROD rules (2,397) or the proposed suggestion queue (501).</div>
   </div>
 </div>
 
 <div class="kpi-row">
   <div class="kpi">
     <span class="kpi-label">Existing PROD rules</span>
-    <span class="kpi-value c-green"><button class="kpi-link" onclick="showKpiSamples('prod')">2,698</button></span>
-    <span class="kpi-note">54.1% · auto-merge today · click to see samples</span>
+    <span class="kpi-value c-green"><button class="kpi-link" onclick="showKpiSamples('prod')">2,397</button></span>
+    <span class="kpi-note">82.7% · auto-merge today · click to see samples</span>
   </div>
   <div class="kpi">
-    <span class="kpi-label">Proposed R5–R18 · auto-merge</span>
-    <span class="kpi-value c-sky"><button class="kpi-link" onclick="showKpiSamples('auto')">1,787</button></span>
-    <span class="kpi-note">35.8% · on activation · click to see samples</span>
+    <span class="kpi-label">Proposed net-new · auto-merge</span>
+    <span class="kpi-value c-sky">0</span>
+    <span class="kpi-note">Proposed rules add no net-new pairs after CRD verification</span>
   </div>
   <div class="kpi">
     <span class="kpi-label">Proposed R11–R13 · suggestion queue</span>
     <span class="kpi-value c-orange"><button class="kpi-link" onclick="showKpiSamples('sugg')">501</button></span>
-    <span class="kpi-note">10.1% · steward review · click to see samples</span>
+    <span class="kpi-note">17.3% · steward review · click to see samples</span>
   </div>
 </div>
 
@@ -244,27 +242,20 @@ tfoot td.r{text-align:right;}
       <tbody>
         <tr>
           <td><span class="chip chip-accent">Definite</span></td>
-          <td class="r">2,992</td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','prod')">2,425</button></td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','auto')">567</button></td>
+          <td class="r">2,370</td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('definite','prod')">2,370</button></td>
+          <td class="r"><span class="cell-zero">0</span></td>
           <td class="r"><span class="cell-zero">0</span></td>
         </tr>
         <tr>
           <td><span class="chip chip-amber">Likely</span></td>
-          <td class="r">1,940</td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('likely','prod')">240</button></td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('likely','auto')">1,199</button></td>
+          <td class="r">528</td>
+          <td class="r"><button class="cell-link" onclick="showSumSamples('likely','prod')">27</button></td>
+          <td class="r"><span class="cell-zero">0</span></td>
           <td class="r"><button class="cell-link" onclick="showSumSamples('likely','sugg')">501</button></td>
         </tr>
-        <tr>
-          <td><span class="chip chip-teal">Email Variant</span></td>
-          <td class="r">54</td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('email','prod')">33</button></td>
-          <td class="r"><button class="cell-link" onclick="showSumSamples('email','auto')">21</button></td>
-          <td class="r"><span class="cell-zero">0</span></td>
-        </tr>
       </tbody>
-      <tfoot><tr><td>Total</td><td class="r">4,986</td><td class="r">2,698</td><td class="r">1,787</td><td class="r">501</td></tr></tfoot>
+      <tfoot><tr><td>Total</td><td class="r">2,898</td><td class="r">2,397</td><td class="r">0</td><td class="r">501</td></tr></tfoot>
     </table>
   </div>
 
@@ -308,16 +299,16 @@ tfoot td.r{text-align:right;}
           </div>
         </div></td></tr>
 
-        <tr class="rule-row" onclick="td('re')"><td><span class="chevron">▶</span></td><td><strong>ExactEmail</strong> <span style="font-size:10px;font-weight:400;color:var(--muted)">(+ domain-norm, cross-field)</span></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">2,335</td></tr>
+        <tr class="rule-row" onclick="td('re')"><td><span class="chevron">▶</span></td><td><strong>ExactEmail</strong> <span style="font-size:10px;font-weight:400;color:var(--muted)">(+ domain-norm, cross-field)</span></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">1,715</td></tr>
         <tr class="detail-row" id="re"><td colspan="5"><div class="d-inner" id="content-re"></div></td></tr>
 
         <tr class="rule-row" onclick="td('rle')"><td><span class="chevron">▶</span></td><td><strong>ExactLastNameEmail</strong> <span style="font-size:10px;font-weight:400;color:var(--muted)">(+ domain-norm, cross-field)</span></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">867</td></tr>
         <tr class="detail-row" id="rle"><td colspan="5"><div class="d-inner" id="content-rle"></div></td></tr>
 
-        <tr class="rule-row" onclick="td('rzp')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">97</td><td class="r">287</td></tr>
+        <tr class="rule-row" onclick="td('rzp')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxZipPhone</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">97</td><td class="r">277</td></tr>
         <tr class="detail-row" id="rzp"><td colspan="5"><div class="d-inner" id="content-rzp"></div></td></tr>
 
-        <tr class="rule-row" onclick="td('rfs')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">364</td></tr>
+        <tr class="rule-row" onclick="td('rfs')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxFirmState</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">669</td></tr>
         <tr class="detail-row" id="rfs"><td colspan="5"><div class="d-inner" id="content-rfs"></div></td></tr>
 
         <tr class="rule-row" onclick="td('rz')"><td><span class="chevron">▶</span></td><td><strong>ExactFNLNSfxZip</strong></td><td><span class="chip chip-green">PROD</span></td><td class="r">95</td><td class="r">378</td></tr>
@@ -343,7 +334,7 @@ tfoot td.r{text-align:right;}
         <tr class="rule-row" onclick="td('r8')"><td><span class="chevron">▶</span></td><td><strong>R8: ExactFNLNPhone — raise to 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">434</td></tr>
         <tr class="detail-row" id="r8"><td colspan="5"><div class="d-inner" id="content-r8"></div></td></tr>
 
-        <tr class="rule-row" onclick="td('r9')"><td><span class="chevron">▶</span></td><td><strong>R9: ExactFNLNZipPhone — new at 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">287</td></tr>
+        <tr class="rule-row" onclick="td('r9')"><td><span class="chevron">▶</span></td><td><strong>R9: ExactFNLNZipPhone — new at 92</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">0</td></tr>
         <tr class="detail-row" id="r9"><td colspan="5"><div class="d-inner" id="content-r9"></div></td></tr>
 
         <tr class="rule-row" onclick="td('r10')"><td><span class="chevron">▶</span></td><td><strong>R10: FuzzyFNExactLNPhone</strong></td><td><span class="chip chip-sky">Proposed</span></td><td class="r">92</td><td class="r">1,469</td></tr>
@@ -1105,8 +1096,8 @@ function getSumPairs(key) {
 }
 
 var KPI_SAMPLES_META = {
-  'prod': { title:'2,698 · Existing PROD rules', note:'These pairs auto-merge under existing production rules. Coverage spans ExactEmail (2,335 pairs), ExactFNLNSfxFirmState (364), ExactFNLNSfxZip (287), and others.' },
-  'auto': { title:'1,787 · Proposed auto-merge — on activation of R5–R14', note:'These pairs will auto-merge when proposed rules are activated. Samples span R10 (FuzzyFNExactLNPhone), R14 (ExactFNLNEmailVariant), R7/R8/R9 (score raises), and R15 (email-prefix name variant).' },
+  'prod': { title:'2,397 · Existing PROD rules', note:'These pairs auto-merge under existing production rules. Coverage spans ExactEmail (1,715 pairs), ExactFNLNSfxFirmState (669), ExactFNLNSfxZipPhone (277), and ExactFNLNSfxZip/PREQIN (27). Counts are at the golden level — same-golden pairs excluded.' },
+  'auto': { title:'0 · Proposed auto-merge', note:'After CRD verification, proposed rules (R5–R10) add no net-new confirmed pairs. R10 (FuzzyFN+LN+Phone) was eliminated by shared office phone numbers; R6 (FN+LN+ZIP) pairs were eliminated by differing CRDs.' },
   'sugg': { title:'501 · Proposed suggestion queue — steward review', note:'These pairs will be routed to the steward queue under R11/R12/R13. A steward reviews each proposed merge and accepts or rejects.' }
 };
 function getKpiPairs(bucket) {
