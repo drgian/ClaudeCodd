@@ -828,7 +828,8 @@ function pairCard(p, i, total) {
     <span class="chip chip-${cc}">${p.catLabel}</span>
     <div class="rec-links">
       <a href="${SEM_BASE}${aId}${SEM_SUFFIX}" target="_blank" class="rec-link">xDM ↗</a>
-      ${(a.sfdc||b.sfdc) ? `<a href="${SFDC_BASE}${a.sfdc||b.sfdc}${SFDC_SUFFIX}" target="_blank" class="rec-link">NextGen ↗</a>` : ''}
+      ${a.sfdc ? `<a href="${SFDC_BASE}${a.sfdc}${SFDC_SUFFIX}" target="_blank" class="rec-link">A: NextGen ↗</a>` : ''}
+      ${b.sfdc ? `<a href="${SFDC_BASE}${b.sfdc}${SFDC_SUFFIX}" target="_blank" class="rec-link">B: NextGen ↗</a>` : ''}
     </div>
     <span class="disp-chip">${p.disposition}</span>
   </div>
