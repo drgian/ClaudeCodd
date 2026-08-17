@@ -7,23 +7,23 @@
 <style>
 /* ─── TOKENS ─────────────────────────────────────────── */
 :root {
-  --bg:      #f8fafc;
-  --bg2:     #f1f5f9;
+  --bg:      #f3f4f6;
+  --bg2:     #e9ebef;
   --surface: #ffffff;
-  --border:  #e2e8f0;
-  --accent:  #2563eb;
+  --border:  #d1d5db;
+  --accent:  #1d4ed8;
   --a-dim:   #dbeafe;
-  --good:    #16a34a;
-  --g-dim:   #dcfce7;
+  --good:    #057a55;
+  --g-dim:   #d1fae5;
   --warn:    #b45309;
   --w-dim:   #fef3c7;
-  --danger:  #dc2626;
+  --danger:  #c81e1e;
   --d-dim:   #fee2e2;
-  --purple:  #7c3aed;
+  --purple:  #6d28d9;
   --p-dim:   #ede9fe;
-  --text:    #0f172a;
-  --sub:     #475569;
-  --muted:   #94a3b8;
+  --text:    #111827;
+  --sub:     #4b5563;
+  --muted:   #9ca3af;
   --mono:    ui-monospace,'Cascadia Code','Fira Code',monospace;
   --sans:    -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
 }
@@ -31,7 +31,7 @@
   :root:not([data-theme="light"]){
     --bg:#0d1117;--bg2:#161b27;--surface:#1e2637;--border:#2d3b55;
     --accent:#60a5fa;--a-dim:#1e3a5f;
-    --good:#4ade80;--g-dim:#14532d;
+    --good:#34d399;--g-dim:#064e3b;
     --warn:#fbbf24;--w-dim:#451a03;
     --danger:#f87171;--d-dim:#450a0a;
     --purple:#c4b5fd;--p-dim:#2e1065;
@@ -41,7 +41,7 @@
 :root[data-theme="dark"]{
   --bg:#0d1117;--bg2:#161b27;--surface:#1e2637;--border:#2d3b55;
   --accent:#60a5fa;--a-dim:#1e3a5f;
-  --good:#4ade80;--g-dim:#14532d;
+  --good:#34d399;--g-dim:#064e3b;
   --warn:#fbbf24;--w-dim:#451a03;
   --danger:#f87171;--d-dim:#450a0a;
   --purple:#c4b5fd;--p-dim:#2e1065;
@@ -50,41 +50,50 @@
 
 /* ─── RESET ──────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;padding-bottom:56px;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;padding-bottom:64px;}
 
 /* ─── HEADER ─────────────────────────────────────────── */
 header{background:var(--surface);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100;}
-.hdr{max-width:1120px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-.hdr h1{font-size:18px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:10px;}
-.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--a-dim);color:var(--accent);letter-spacing:.04em;}
-.hdr-meta{font-size:12px;color:var(--muted);margin-top:2px;display:flex;gap:16px;flex-wrap:wrap;}
-.hdr-right{font-size:12px;color:var(--sub);text-align:right;}
-.hdr-right strong{display:block;font-size:20px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;}
+.hdr{max-width:1160px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.hdr h1{font-size:17px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:10px;}
+.tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.06em;text-transform:uppercase;}
+.tag-null{background:var(--d-dim);color:var(--danger);}
+.hdr-meta{font-size:11px;color:var(--muted);margin-top:3px;display:flex;gap:16px;flex-wrap:wrap;}
+.hdr-right{font-size:12px;color:var(--sub);text-align:right;line-height:1.4;}
+.hdr-right strong{display:block;font-size:22px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;}
+.hdr-right .hdr-sub{font-size:11px;color:var(--muted);}
 
 /* ─── LAYOUT ─────────────────────────────────────────── */
-.page{max-width:1120px;margin:0 auto;padding:24px 24px 0;}
-.sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:28px 0 10px;}
+.page{max-width:1160px;margin:0 auto;padding:24px 24px 0;}
+.sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:28px 0 10px;}
 .sec:first-child{margin-top:0;}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-@media(max-width:720px){.kgrid{grid-template-columns:repeat(2,1fr)!important;}.two{grid-template-columns:1fr;}.hdr-right{display:none;}}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+@media(max-width:780px){
+  .kgrid{grid-template-columns:repeat(2,1fr)!important;}
+  .two{grid-template-columns:1fr;}
+  .three{grid-template-columns:1fr;}
+  .hdr-right{display:none;}
+}
 
 /* ─── KPIs ───────────────────────────────────────────── */
 .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 20px 16px;position:relative;overflow:hidden;}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ks,var(--border));}
 .kpi-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
-.kpi-num{font-size:36px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--kc,var(--text));}
-.kpi-sub{font-size:12px;color:var(--sub);margin-top:6px;}
+.kpi-num{font-size:38px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--kc,var(--text));}
+.kpi-sub{font-size:12px;color:var(--sub);margin-top:6px;line-height:1.4;}
+.kpi-sub strong{color:var(--kc,var(--text));}
 
 /* ─── CARD ───────────────────────────────────────────── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;}
 .card-h{font-size:13px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 
 /* ─── BAR ROWS ───────────────────────────────────────── */
-.br{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.br{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
 .br:last-of-type{margin-bottom:0;}
-.bl{width:168px;flex-shrink:0;}
-.bl-m{font-size:12px;font-weight:500;}
+.bl{width:180px;flex-shrink:0;}
+.bl-m{font-size:12px;font-weight:600;}
 .bl-s{font-size:11px;color:var(--muted);}
 .bt{flex:1;height:10px;background:var(--bg2);border-radius:99px;overflow:hidden;}
 .bf{height:100%;border-radius:99px;}
@@ -99,7 +108,7 @@ header{background:var(--surface);border-bottom:2px solid var(--border);position:
 .flb{flex:1;}
 .flt{font-size:13px;font-weight:600;margin-bottom:3px;}
 .fld{font-size:12px;color:var(--sub);line-height:1.5;}
-.flc{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;flex-shrink:0;align-self:center;}
+.flc{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0;align-self:flex-start;margin-top:2px;padding:2px 8px;border-radius:4px;}
 
 /* ─── PILL ───────────────────────────────────────────── */
 .pill{display:inline-flex;align-items:center;padding:1px 7px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap;}
@@ -117,27 +126,38 @@ header{background:var(--surface);border-bottom:2px solid var(--border);position:
 .exp-left{flex:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .exp-t{font-size:13px;font-weight:600;}
 .exp-s{font-size:12px;color:var(--sub);}
-.chev{font-size:10px;color:var(--muted);transition:transform .2s;flex-shrink:0;display:inline-block;}
+.chev{font-size:10px;color:var(--muted);transition:transform .2s;flex-shrink:0;}
 .exp.open .chev{transform:rotate(180deg);}
 .exp-body{display:none;border-top:1px solid var(--border);overflow-x:auto;}
 .exp.open .exp-body{display:block;}
 
 /* ─── TABLE ──────────────────────────────────────────── */
 table{width:100%;border-collapse:collapse;font-size:12px;}
-th{padding:8px 14px;background:var(--bg2);color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-align:left;white-space:nowrap;}
-td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap;}
+th{padding:8px 14px;background:var(--bg2);color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:left;white-space:nowrap;}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:var(--bg2);}
 .mono{font-family:var(--mono);font-size:11px;}
-.diff-val{color:var(--warn);}
-.faint{color:var(--muted);}
 .np{display:flex;flex-direction:column;gap:1px;}
 .np-a{font-weight:600;}
 .np-b{color:var(--sub);font-size:11px;}
+.diff-val{color:var(--warn);}
 
-/* ─── INFO BOX ───────────────────────────────────────── */
-.infobox{border-radius:8px;padding:14px 18px;margin-bottom:12px;font-size:13px;border:1px solid var(--accent);background:var(--a-dim);}
-.infobox b{color:var(--accent);}
+/* ─── INFOBOX ─────────────────────────────────────────── */
+.infobox{border-radius:8px;padding:14px 18px;margin-bottom:16px;font-size:13px;line-height:1.6;}
+.infobox-warn{border:1px solid var(--warn);background:var(--w-dim);}
+.infobox-warn b{color:var(--warn);}
+.infobox-info{border:1px solid var(--accent);background:var(--a-dim);}
+.infobox-info b{color:var(--accent);}
+
+/* ─── RULE TABLE ──────────────────────────────────────── */
+.rule-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px;}
+.rule-table th{padding:7px 14px;background:var(--bg2);color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:left;white-space:nowrap;}
+.rule-table td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+.rule-table tr:last-child td{border-bottom:none;}
+.score{font-family:var(--mono);font-size:12px;font-weight:700;width:40px;display:inline-block;}
+.fires{color:var(--good);font-weight:600;font-size:11px;}
+.gap{color:var(--danger);font-weight:600;font-size:11px;}
 </style>
 </head>
 <body>
@@ -145,15 +165,15 @@ tr:hover td{background:var(--bg2);}
 <header>
   <div class="hdr">
     <div>
-      <h1>PBW Duplicate Analysis <span class="tag">SFDC_NG</span></h1>
+      <h1>PBW Duplicate Analysis <span class="tag tag-null">NULL-CRD BLIND SPOT</span></h1>
       <div class="hdr-meta">
-        <span>CONTACT_FORMULA_VW · account.business_group LIKE 'PB/Wires%' · crd_number IS NOT NULL</span>
-        <span>CRD-anchored + LLM pair review · 2026-08-17</span>
+        <span>CONTACT_FORMULA_VW · account.business_group LIKE 'PB/Wires%' · at least one side with null CRD</span>
+        <span>Email + phone/zip + firmstate blocking · LLM pair review · 2026-08-17</span>
       </div>
     </div>
     <div class="hdr-right">
-      <strong>216,611</strong>
-      contacts analyzed
+      <strong>231,809</strong>
+      <span class="hdr-sub">total PBW contacts · <b>15,198</b> null-CRD</span>
     </div>
   </div>
 </header>
@@ -161,432 +181,530 @@ tr:hover td{background:var(--bg2);}
 <div class="page">
 
   <div class="sec">Summary</div>
+
+  <div class="infobox infobox-warn">
+    <b>The prior CRD-only analysis found 391 duplicate pairs — all resolved by xDM's ExactCRD rule.</b>
+    That analysis only looked at contacts where <em>both</em> records had a CRD. This analysis covers the remaining
+    15,198 contacts (6.6% of PBW) with null CRD. These are invisible to ExactCRD, and the name-based fallback rules
+    require <em>exact</em> first-name match — catching none of the nickname or spelling variants found below.
+  </div>
+
   <div class="kgrid">
     <div class="kpi" style="--ks:var(--accent);">
-      <div class="kpi-lbl">Same-Person Pairs Found</div>
-      <div class="kpi-num" style="--kc:var(--accent);">391</div>
-      <div class="kpi-sub">Confirmed by matching FINRA CRD number</div>
-    </div>
-    <div class="kpi" style="--ks:var(--good);">
-      <div class="kpi-lbl">Resolved in xDM</div>
-      <div class="kpi-num" style="--kc:var(--good);">391</div>
-      <div class="kpi-sub"><strong>100%</strong> · ExactCRD rule correctly merged all</div>
-    </div>
-    <div class="kpi" style="--ks:var(--warn);">
-      <div class="kpi-lbl">CRD-Only Coverage</div>
-      <div class="kpi-num" style="--kc:var(--warn);">47</div>
-      <div class="kpi-sub">Pairs with <strong>no backup rule</strong> if CRD data degrades</div>
+      <div class="kpi-lbl">Genuine Duplicate Pairs</div>
+      <div class="kpi-num" style="--kc:var(--accent);">397</div>
+      <div class="kpi-sub">SEPARATE goldens — same person, not yet merged in xDM</div>
     </div>
     <div class="kpi" style="--ks:var(--danger);">
-      <div class="kpi-lbl">SFDC Data Flags</div>
-      <div class="kpi-num" style="--kc:var(--danger);">12</div>
-      <div class="kpi-sub">6 placeholder CRD · 6 suspected wrong CRD assignment</div>
+      <div class="kpi-lbl">xDM Resolution Rate</div>
+      <div class="kpi-num" style="--kc:var(--danger);">0%</div>
+      <div class="kpi-sub"><strong>None</strong> of the 397 are auto-merged — ExactCRD can't fire, name rules need exact match</div>
+    </div>
+    <div class="kpi" style="--ks:var(--warn);">
+      <div class="kpi-lbl">Null-CRD Population</div>
+      <div class="kpi-num" style="--kc:var(--warn);">15,198</div>
+      <div class="kpi-sub"><strong>6.6%</strong> of PBW SFDC_NG contacts · FINRA-unregistered or missing data</div>
+    </div>
+    <div class="kpi" style="--ks:var(--muted);">
+      <div class="kpi-lbl">False Positives Filtered</div>
+      <div class="kpi-num" style="--kc:var(--muted);">147</div>
+      <div class="kpi-sub">From 474 candidate pairs reviewed · bigrams occasionally match different names</div>
     </div>
   </div>
 
-  <div class="sec">Rule Coverage &amp; Data Quality</div>
+  <div class="sec">How We Found Them — Blocking Strategies</div>
   <div class="two">
 
     <div class="card">
       <div class="card-h">
-        How the 391 pairs are covered
-        <span class="pill pn">beyond ExactCRD</span>
+        Pairs found by blocking strategy
+        <span class="pill pn">genuine only · after FP review</span>
       </div>
 
       <div class="br">
-        <div class="bl"><div class="bl-m">Name + ZIP</div><div class="bl-s">score 95 · existing rule</div></div>
-        <div class="bt"><div class="bf" style="width:62%;background:var(--good);"></div></div>
-        <div class="bc">241 <span class="bpct">62%</span></div>
+        <div class="bl"><div class="bl-m">NAME_ZIP</div><div class="bl-s">same last name · bigrams ≥2 · same ZIP</div></div>
+        <div class="bt"><div class="bf" style="width:100%;background:var(--accent);"></div></div>
+        <div class="bc">161 <span class="bpct">41%</span></div>
       </div>
       <div class="br">
-        <div class="bl"><div class="bl-m">Name + Phone</div><div class="bl-s">score 85 · existing rule</div></div>
-        <div class="bt"><div class="bf" style="width:48%;background:var(--accent);"></div></div>
-        <div class="bc">189 <span class="bpct">48%</span></div>
+        <div class="bl"><div class="bl-m">NAME_FIRMSTATE</div><div class="bl-s">same last name · bigrams ≥2 · same firm+state</div></div>
+        <div class="bt"><div class="bf" style="width:84%;background:var(--purple);"></div></div>
+        <div class="bc">135 <span class="bpct">34%</span></div>
       </div>
       <div class="br">
-        <div class="bl"><div class="bl-m">Exact Email</div><div class="bl-s">score 95 · R5 proposed only</div></div>
-        <div class="bt"><div class="bf" style="width:2%;background:var(--purple);"></div></div>
-        <div class="bc">7 <span class="bpct">2%</span></div>
+        <div class="bl"><div class="bl-m">EMAIL</div><div class="bl-s">same email address · at least one null CRD</div></div>
+        <div class="bt"><div class="bf" style="width:36%;background:var(--good);"></div></div>
+        <div class="bc">58 <span class="bpct">15%</span></div>
       </div>
       <div class="br">
-        <div class="bl"><div class="bl-m">Any backup rule</div><div class="bl-s">name+zip or name+phone</div></div>
-        <div class="bt"><div class="bf" style="width:70%;background:var(--sub);opacity:.4;"></div></div>
-        <div class="bc">273 <span class="bpct">70%</span></div>
+        <div class="bl"><div class="bl-m">Multi-block</div><div class="bl-s">NAME_PHONE + NAME_ZIP both fired</div></div>
+        <div class="bt"><div class="bf" style="width:20%;background:var(--warn);"></div></div>
+        <div class="bc">33 <span class="bpct">8%</span></div>
       </div>
       <div class="br">
-        <div class="bl"><div class="bl-m">CRD only — no backup</div><div class="bl-s">miss these without ExactCRD</div></div>
-        <div class="bt"><div class="bf" style="width:12%;background:var(--warn);"></div></div>
-        <div class="bc">47 <span class="bpct">12%</span></div>
+        <div class="bl"><div class="bl-m">NAME_PHONE</div><div class="bl-s">same last name · bigrams ≥2 · same phone</div></div>
+        <div class="bt"><div class="bf" style="width:6%;background:var(--sub);opacity:.5;"></div></div>
+        <div class="bc">10 <span class="bpct">2%</span></div>
       </div>
       <div class="bar-note">
-        Categories overlap — a pair can satisfy multiple rules simultaneously. ExactEmail (R5) is currently
-        blocked for SFDC_NG↔SFDC_NG by a publisher guard; CM-2121 R5 removes that guard. The 7 email-covered
-        pairs are already merged via ExactCRD — R5 adds no net new merges for PBW.
+        NAME_FIRMSTATE was a net-new pass: it excluded pairs already found by email/phone/zip.
+        Multi-block pairs are counted only once in the total of 397 — they are the highest-confidence subset.
+        Bigrams = positional 2-char windows (e.g. "tim"→ti,im · "timothy"→ti,im,mo,ot,th,hy) — ≥2 shared positions required.
       </div>
     </div>
 
     <div class="card">
-      <div class="card-h">SFDC Data Quality Flags</div>
-
-      <div class="flag">
-        <div class="fli" style="background:var(--d-dim);">⚠️</div>
-        <div class="flb">
-          <div class="flt">Placeholder CRD 6953398 in SFDC</div>
-          <div class="fld">
-            4 completely different people (Eckberg, Ramirez, Pardue, Lilly — all UBS) share this known-bad
-            CRD in SFDC_NG. xDM correctly did <em>not</em> merge them — separate goldens. Fix: correct CRD in
-            Salesforce. This CRD is already in the xDM exclusion list.
-          </div>
-        </div>
-        <div class="flc" style="color:var(--danger);">4</div>
+      <div class="card-h">
+        Root-cause categories
+        <span class="pill pn">estimated from LLM review</span>
       </div>
 
-      <div class="flag">
-        <div class="fli" style="background:var(--w-dim);">🔍</div>
-        <div class="flb">
-          <div class="flt">Same email, different CRD — likely bad CRD assignment</div>
-          <div class="fld">
-            31 pairs share an email but carry different CRDs. LLM review: <strong>6 likely same person</strong>
-            with an incorrect CRD on one record. E.g. Gerald Hannah (WFA Meridian MS) — same name, firm,
-            phone, ZIP, but CRDs 6076491 vs 4700076. Ashley Matthews (RJ) — CRD 7335535 vs 735535,
-            probable dropped leading digit. Not fixable by xDM rule changes — requires SFDC CRD correction.
-          </div>
-        </div>
-        <div class="flc" style="color:var(--warn);">6</div>
-      </div>
-
-      <div class="flag">
-        <div class="fli" style="background:var(--bg2);">≈</div>
-        <div class="flb">
-          <div class="flt">Same email, different CRD — ambiguous</div>
-          <div class="fld">
-            14 same-email/different-CRD pairs where names match but CRDs are genuinely distinct registered
-            individuals (e.g. two Christopher Boyds at different Morgan Stanley OH branches). SFDC account
-            owner investigation needed — not resolvable by rule.
-          </div>
-        </div>
-        <div class="flc" style="color:var(--muted);">14</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec">Why 47 Pairs Have No Backup Signal</div>
-
-  <div class="infobox">
-    These are confirmed same-person pairs (identical CRD = same FINRA individual) where every other matchable
-    field differs between the two records. <b>ExactCRD is their only safety net.</b> No existing or CM-2121 proposed
-    rule would catch them if CRD data quality degraded.
-  </div>
-
-  <div class="two" style="margin-bottom:0;">
-    <div class="card" style="padding:16px 20px;">
-      <div class="card-h">Breakdown by reason</div>
       <div class="br">
-        <div class="bl"><div class="bl-m">Nickname / preferred name</div><div class="bl-s">Tom/Thomas · Steve/Stephen · Joe/Joseph · Sandy/Sandra · Trip/Mabry</div></div>
-        <div class="bt"><div class="bf" style="width:43%;background:var(--accent);"></div></div>
-        <div class="bc">~20</div>
+        <div class="bl"><div class="bl-m">Same-firm, diff office</div><div class="bl-s">two SFDC records, same brand, diff branch</div></div>
+        <div class="bt"><div class="bf" style="width:100%;background:var(--accent);"></div></div>
+        <div class="bc">160 <span class="bpct">40%</span></div>
       </div>
       <div class="br">
-        <div class="bl"><div class="bl-m">Married / legal name change</div><div class="bl-s">Hill→Moore · Nunez→Mackie · Miller→Mundie · Powell→Williams</div></div>
-        <div class="bt"><div class="bf" style="width:32%;background:var(--purple);"></div></div>
-        <div class="bc">~15</div>
+        <div class="bl"><div class="bl-m">Nickname variant</div><div class="bl-s">Tim/Timothy · Kathy/Kathleen · Niki/Nikolaus</div></div>
+        <div class="bt"><div class="bf" style="width:47%;background:var(--purple);"></div></div>
+        <div class="bc">75 <span class="bpct">19%</span></div>
       </div>
       <div class="br">
-        <div class="bl"><div class="bl-m">Different email addresses</div><div class="bl-s">firm email vs personal consulting domain; different email format</div></div>
-        <div class="bt"><div class="bf" style="width:25%;background:var(--warn);"></div></div>
-        <div class="bc">~12</div>
+        <div class="bl"><div class="bl-m">Cross-firm (moved)</div><div class="bl-s">advisor changed firms; both records still active</div></div>
+        <div class="bt"><div class="bf" style="width:29%;background:var(--good);"></div></div>
+        <div class="bc">47 <span class="bpct">12%</span></div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">ML / BofA dual-entity</div><div class="bl-s">same advisor under ML and BofA Private Bank</div></div>
+        <div class="bt"><div class="bf" style="width:28%;background:var(--warn);"></div></div>
+        <div class="bc">45 <span class="bpct">11%</span></div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Email-only match</div><div class="bl-s">same email · no other corroborating signal</div></div>
+        <div class="bt"><div class="bf" style="width:31%;background:var(--sub);opacity:.5;"></div></div>
+        <div class="bc">50 <span class="bpct">13%</span></div>
+      </div>
+      <div class="br">
+        <div class="bl"><div class="bl-m">Name encoding / split</div><div class="bl-s">"amy jo" vs fn=amy mn=jo · "maria angelica"</div></div>
+        <div class="bt"><div class="bf" style="width:13%;background:var(--danger);opacity:.6;"></div></div>
+        <div class="bc">20 <span class="bpct">5%</span></div>
       </div>
     </div>
 
-    <div class="card" style="padding:16px 20px;">
-      <div class="card-h">CM-2121 impact on PBW</div>
-      <p style="font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:10px;">
-        <strong style="color:var(--text);">R5</strong> (remove SFDC_NG guard from ExactEmail) would add email
-        coverage for <strong style="color:var(--text);">7 pairs</strong> — all already merged via ExactCRD.
-        Zero net change in resolution rate for PBW.
-      </p>
-      <p style="font-size:13px;color:var(--sub);line-height:1.7;">
-        The 47 CRD-only pairs (nickname, name-change, and email-split cases) are <strong style="color:var(--text);">not addressable
-        by any proposed rule</strong>. Their records differ on name, email, phone, and ZIP simultaneously.
-        ExactCRD is and will remain their sole match path.
-      </p>
-      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);">
-        CM-2121's primary PBW value is cross-publisher matching (SFDC_NG ↔ DISCOVERY_BD etc.), not within
-        SFDC_NG where CRD data is nearly complete.
-      </div>
-    </div>
   </div>
 
-  <!-- DRILL-DOWN -->
-  <div class="sec">Drill-Down</div>
+  <div class="sec">Rule Gap Analysis — Why xDM Misses These</div>
+  <div class="card">
 
-  <div class="exp open" id="e1">
-    <div class="exp-hdr" onclick="tog('e1')">
+    <div class="infobox infobox-info" style="margin-bottom:18px;">
+      <b>The core problem:</b> xDM's ExactCRD rule (score 100) requires both records to have a matching, non-null CRD.
+      When one side is null, xDM falls back to name+location rules — but all of them require <em>exact</em> first-name match,
+      ruling out every nickname, spelling variant, and abbreviated name. There is no fuzzy or phonetic first-name rule in the current model.
+    </div>
+
+    <div class="flag">
+      <div class="fli" style="background:var(--d-dim);">🔒</div>
+      <div class="flb">
+        <div class="flt">ExactCRD (score 100) — the only reliable identity anchor</div>
+        <div class="fld">
+          Fires when CRD<sub>A</sub> = CRD<sub>B</sub>, both non-null. If either side has a null CRD, the rule is skipped entirely.
+          All 397 duplicate pairs have at least one null-CRD side. A new rule
+          <strong>ExactCRD_OneNull</strong> or a null-CRD flag on the record would enable targeted stewardship routing
+          before a bad merge can occur.
+        </div>
+      </div>
+      <div class="flc" style="background:var(--d-dim);color:var(--danger);">397 missed</div>
+    </div>
+
+    <div class="flag">
+      <div class="fli" style="background:var(--w-dim);">🔤</div>
+      <div class="flb">
+        <div class="flt">Name+Location rules (scores 85–97) — exact first-name required</div>
+        <div class="fld">
+          ExactFirstNameLastNameMiddleNameSuffixZip (95), ExactFirstNameLastNameMiddleNameSuffixFirmState (95),
+          ExactFirstNameLastNameMiddleNameZip (85), ExactFirstNameLastNameMiddleNameSuffixPhone (85) —
+          all require an exact match on <code>FIRST_NAME</code>. "Timothy" ≠ "Tim", "Kathleen" ≠ "Kathy",
+          "Giancarlo" ≠ "Gianni", "Nikolaus" ≠ "Niki". The phonetic encoder compounds this:
+          Timothy → TM0, Tim → TM (different codes).
+          <strong>~75 nickname-variant pairs are completely unaddressable by current rules.</strong>
+        </div>
+      </div>
+      <div class="flc" style="background:var(--w-dim);color:var(--warn);">~75 missed</div>
+    </div>
+
+    <div class="flag">
+      <div class="fli" style="background:var(--w-dim);">🔗</div>
+      <div class="flb">
+        <div class="flt">No ExactFirstNameLastNameZip rule (first+last+ZIP, no middle)</div>
+        <div class="fld">
+          xDM has rules requiring first+last+<em>middle</em>+zip. There is no rule for just first+last+zip.
+          Many same-name pairs (e.g. same-name advisor at two ML offices in the same city) are SEPARATE in xDM
+          precisely because one record has a middle name/initial and the other doesn't, making the
+          ExactFirstNameLastNameMiddleNameSuffixZip rule fail on middle-name mismatch.
+          A new <strong>ExactFirstLastZip</strong> rule at score 80 would resolve a large fraction of the
+          160 same-firm/diff-office pairs.
+        </div>
+      </div>
+      <div class="flc" style="background:var(--w-dim);color:var(--warn);">~100 affected</div>
+    </div>
+
+    <div class="flag">
+      <div class="fli" style="background:var(--a-dim);">📧</div>
+      <div class="flb">
+        <div class="flt">ExactEmail (score 95) — partially effective, but data gaps limit reach</div>
+        <div class="fld">
+          ExactEmail fires when the stored email matches in xDM's master data. The 58 EMAIL-block pairs have
+          matching emails in SFDC's <code>CONTACT_FORMULA_VW</code> today, yet are SEPARATE in xDM.
+          Likely causes: email was null or different when xDM last processed the record (stale source snapshot),
+          or one record had the email added after the last Integration run.
+          Ensuring email is populated and current in every SFDC_NG load would let ExactEmail close ~58 of the gaps.
+          Note: ExactEmail is currently gated per CM-2121 R5 for SFDC_NG↔SFDC_NG matching.
+        </div>
+      </div>
+      <div class="flc" style="background:var(--a-dim);color:var(--accent);">~58 closeable</div>
+    </div>
+
+  </div>
+
+  <div class="sec">Selected Examples</div>
+
+  <div class="exp open">
+    <div class="exp-hdr" onclick="this.closest('.exp').classList.toggle('open')">
       <div class="exp-left">
-        <span class="exp-t">CRD-only pairs — sample (15 of 47)</span>
-        <span class="pill pw">no backup rule fires</span>
-        <span class="exp-s">Same CRD = same person · every other matchable field differs</span>
+        <span class="exp-t">Nickname variants — xDM has no path to merge these</span>
+        <span class="pill pd">ExactCRD blocked · name rules need exact match</span>
       </div>
       <span class="chev">▼</span>
     </div>
     <div class="exp-body">
       <table>
         <thead>
-          <tr><th>CRD</th><th>Record A · Name / Email</th><th>Record B · Name / Email</th><th>Why no rule fires</th></tr>
+          <tr>
+            <th>Record A</th><th>Record B</th><th>Firm</th><th>Signal</th><th>CRD gap</th>
+          </tr>
         </thead>
         <tbody>
-          <tr><td><span class="mono">1211066</span></td>
-            <td><div class="np"><span class="np-a">Thomas Lee</span><span class="np-b">leets@stifel.com</span></div></td>
-            <td><div class="np"><span class="np-a">Tom Lee</span><span class="np-b">thomas.lee@stifel.com</span></div></td>
-            <td><span class="pill pa">Nickname</span> Thomas ≠ Tom; different email prefix</td></tr>
-          <tr><td><span class="mono">2703318</span></td>
-            <td><div class="np"><span class="np-a">Stephen Ethridge</span><span class="np-b">steve@guardinv.com · CA</span></div></td>
-            <td><div class="np"><span class="np-a">Steve Ethridge</span><span class="np-b">steve.ethridge@morganstanley.com · CA</span></div></td>
-            <td><span class="pill pa">Nickname</span> Stephen ≠ Steve; different email domains</td></tr>
-          <tr><td><span class="mono">2311336</span></td>
-            <td><div class="np"><span class="np-a">Joseph Hoffmeier</span><span class="np-b">joseph.hoffmeier@morganstanley.com</span></div></td>
-            <td><div class="np"><span class="np-a">Joe Hoffmeier</span><span class="np-b">j.b.hoffmeier@morganstanley.com</span></div></td>
-            <td><span class="pill pa">Nickname</span> Joseph ≠ Joe; different email format</td></tr>
-          <tr><td><span class="mono">3045999</span></td>
-            <td><div class="np"><span class="np-a">Sandra Cunningham</span><span class="np-b">sandra.cunningham@ubs.com · DC</span></div></td>
-            <td><div class="np"><span class="np-a">Sandy Cunningham</span><span class="np-b">sandy.cunningham@ubs.com · DC</span></div></td>
-            <td><span class="pill pa">Nickname</span> Sandra ≠ Sandy; different email prefix despite same domain</td></tr>
-          <tr><td><span class="mono">1968939</span></td>
-            <td><div class="np"><span class="np-a">Mabry Phillips</span><span class="np-b">mabry.phillips@raymondjames.com · AL</span></div></td>
-            <td><div class="np"><span class="np-a">Trip Phillips</span><span class="np-b">trip.phillips@raymondjames.com · AL</span></div></td>
-            <td><span class="pill pa">Nickname</span> Mabry ≠ Trip (preferred name); different email</td></tr>
-          <tr><td><span class="mono">1259020</span></td>
-            <td><div class="np"><span class="np-a">Victoria Hill</span><span class="np-b">victoria.hill@morganstanley.com · CO</span></div></td>
-            <td><div class="np"><span class="np-a">Victoria Moore</span><span class="np-b">victoria.moore@morganstanley.com · GA</span></div></td>
-            <td><span class="pill pp">Name change</span> Hill→Moore; relocated CO→GA; no shared signals</td></tr>
-          <tr><td><span class="mono">2974174</span></td>
-            <td><div class="np"><span class="np-a">Jessica Miller</span><span class="np-b">jessica.b.miller@morganstanley.com · TX</span></div></td>
-            <td><div class="np"><span class="np-a">Jessica Mundie</span><span class="np-b">jessica.mundie@morganstanley.com · NY</span></div></td>
-            <td><span class="pill pp">Name change</span> Miller→Mundie; different offices and email</td></tr>
-          <tr><td><span class="mono">3054504</span></td>
-            <td><div class="np"><span class="np-a">Diana Nunez</span><span class="np-b">diana.nunez@morganstanley.com · TX</span></div></td>
-            <td><div class="np"><span class="np-a">Diana Mackie</span><span class="np-b">diana.mackie@morganstanley.com · TX</span></div></td>
-            <td><span class="pill pp">Name change</span> Nunez→Mackie; same branch/phone/ZIP but name+email differ</td></tr>
-          <tr><td><span class="mono">1893549</span></td>
-            <td><div class="np"><span class="np-a">Melissa Powell</span><span class="np-b">melissa.powell@raymondjames.com · TN</span></div></td>
-            <td><div class="np"><span class="np-a">Lisa Williams</span><span class="np-b">lisa.williams@raymondjames.com · TN</span></div></td>
-            <td><span class="pill pd">Major change</span> First + last both changed; CRD is the only link</td></tr>
-          <tr><td><span class="mono">1985218</span></td>
-            <td><div class="np"><span class="np-a">Gary Handler</span><span class="np-b">gary.handler@raymondjames.com · CA</span></div></td>
-            <td><div class="np"><span class="np-a">Gary Handler</span><span class="np-b">garyhandler@dhconsultinggroup.com · CA</span></div></td>
-            <td><span class="pill pw">Diff email</span> Same name; RJ email vs personal consulting firm email</td></tr>
-          <tr><td><span class="mono">2638329</span></td>
-            <td><div class="np"><span class="np-a">Peter Prunty</span><span class="np-b">peter.prunty@indexcapitalconsultants.com · NJ</span></div></td>
-            <td><div class="np"><span class="np-a">Peter Prunty</span><span class="np-b">peter.prunty@morganstanley.com · NY</span></div></td>
-            <td><span class="pill pw">Diff email</span> Consulting firm email vs MS email; different ZIP</td></tr>
-          <tr><td><span class="mono">2415365</span></td>
-            <td><div class="np"><span class="np-a">Lisa Schuhmacher</span><span class="np-b">lisa.schuhmacher@wellsfargoadvisors.com · MA</span></div></td>
-            <td><div class="np"><span class="np-a">Lisa Schumacher</span><span class="np-b">lisa.j.schumacher@wfa.com · MA</span></div></td>
-            <td><span class="pill pw">Diff email</span> Name spelling typo + different email format</td></tr>
-          <tr><td><span class="mono">1357308</span></td>
-            <td><div class="np"><span class="np-a">Laura Martin</span><span class="np-b">laura.martin@raymondjames.com · ZIP 30305</span></div></td>
-            <td><div class="np"><span class="np-a">Laura Martin</span><span class="np-b">laura.j.martin@raymondjames.com · ZIP 60481</span></div></td>
-            <td><span class="pill pw">Diff email</span> Same name/firm; different email variant and ZIP</td></tr>
-          <tr><td><span class="mono">2762026</span></td>
-            <td><div class="np"><span class="np-a">James Albano</span><span class="np-b">james.albano@raymondjames.com · VA</span></div></td>
-            <td><div class="np"><span class="np-a">Mike Albano</span><span class="np-b">mike@trinitaswealthmanagement.com · VA</span></div></td>
-            <td><span class="pill pd">Unusual</span> James vs Mike; different email domains; CRD is sole link</td></tr>
-          <tr><td><span class="mono">1363852</span></td>
-            <td><div class="np"><span class="np-a">Donna Bailey</span><span class="np-b">donna.s.bailey@morganstanley.com · ZIP 55391</span></div></td>
-            <td><div class="np"><span class="np-a">Donna Bailey</span><span class="np-b">donna.bailey@morganstanley.com · ZIP 10036</span></div></td>
-            <td><span class="pill pw">Diff email</span> Same name; different email variant + different office ZIP</td></tr>
+          <tr>
+            <td><div class="np"><span class="np-a">Eliyahu Hoffman</span><span class="np-b">UBS NY · 299 Park Ave</span></div></td>
+            <td><div class="np"><span class="np-a">Eli Hoffman</span><span class="np-b">UBS NY · 299 Park Ave</span></div></td>
+            <td>UBS Financial Services</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="diff-val">A has CRD 7718595 · B null</td>
+          </tr>
+          <tr>
+            <td><div class="np"><span class="np-a">Giancarlo Villanella A.</span><span class="np-b">UBS NY · 299 Park Ave</span></div></td>
+            <td><div class="np"><span class="np-a">Gianni Villanella</span><span class="np-b">UBS NY · 299 Park Ave</span></div></td>
+            <td>UBS Financial Services</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="diff-val">A has CRD 5177932 · B null</td>
+          </tr>
+          <tr>
+            <td><div class="np"><span class="np-a">Maddie Schroeder</span><span class="np-b">UBS Atlanta · Lenox Rd</span></div></td>
+            <td><div class="np"><span class="np-a">Madison Schroeder Christian</span><span class="np-b">UBS Atlanta · Lenox Rd</span></div></td>
+            <td>UBS Financial Services</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="diff-val">A null · B has CRD 7581611</td>
+          </tr>
+          <tr>
+            <td><div class="np"><span class="np-a">Andy Saperstein</span><span class="np-b">MS Wealth Management</span></div></td>
+            <td><div class="np"><span class="np-a">Andrew Saperstein Michael</span><span class="np-b">Morgan Stanley Home Office</span></div></td>
+            <td>Morgan Stanley</td>
+            <td><span class="pill pw">NAME_ZIP</span></td>
+            <td class="diff-val">A null · B has CRD 4728253</td>
+          </tr>
+          <tr>
+            <td><div class="np"><span class="np-a">Krissi Novello</span><span class="np-b">UBS Knoxville</span></div></td>
+            <td><div class="np"><span class="np-a">Kristine Novello Diane</span><span class="np-b">UBS Knoxville</span></div></td>
+            <td>UBS Financial Services</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="diff-val">A null · B has CRD 7363698</td>
+          </tr>
+          <tr>
+            <td><div class="np"><span class="np-a">Niki Moore</span><span class="np-b">Morgan Stanley Orinda CA</span></div></td>
+            <td><div class="np"><span class="np-a">Nikolaus Moore J</span><span class="np-b">Morgan Stanley Walnut Creek CA</span></div></td>
+            <td>Morgan Stanley</td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+            <td class="diff-val">A null · B has CRD 7409431</td>
+          </tr>
+          <tr>
+            <td><div class="np"><span class="np-a">Deborah Maksymetz</span><span class="np-b">Wells Fargo Naples FL</span></div></td>
+            <td><div class="np"><span class="np-a">Debbi Maksymetz</span><span class="np-b">WFAFN Naples FL</span></div></td>
+            <td>Wells Fargo</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="diff-val">A null · B null</td>
+          </tr>
+          <tr>
+            <td><div class="np"><span class="np-a">Kateryna Yergina</span><span class="np-b">WFAFN Melbourne FL</span></div></td>
+            <td><div class="np"><span class="np-a">Katya Yergina</span><span class="np-b">WF Melbourne FL</span></div></td>
+            <td>Wells Fargo</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="diff-val">A has CRD 6699627 · B null</td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="exp" id="e2">
-    <div class="exp-hdr" onclick="tog('e2')">
+  <div class="exp">
+    <div class="exp-hdr" onclick="this.closest('.exp').classList.toggle('open')">
       <div class="exp-left">
-        <span class="exp-t">Same-email, different-CRD pairs (all 31)</span>
-        <span class="pill pw">6 likely bad CRD data</span>
-        <span class="pill pn">14 ambiguous</span>
-        <span class="pill pn">11 different people</span>
-        <span class="exp-s">LLM verdict on each · requires SFDC investigation, not xDM rule changes</span>
+        <span class="exp-t">Same-firm, different office — same exact name, still SEPARATE</span>
+        <span class="pill pd">ExactFirstLastZip rule missing · middle-name mismatch blocks existing rules</span>
       </div>
       <span class="chev">▼</span>
     </div>
     <div class="exp-body">
       <table>
         <thead>
-          <tr><th>Email</th><th>Record A · Name / CRD</th><th>Record B · Name / CRD</th><th>Location</th><th>Verdict</th><th>Notes</th></tr>
+          <tr><th>Name</th><th>Office A</th><th>Office B</th><th>Signal</th><th>CRD gap</th></tr>
         </thead>
         <tbody>
-          <tr><td class="faint">alexander.w.king@ml.com</td>
-            <td><div class="np"><span class="np-a">Alexander King</span><span class="mono diff-val">6339359</span></div></td>
-            <td><div class="np"><span class="np-a">William King</span><span class="mono diff-val">1432593</span></div></td>
-            <td class="faint">NY · NY</td><td><span class="pill pn">Diff people</span></td>
-            <td>Name mismatch; shared ML team email</td></tr>
-          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
-            <td class="faint">ashley.matthews@raymondjames.com</td>
-            <td><div class="np"><span class="np-a">Ashley Matthews</span><span class="mono diff-val">7335535</span></div></td>
-            <td><div class="np"><span class="np-a">Ashley Matthews</span><span class="mono diff-val">735535</span></div></td>
-            <td class="faint">FL · FL · same ZIP</td><td><span class="pill pw">Likely same</span></td>
-            <td>CRD 735535 ≈ 7335535 — probable dropped leading digit</td></tr>
-          <tr><td class="faint">blake.schmidt@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Blake Schmidt</span><span class="mono diff-val">6706046</span></div></td>
-            <td><div class="np"><span class="np-a">Karolyn Bradley</span><span class="mono diff-val">2393394</span></div></td>
-            <td class="faint">CA · CA</td><td><span class="pill pn">Diff people</span></td>
-            <td>Completely different names; shared office email</td></tr>
-          <tr><td class="faint">chris.boyd@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Christopher Boyd</span><span class="mono diff-val">6857034</span></div></td>
-            <td><div class="np"><span class="np-a">Christopher Boyd</span><span class="mono diff-val">4735900</span></div></td>
-            <td class="faint">OH Columbus · OH Columbus</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/city/firm; different CRDs — two separate advisors</td></tr>
-          <tr><td class="faint">christopher.lambert@raymondjames.com</td>
-            <td><div class="np"><span class="np-a">Christopher Lambert</span><span class="mono diff-val">7368352</span></div></td>
-            <td><div class="np"><span class="np-a">Christopher Lambert</span><span class="mono diff-val">2336186</span></div></td>
-            <td class="faint">TX · IL</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different states and CRDs</td></tr>
-          <tr><td class="faint">christopher.rocha@jpmorgan.com</td>
-            <td><div class="np"><span class="np-a">Christopher Rocha</span><span class="mono diff-val">6315068</span></div></td>
-            <td><div class="np"><span class="np-a">Christopher Rocha</span><span class="mono diff-val">6126372</span></div></td>
-            <td class="faint">IL · TX</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different states and CRDs</td></tr>
-          <tr><td class="faint">corey.engelhard@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Jerome Engelhard</span><span class="mono diff-val">861718</span></div></td>
-            <td><div class="np"><span class="np-a">Corey Engelhard</span><span class="mono diff-val">2788550</span></div></td>
-            <td class="faint">FL · FL same branch</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Name mismatch; same branch — possible middle name / father-son</td></tr>
-          <tr><td class="faint">drew.t.johnson@ml.com</td>
-            <td><div class="np"><span class="np-a">Ann Cirullo</span><span class="mono diff-val">4400687</span></div></td>
-            <td><div class="np"><span class="np-a">Drew Johnson</span><span class="mono diff-val">7179644</span></div></td>
-            <td class="faint">MN · MN</td><td><span class="pill pn">Diff people</span></td>
-            <td>Completely different names; SFDC data entry error on Cirullo's email</td></tr>
-          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
-            <td class="faint">elliott.gruber@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Elliott Gruber</span><span class="mono diff-val">6104781</span></div></td>
-            <td><div class="np"><span class="np-a">Elliott Gruber</span><span class="mono diff-val">610478</span></div></td>
-            <td class="faint">TN · MS same firm</td><td><span class="pill pw">Likely same</span></td>
-            <td>CRD 610478 ≈ 6104781 — probable trailing digit dropped</td></tr>
-          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
-            <td class="faint">gerald.hannah@wellsfargoadvisors.com</td>
-            <td><div class="np"><span class="np-a">Gerald Hannah</span><span class="mono diff-val">6076491</span></div></td>
-            <td><div class="np"><span class="np-a">Gerald Hannah</span><span class="mono diff-val">4700076</span></div></td>
-            <td class="faint">MS · MS same branch+phone+ZIP</td><td><span class="pill pw">Likely same</span></td>
-            <td>Everything matches except CRD — classic bad CRD assignment in SFDC</td></tr>
-          <tr><td class="faint">gilbertm@stifel.com</td>
-            <td><div class="np"><span class="np-a">Michael Gilbert</span><span class="mono diff-val">2889240</span></div></td>
-            <td><div class="np"><span class="np-a">Megan Gilbert</span><span class="mono diff-val">5576203</span></div></td>
-            <td class="faint">MD · MO</td><td><span class="pill pn">Diff people</span></td>
-            <td>Name mismatch; likely family sharing Stifel mailbox</td></tr>
-          <tr><td class="faint">ginger.murray@wellsfargoadvisors.com</td>
-            <td><div class="np"><span class="np-a">Amy Schmitz</span><span class="mono diff-val">5923039</span></div></td>
-            <td><div class="np"><span class="np-a">Ginger Murray</span><span class="mono diff-val">1161158</span></div></td>
-            <td class="faint">IL · IL same branch</td><td><span class="pill pn">Diff people</span></td>
-            <td>Completely different names; SFDC email data entry error on Schmitz</td></tr>
-          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
-            <td class="faint">irvin_david@ml.com</td>
-            <td><div class="np"><span class="np-a">Irvin David</span><span class="mono diff-val">4810984</span></div></td>
-            <td><div class="np"><span class="np-a">Irvin David</span><span class="mono diff-val">862717</span></div></td>
-            <td class="faint">LA · LA same branch+ZIP</td><td><span class="pill pw">Likely same</span></td>
-            <td>Same name/firm/ZIP; only CRD differs — bad CRD on one record</td></tr>
-          <tr><td class="faint">james.k.cronin@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Michael Weitman</span><span class="mono diff-val">3050620</span></div></td>
-            <td><div class="np"><span class="np-a">James Cronin</span><span class="mono diff-val">2106986</span></div></td>
-            <td class="faint">FL · IL</td><td><span class="pill pn">Diff people</span></td>
-            <td>Completely different names; placeholder phone on Weitman record</td></tr>
-          <tr><td class="faint">jonesg@stifel.com</td>
-            <td><div class="np"><span class="np-a">Ginger Jones</span><span class="mono diff-val">2688656</span></div></td>
-            <td><div class="np"><span class="np-a">Gregory Jones</span><span class="mono diff-val">1291974</span></div></td>
-            <td class="faint">AL · MO</td><td><span class="pill pn">Diff people</span></td>
-            <td>Name mismatch; Stifel shared mailbox pattern</td></tr>
-          <tr><td class="faint">justin.v.smith@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Justin Smith</span><span class="mono diff-val">7632271</span></div></td>
-            <td><div class="np"><span class="np-a">Justin Smith</span><span class="mono diff-val">3034605</span></div></td>
-            <td class="faint">FL · CA same phone</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/phone/email; different states and CRDs</td></tr>
-          <tr><td class="faint">keith.r.robinson@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Keith Robinson</span><span class="mono diff-val">2382963</span></div></td>
-            <td><div class="np"><span class="np-a">Keith Robinson</span><span class="mono diff-val">1456540</span></div></td>
-            <td class="faint">CO · FL same ZIP</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different states and CRDs</td></tr>
-          <tr><td class="faint">kenneth.moorefield@raymondjames.com</td>
-            <td><div class="np"><span class="np-a">Kenneth Moorefield</span><span class="mono diff-val">6206386</span></div></td>
-            <td><div class="np"><span class="np-a">Kenneth Moorefield</span><span class="mono diff-val">1689765</span></div></td>
-            <td class="faint">VA · FL</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different states and CRDs</td></tr>
-          <tr><td class="faint">kimberly.morse@wellsfargoadvisors.com</td>
-            <td><div class="np"><span class="np-a">Kimberly Morse</span><span class="mono diff-val">4334640</span></div></td>
-            <td><div class="np"><span class="np-a">Kimberly Morse</span><span class="mono diff-val">3120153</span></div></td>
-            <td class="faint">CO · IN</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different states/firms and CRDs</td></tr>
-          <tr><td class="faint">kramers@stifel.com</td>
-            <td><div class="np"><span class="np-a">Sherri Kramer</span><span class="mono diff-val">2362652</span></div></td>
-            <td><div class="np"><span class="np-a">Sheldon Kramer</span><span class="mono diff-val">274897</span></div></td>
-            <td class="faint">MO · NY</td><td><span class="pill pn">Diff people</span></td>
-            <td>Name mismatch; Stifel shared mailbox pattern</td></tr>
-          <tr><td class="faint">lisa.di.piazza@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Lisa Di Piazza</span><span class="mono diff-val">6084406</span></div></td>
-            <td><div class="np"><span class="np-a">Lisa Piazza</span><span class="mono diff-val">2071299</span></div></td>
-            <td class="faint">WI · CA</td><td><span class="pill pn">Diff people</span></td>
-            <td>Different CRDs + different states; name variation insufficient without other signals</td></tr>
-          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
-            <td class="faint">matthew.eckberg@ubs.com</td>
-            <td><div class="np"><span class="np-a">Matthew Eckberg</span><span class="mono diff-val">6953398 ⚠</span></div></td>
-            <td><div class="np"><span class="np-a">Matthew Eckberg</span><span class="mono diff-val">7198630</span></div></td>
-            <td class="faint">MN UBS · MN ML</td><td><span class="pill pw">Likely same</span></td>
-            <td>CRD 6953398 is a known placeholder; 7198630 is the real CRD for this person</td></tr>
-          <tr><td class="faint">michael.lacroix@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Michael Lacroix</span><span class="mono diff-val">5689347</span></div></td>
-            <td><div class="np"><span class="np-a">Robert Lacroix</span><span class="mono diff-val">1244093</span></div></td>
-            <td class="faint">CA · CA same branch</td><td><span class="pill pn">Diff people</span></td>
-            <td>Name mismatch; likely family sharing branch email</td></tr>
-          <tr><td class="faint">michael.r.white@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Michael White</span><span class="mono diff-val">2411286</span></div></td>
-            <td><div class="np"><span class="np-a">Michael White</span><span class="mono diff-val">3144990</span></div></td>
-            <td class="faint">OK · SC</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/phone/email; different states and CRDs</td></tr>
-          <tr><td class="faint">mike.mccarthy@ml.com</td>
-            <td><div class="np"><span class="np-a">Michael McCarthy</span><span class="mono diff-val">6907416</span></div></td>
-            <td><div class="np"><span class="np-a">Michael McCarthy</span><span class="mono diff-val">1067348</span></div></td>
-            <td class="faint">IL · IL</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different IL ZIP codes and CRDs</td></tr>
-          <tr><td class="faint">miranda.cabrelli@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Marie Gabriele</span><span class="mono diff-val">1904150</span></div></td>
-            <td><div class="np"><span class="np-a">Miranda Cabrelli</span><span class="mono diff-val">5588710</span></div></td>
-            <td class="faint">PA · PA same branch+phone</td><td><span class="pill pn">Diff people</span></td>
-            <td>Different names; shared branch phone; SFDC data entry error on Gabriele's email</td></tr>
-          <tr><td class="faint">renee.johnson@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Renee Johnson</span><span class="mono diff-val">2296294</span></div></td>
-            <td><div class="np"><span class="np-a">Renee Johnson</span><span class="mono diff-val">4757621</span></div></td>
-            <td class="faint">CA MS · NJ UBS</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different firms and CRDs</td></tr>
-          <tr style="background-color:color-mix(in srgb,var(--w-dim) 40%,transparent);">
-            <td class="faint">richard.k.maurer@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Richard Maurer</span><span class="mono diff-val">4141982</span></div></td>
-            <td><div class="np"><span class="np-a">Richard Maurer</span><span class="mono diff-val">846485</span></div></td>
-            <td class="faint">FL · FL same branch+ZIP</td><td><span class="pill pw">Likely same</span></td>
-            <td>Same name/firm/branch/ZIP; two CRDs assigned to one person in SFDC</td></tr>
-          <tr><td class="faint">richard.tanner@wellsfargoadvisors.com</td>
-            <td><div class="np"><span class="np-a">Richard Tanner</span><span class="mono diff-val">6849559</span></div></td>
-            <td><div class="np"><span class="np-a">Richard Tanner</span><span class="mono diff-val">4474093</span></div></td>
-            <td class="faint">CT · FL</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different states and CRDs</td></tr>
-          <tr><td class="faint">ryan.c.young@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Ryan Young</span><span class="mono diff-val">7341972</span></div></td>
-            <td><div class="np"><span class="np-a">Ryan Young</span><span class="mono diff-val">6338812</span></div></td>
-            <td class="faint">PA · MD</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/email; different states and CRDs</td></tr>
-          <tr><td class="faint">scott.lewis@morganstanley.com</td>
-            <td><div class="np"><span class="np-a">Scott Lewis</span><span class="mono diff-val">4169826</span></div></td>
-            <td><div class="np"><span class="np-a">Scott Lewis</span><span class="mono diff-val">4140566</span></div></td>
-            <td class="faint">MI · GA</td><td><span class="pill pn">Ambiguous</span></td>
-            <td>Same name/phone/email; different states — CRDs close numerically but distinct</td></tr>
+          <tr>
+            <td><strong>Douglas / Doug Dyakon</strong></td>
+            <td class="np-b">MS LA · 444 S Flower St Fl 34</td>
+            <td class="np-b">MS LA · 444 S Flower St Fl 34 <em>(same address!)</em></td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+            <td class="diff-val">A has CRD 4708354 · B null</td>
+          </tr>
+          <tr>
+            <td><strong>Anupma / Anu Parks</strong></td>
+            <td class="np-b">MS LA · 1999 Ave of Stars Ste 2400</td>
+            <td class="np-b">MS LA · 1999 Ave of Stars Ste 2400 <em>(same address!)</em></td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+            <td class="diff-val">A has CRD 2386259 · B null</td>
+          </tr>
+          <tr>
+            <td><strong>Nicholas / Nick Sodahl Adam</strong></td>
+            <td class="np-b">ML MN · 315 Lake St E Ste 200</td>
+            <td class="np-b">ML MN · 315 Lake St E Ste 200 <em>(same address!)</em></td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+            <td class="diff-val">A has CRD 7611975 · B null</td>
+          </tr>
+          <tr>
+            <td><strong>Katherine / Katie Sarb</strong></td>
+            <td class="np-b">WF Grand Rapids · 2025 E Beltline Ave</td>
+            <td class="np-b">WF Grand Rapids · 2025 E Beltline Ave <em>(same address!)</em></td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+            <td class="diff-val">A has CRD 7475415 · B null</td>
+          </tr>
+          <tr>
+            <td><strong>Patrice Diaz L</strong></td>
+            <td class="np-b">ML Frederick MD · 30 W Patrick St</td>
+            <td class="np-b">ML North Bethesda MD · 11810 Grand Park Ave</td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+            <td class="diff-val">both null · email on B only</td>
+          </tr>
+          <tr>
+            <td><strong>Jaclyn / Jackie Rock Leigh</strong></td>
+            <td class="np-b">MS Fort Lauderdale · 350 E Las Olas Ste 1500</td>
+            <td class="np-b">MS Fort Lauderdale · 350 E Las Olas Ste 1200</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="diff-val">A has CRD 6829803 · B null</td>
+          </tr>
+          <tr>
+            <td><strong>Kristell Tuz</strong> <em>(3 records)</em></td>
+            <td class="np-b">ML NJ Flemington · 200 State Rte 31</td>
+            <td class="np-b">ML NJ Bridgewater + ML NJ East Brunswick</td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+            <td class="diff-val">all three null CRD</td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-</div>
+  <div class="exp">
+    <div class="exp-hdr" onclick="this.closest('.exp').classList.toggle('open')">
+      <div class="exp-left">
+        <span class="exp-t">ML / BofA dual-entity — same advisor under two SFDC accounts</span>
+        <span class="pill pd">BofA Private Bank record has no CRD · ExactCRD can't bridge</span>
+      </div>
+      <span class="chev">▼</span>
+    </div>
+    <div class="exp-body">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>ML record</th><th>BofA Private Bank record</th><th>Signal</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Henry Farnum</strong></td>
+            <td class="np-b">ML generic · toll-free · ZIP 10036</td>
+            <td class="np-b">BofA PB NY · 1 Bryant Park · CRD null</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+          </tr>
+          <tr>
+            <td><strong>Timothy Heller J</strong></td>
+            <td class="np-b">ML Boston · 100 Federal St · email on A</td>
+            <td class="np-b">BofA PB Boston · 100 Federal St · CRD null</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+          </tr>
+          <tr>
+            <td><strong>David Furlin Samuel</strong></td>
+            <td class="np-b">ML Chicago · 110 N Wacker · CRD 4594923</td>
+            <td class="np-b">BofA PB Chicago · 110 N Wacker · CRD null</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+          </tr>
+          <tr>
+            <td><strong>Christopher Ferraro</strong></td>
+            <td class="np-b">ML New Haven CT · 157 Church St Fl 26</td>
+            <td class="np-b">BofA PB New Haven CT · 157 Church St Fl 21</td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+          </tr>
+          <tr>
+            <td><strong>Bruce Konstant M</strong></td>
+            <td class="np-b">BofA PB generic · toll-free · ZIP 60603</td>
+            <td class="np-b">BofA PB Chicago · 110 N Wacker · CRD null</td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="exp">
+    <div class="exp-hdr" onclick="this.closest('.exp').classList.toggle('open')">
+      <div class="exp-left">
+        <span class="exp-t">Cross-firm, name encoding, and email-only examples</span>
+        <span class="pill pn">advisor moved firms · name split across fields · email match only</span>
+      </div>
+      <span class="chev">▼</span>
+    </div>
+    <div class="exp-body">
+      <table>
+        <thead>
+          <tr><th>Type</th><th>Record A</th><th>Record B</th><th>Signal</th><th>Note</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pill pw">Cross-firm</span></td>
+            <td><div class="np"><span class="np-a">Katherine Kozlowski Towar</span><span class="np-b">Raymond James · Naperville IL · CRD 2165006</span></div></td>
+            <td><div class="np"><span class="np-a">Katie Kozlowski</span><span class="np-b">Wells Fargo · Naperville IL · CRD null</span></div></td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="np-b">Nickname + moved firms</td>
+          </tr>
+          <tr>
+            <td><span class="pill pw">Cross-firm</span></td>
+            <td><div class="np"><span class="np-a">Lyndsi Truka K</span><span class="np-b">Merrill Lynch · West Des Moines IA</span></div></td>
+            <td><div class="np"><span class="np-a">Lyndsi Truka</span><span class="np-b">Stifel · West Des Moines IA</span></div></td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="np-b">Same unusual name · same city</td>
+          </tr>
+          <tr>
+            <td><span class="pill pp">Name split</span></td>
+            <td><div class="np"><span class="np-a">Amy Ferguson (fn=amy, mn=jo)</span><span class="np-b">Merrill Lynch · Stillwater MN · CRD 7566830</span></div></td>
+            <td><div class="np"><span class="np-a">Amy Jo Ferguson (fn="amy jo")</span><span class="np-b">Merrill Lynch · Stillwater MN · CRD null</span></div></td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="np-b">First name vs first+middle split</td>
+          </tr>
+          <tr>
+            <td><span class="pill pp">Name split</span></td>
+            <td><div class="np"><span class="np-a">Maria Angelica Suffredini</span><span class="np-b">Morgan Stanley Miami · Fl 51</span></div></td>
+            <td><div class="np"><span class="np-a">Maria Suffredini Angelica (mn)</span><span class="np-b">Morgan Stanley Miami · Fl 51</span></div></td>
+            <td><span class="pill pa">NAME_ZIP</span></td>
+            <td class="np-b">Same office · compound first name</td>
+          </tr>
+          <tr>
+            <td><span class="pill pa">Email-only</span></td>
+            <td><div class="np"><span class="np-a">Courtney Ames</span><span class="np-b">Morgan Stanley · email match</span></div></td>
+            <td><div class="np"><span class="np-a">Courtney Ames Paulette</span><span class="np-b">Morgan Stanley · CRD null</span></div></td>
+            <td><span class="pill pg">EMAIL</span></td>
+            <td class="np-b">ExactEmail fired in SFDC; stale in xDM?</td>
+          </tr>
+          <tr>
+            <td><span class="pill pn">Typo</span></td>
+            <td><div class="np"><span class="np-a">Courthey McCutcheon</span><span class="np-b">Morgan Stanley Olean NY</span></div></td>
+            <td><div class="np"><span class="np-a">Courtney McCutcheon Lynn</span><span class="np-b">Morgan Stanley Olean NY · CRD 7210091</span></div></td>
+            <td><span class="pill pw">Multi-block</span></td>
+            <td class="np-b">Single-char typo · same office</td>
+          </tr>
+          <tr>
+            <td><span class="pill pn">Typo</span></td>
+            <td><div class="np"><span class="np-a">Adriana Hihi</span><span class="np-b">MS SF · 101 California St · CRD 7586665</span></div></td>
+            <td><div class="np"><span class="np-a">Adirana Hihi <em>(transposed)</em></span><span class="np-b">MS SF · 101 California St · CRD null</span></div></td>
+            <td><span class="pill pp">NAME_FIRMSTATE</span></td>
+            <td class="np-b">Same address; "adirana" is typo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec">Recommendations</div>
+  <div class="two">
+
+    <div class="card">
+      <div class="card-h">Short-term — xDM rule additions</div>
+
+      <div class="flag">
+        <div class="fli" style="background:var(--d-dim);">1</div>
+        <div class="flb">
+          <div class="flt">Add ExactFirstLastZip rule (score 80)</div>
+          <div class="fld">First name + last name + ZIP, no middle name required. Would resolve ~100 of the
+          same-firm/same-ZIP pairs where one record lacks a middle name. Threshold of 80 routes to stewardship
+          (not auto-confirm) — safe for review queue.</div>
+        </div>
+      </div>
+      <div class="flag">
+        <div class="fli" style="background:var(--w-dim);">2</div>
+        <div class="flb">
+          <div class="flt">Unblock ExactEmail for SFDC_NG↔SFDC_NG (R5 / CM-2121)</div>
+          <div class="fld">Already proposed. Score 95 would auto-merge confirmed goldens with matching email
+          (strictly > 90 threshold). Requires ensuring email is populated and current in every load — stale
+          email is why ~58 email-match pairs remain SEPARATE today.</div>
+        </div>
+      </div>
+      <div class="flag" style="border-bottom:none;padding-bottom:0;">
+        <div class="fli" style="background:var(--a-dim);">3</div>
+        <div class="flb">
+          <div class="flt">Null-CRD stewardship routing</div>
+          <div class="fld">Flag SFDC_NG records with null CRD on ingest — route to a stewardship queue for
+          CRD lookup before the Integration run. Reducing null-CRD count directly reduces the size of the
+          blind spot, independent of new match rules.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Longer-term — data quality</div>
+
+      <div class="flag">
+        <div class="fli" style="background:var(--p-dim);">4</div>
+        <div class="flb">
+          <div class="flt">Phonetic / nickname first-name matching</div>
+          <div class="fld">A phonetic rule (Soundex / Metaphone / custom nickname table) would close the ~75
+          nickname-variant pairs. Risk: precision drop — "Michael" and "Michelle" share phonetic codes in some
+          encoders. A curated nickname dictionary (Tim→Timothy, Kathy→Kathleen, etc.) has higher precision
+          than generic phonetics.</div>
+        </div>
+      </div>
+      <div class="flag">
+        <div class="fli" style="background:var(--g-dim);">5</div>
+        <div class="flb">
+          <div class="flt">Normalise ML / BofA entity hierarchy in source</div>
+          <div class="fld">45 duplicate pairs arise because "Merrill Lynch Pierce Fenner &amp; Smith" and
+          "Bank of America Private Bank" are separate SFDC Account records for what is operationally the same
+          advisor population. A firm-alias lookup in Semarchy's enricher — mapping both to the same canonical
+          parent — would let FirmState rules fire across entity boundaries.</div>
+        </div>
+      </div>
+      <div class="flag" style="border-bottom:none;padding-bottom:0;">
+        <div class="fli" style="background:var(--w-dim);">6</div>
+        <div class="flb">
+          <div class="flt">Dedup SFDC before load</div>
+          <div class="fld">Several advisors have 3+ active SFDC records (e.g. Kristell Tuz, Jordan Fitzmaurice,
+          Katherine Park, Luis Lemus). Upstream deduplication in Salesforce eliminates the problem at the source
+          rather than relying on xDM matching to compensate.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /page -->
 
 <script>
-function tog(id){document.getElementById(id).classList.toggle('open');}
+// All exp sections start collapsed except the first (already marked open inline)
 </script>
 </body>
 </html>
