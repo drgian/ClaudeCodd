@@ -21,6 +21,9 @@
 .download-bar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--border);background:var(--surface2);flex-wrap:wrap}.download-label{font-size:13px;font-weight:600}.download-sub{font-size:12px;color:var(--text2)}.btn-download{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;background:var(--accent);color:#fff;border:none;cursor:pointer;transition:opacity .15s}.btn-download:hover{opacity:.85}.btn-copy{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;background:var(--surface);color:var(--text);border:1px solid var(--border2);cursor:pointer;transition:all .15s}.btn-copy:hover{border-color:var(--accent);color:var(--accent)}
 .toast{position:fixed;bottom:24px;right:24px;background:#1a2332;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;z-index:1000}.toast.show{opacity:1;transform:translateY(0)}
 .empty-state{padding:48px;text-align:center;color:var(--text3);font-size:13px}
+.rule-tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.rule-prod{background:var(--green-bg);color:var(--green)}.rule-proposed{background:var(--accent-bg);color:var(--accent)}.rule-partial{background:var(--amber-bg);color:var(--amber)}.rule-gap{background:var(--red-bg);color:var(--red)}
+.rule-cov{border-top:1px solid var(--border);margin-top:14px;padding-top:12px}.rule-cov-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:4px}.rule-note{font-size:11px;color:var(--text2);margin-top:5px;line-height:1.45}
 </style>
 <div class="page">
   <div class="header">
@@ -168,6 +171,7 @@ const D = PAIRS.map(p => {
     _lfirm:   fixEnc(aw ? p.f2 : p.f1),
     _wcrd:    aw ? p.c1 : p.c2,
     _lcrd:    aw ? p.c2 : p.c1,
+    _rule:    ruleTag(p),
   });
 });
 
@@ -202,6 +206,50 @@ function catBadge(cat){return '<span class="cat-badge '+(CAT_CLS[cat]||'cat-zip'
 function pubTag(pub, win) {
   if (!pub || pub === 'SFDC only') return '<span style="font-size:11px;color:var(--text3)">SFDC only</span>';
   return '<span class="exp-pub '+(win?'exp-pub-win':'exp-pub-lose')+'">'+esc(pub)+'</span>';
+}
+
+// Jaro-Winkler — used to evaluate fuzzy first-name similarity for CM-2121 R9 rule
+function _jaro(a,b){if(a===b)return 1;const la=a.length,lb=b.length;if(!la||!lb)return 0;const mw=Math.max(Math.floor(Math.max(la,lb)/2)-1,0);const ma=new Array(la).fill(false),mb=new Array(lb).fill(false);let m=0;for(let i=0;i<la;i++){const lo=Math.max(0,i-mw),hi=Math.min(lb-1,i+mw);for(let j=lo;j<=hi;j++){if(!mb[j]&&a[i]===b[j]){ma[i]=mb[j]=true;m++;break;}}}if(!m)return 0;let t=0,k=0;for(let i=0;i<la;i++)if(ma[i]){while(!mb[k])k++;if(a[i]!==b[k])t++;k++;}return(m/la+m/lb+(m-t/2)/m)/3;}
+function _jw(a,b){const j=_jaro(a,b);if(j<0.7)return j;let p=0;while(p<4&&p<a.length&&p<b.length&&a[p]===b[p])p++;return j+p*0.1*(1-j);}
+function _fn(name){if(!name)return'';return name.trim().split(/[\s,]+/)[0].toLowerCase().replace(/[^a-z]/g,'');}
+function ruleTag(p){
+  const fn1=_fn(p.n1),fn2=_fn(p.n2),exactFN=fn1===fn2,jwScore=_jw(fn1,fn2),fuzzyFN=jwScore>=0.75;
+  const pubs=(p.p1+'|'+p.p2).toUpperCase();
+  const hasSFDC=pubs.includes('SFDC_NG');
+  const hasPreqinBoth=p.p1.toUpperCase().includes('PREQIN')&&p.p2.toUpperCase().includes('PREQIN');
+  if(p.blk==='EMAIL'){
+    if(hasSFDC)return{rule:'ExactEmail',tag:'R5',status:'proposed',score:95,outcome:'auto-merge',note:'SFDC_NG was explicitly excluded from ExactEmail in PROD; R5 removes that exclusion.'};
+    return{rule:'ExactEmail',tag:null,status:'prod',score:95,outcome:'auto-merge',note:'Covered by existing PROD rule. If still showing as duplicate, likely caused by a B_XGRP exclusion group or data mismatch between SFDC and xDM source.'};
+  }
+  if(p.blk==='NAME_PHONE'){
+    if(exactFN)return{rule:'FNLNSfxPhone 85→92',tag:'R8',status:'proposed',score:92,outcome:'auto-merge',note:'Exact first name match. PROD rule fires at score 85 (suggestion queue, below >90 auto-merge threshold); R8 raises it to 92 → auto-merge.'};
+    if(fuzzyFN)return{rule:'FuzzyFNLNPhone (new)',tag:'R9',status:'proposed',score:92,outcome:'auto-merge',note:'New rule: same last name + JW(first name)='+jwScore.toFixed(2)+' ≥0.75 + same phone → score 92 → auto-merge. Catches nickname/abbreviation pairs like Louis/Lou, Tim/Timothy.'};
+    return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'JW(first name)='+jwScore.toFixed(2)+' below R9 threshold of 0.75 — no CM-2121 rule covers this first-name combination. May warrant a new rule proposal.'};
+  }
+  if(p.blk==='NAME_ZIP'){
+    if(exactFN){
+      if(hasPreqinBoth)return{rule:'FNLNSfxZip (PREQIN only)',tag:'R6',status:'prod-partial',score:95,outcome:'auto-merge',note:'Current PROD rule requires both masters to be PREQIN; these records qualify. R6 extends this same rule to all publisher combinations.'};
+      return{rule:'FNLNSfxZip',tag:'R6',status:'proposed',score:95,outcome:'auto-merge',note:'R6 removes the PREQIN-only restriction from the name+ZIP rule. Same score (95), same auto-merge outcome — just opens it to all publishers.'};
+    }
+    if(fuzzyFN)return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'JW(first name)='+jwScore.toFixed(2)+'; R6 extends the ZIP rule to all publishers but still requires exact first name. Fuzzy-only first-name match is not covered. Might be caught by R9 if phone signal is also present.'};
+    return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'No CM-2121 rule covers this combination.'};
+  }
+  if(p.blk==='NAME_FIRMSTATE'){
+    if(exactFN)return{rule:'FNLNSfxFirmState',tag:null,status:'prod',score:95,outcome:'auto-merge',note:'Covered by existing PROD rule. If still a duplicate, likely a firm-name standardization mismatch between SFDC and xDM, or a B_XGRP exclusion group preventing merge.'};
+    if(fuzzyFN)return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'JW(first name)='+jwScore.toFixed(2)+'; CM-2121 does not propose a fuzzy first-name rule for firm+state. Pairs here may be caught by R9 if they also share a phone number (unknown from this dataset).'};
+    return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'No CM-2121 rule covers this combination.'};
+  }
+  return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:''};
+}
+function ruleBadge(r){
+  const cls={prod:'rule-prod',proposed:'rule-proposed','prod-partial':'rule-partial',gap:'rule-gap'}[r.status]||'rule-gap';
+  const lbl={prod:'PROD',proposed:'CM-2121 (new)','prod-partial':'PROD (partial)',gap:'No Rule'}[r.status]||'Gap';
+  const scoreStr=r.score?'score '+r.score+' → '+r.outcome:'—';
+  const ruleName=r.rule||'Not covered by any proposed rule';
+  const tagStr=r.tag?'<span style="font-size:10px;opacity:.75;margin-left:3px">('+esc(r.tag)+')</span>':'';
+  return '<span class="rule-tag '+cls+'">'+lbl+'</span>&nbsp;'
+    +'<span style="font-size:12px;font-weight:600;color:var(--text)">'+esc(ruleName)+tagStr+'</span>'
+    +'&nbsp;<span style="font-size:11px;color:var(--text3)">'+scoreStr+'</span>';
 }
 
 function renderTable() {
@@ -243,6 +291,11 @@ function renderTable() {
          +(p._wcrd ? '<a href="https://brokercheck.finra.org/individual/summary/'+encodeURIComponent(p._wcrd)+'" target="_blank" class="btn-sm">BrokerCheck: '+esc(p._wcrd)+' &#x2197;</a>' : '')
          +(p._lcrd && p._lcrd !== p._wcrd ? '<a href="https://brokercheck.finra.org/individual/summary/'+encodeURIComponent(p._lcrd)+'" target="_blank" class="btn-sm">BrokerCheck: '+esc(p._lcrd)+' &#x2197;</a>' : '')
          +'</div>'
+      +'<div class="rule-cov">'
+        +'<div class="rule-cov-label">CM-2121 / CM-2141 Match Rule Coverage</div>'
+        +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px">'+ruleBadge(p._rule)+'</div>'
+        +(p._rule.note ? '<div class="rule-note">'+esc(p._rule.note)+'</div>' : '')
+      +'</div>'
       +'</div></td></tr>';
   }).join('');
 }
@@ -264,12 +317,16 @@ function initTabs(){
 
 function initKPIs(){
   const bc={};D.forEach(p=>{bc[p.blk]=(bc[p.blk]||0)+1;});
+  const nProd=D.filter(p=>p._rule&&p._rule.status==='prod').length;
+  const nProposed=D.filter(p=>p._rule&&(p._rule.status==='proposed'||p._rule.status==='prod-partial')).length;
+  const nGap=D.filter(p=>p._rule&&p._rule.status==='gap').length;
   document.getElementById('totalCount').textContent=D.length.toLocaleString();
   document.getElementById('kpiContainer').innerHTML=
     '<div class="kpi"><div class="kpi-value">'+D.length.toLocaleString()+'</div><div class="kpi-label">Duplicate Pairs</div><div class="kpi-sub">Contacts flagged for merge review</div></div>'
     +'<div class="kpi"><div class="kpi-value">'+(D.length*2).toLocaleString()+'</div><div class="kpi-label">Contacts Affected</div><div class="kpi-sub">Need deduplication in NextGen</div></div>'
-    +'<div class="kpi"><div class="kpi-value">5</div><div class="kpi-label">Categories</div><div class="kpi-sub">Across 4 blocking strategies</div></div>'
-    +'<div class="kpi"><div class="kpi-value">'+D.filter(p=>p.blk==='EMAIL').length+'</div><div class="kpi-label">Email Matches</div><div class="kpi-sub">Same email address, diff record</div></div>';
+    +'<div class="kpi"><div class="kpi-value" style="color:var(--green)">'+nProd+'</div><div class="kpi-label">Covered — PROD</div><div class="kpi-sub">Existing rules already fire (or should)</div></div>'
+    +'<div class="kpi"><div class="kpi-value" style="color:var(--accent)">'+nProposed+'</div><div class="kpi-label">Covered — CM-2121</div><div class="kpi-sub">Newly caught by proposed rule changes</div></div>'
+    +'<div class="kpi"><div class="kpi-value" style="color:var(--red)">'+nGap+'</div><div class="kpi-label">Not Covered</div><div class="kpi-sub">No proposed rule catches these pairs</div></div>';
   document.getElementById('cnt-email').textContent=bc['EMAIL']||0;
   document.getElementById('cnt-phone').textContent=bc['NAME_PHONE']||0;
   document.getElementById('cnt-zip').textContent=bc['NAME_ZIP']||0;
