@@ -145,8 +145,14 @@ function fixEnc(s) {
 
 // Precompute derived values for every pair
 const D = PAIRS.map(p => {
-  const ra = RANK[bestPub(p.p1)] || 99, rb = RANK[bestPub(p.p2)] || 99;
-  const aw = ra <= rb; // golden_a wins
+  // ML/BofA: Merrill Lynch always wins regardless of publisher rank
+  let aw;
+  if (p.cat === 'ML / BofA Dual-Entity') {
+    aw = (p.f1 || '').toLowerCase().includes('merrill');
+  } else {
+    const ra = RANK[bestPub(p.p1)] || 99, rb = RANK[bestPub(p.p2)] || 99;
+    aw = ra <= rb;
+  }
   return Object.assign({}, p, {
     _wname:   fixEnc(aw ? p.n1 : p.n2),
     _lname:   fixEnc(aw ? p.n2 : p.n1),
