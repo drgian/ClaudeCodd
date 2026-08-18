@@ -9,6 +9,7 @@
 .header-chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}.chip{display:inline-flex;align-items:center;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}.chip-blue{background:var(--accent-bg);color:var(--accent)}.chip-gray{background:var(--tag-bg);color:var(--tag-text)}
 .header-meta{font-size:12px;color:var(--text3);margin-top:6px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px}.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;box-shadow:var(--shadow)}.kpi-value{font-size:32px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}.kpi-label{font-size:12px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}.kpi-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.kpi-rf{cursor:pointer;transition:box-shadow .15s,border-color .15s}.kpi-rf:hover{border-color:var(--accent)}.kpi-rf-active{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}.kpi-rf-active .kpi-label{color:var(--accent)}
 .section-header{font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--text3);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 .methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:32px}.method-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:var(--shadow)}.method-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.method-name{font-size:13px;font-weight:700}.method-count{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}.method-desc{font-size:12px;color:var(--text2);line-height:1.5}.method-rule{font-size:11px;margin-top:8px;padding:6px 10px;border-radius:6px;font-family:'SF Mono','Fira Code',monospace}
 .c-email .method-count{color:var(--green)}.c-email .method-rule{background:var(--green-bg);color:var(--green)}.c-phone .method-count{color:var(--accent)}.c-phone .method-rule{background:var(--accent-bg);color:var(--accent)}.c-zip .method-count{color:var(--amber)}.c-zip .method-rule{background:var(--amber-bg);color:var(--amber)}.c-firm .method-count{color:var(--purple)}.c-firm .method-rule{background:var(--purple-bg);color:var(--purple)}
@@ -176,15 +177,21 @@ const D = PAIRS.map(p => {
 });
 
 const SFDC = 'https://apollonextgencrm.lightning.force.com/lightning/r/Contact/';
-const CAT_CLS = {'Email Match':'cat-email','Nickname / Alt Name':'cat-nickname','Same Firm \u00b7 Diff Office':'cat-firm','Name + ZIP Match':'cat-zip','ML / BofA Dual-Entity':'cat-mlboa'};
+const XDM = null; // Set to xDM golden record URL base once format is known, e.g. 'https://host/semarchy/.../Contact/'
+const CAT_CLS ={'Email Match':'cat-email','Nickname / Alt Name':'cat-nickname','Same Firm \u00b7 Diff Office':'cat-firm','Name + ZIP Match':'cat-zip','ML / BofA Dual-Entity':'cat-mlboa'};
 const CAT_ORDER = ['Email Match','Nickname / Alt Name','Same Firm \u00b7 Diff Office','Name + ZIP Match','ML / BofA Dual-Entity'];
 const BLK_LBL = {EMAIL:'Email Match',NAME_PHONE:'Name + Phone',NAME_ZIP:'Name + ZIP',NAME_FIRMSTATE:'Name + Firm + State'};
 
-let currentTab='all', query='', sortKey='', sortDir=1;
+let currentTab='all', query='', sortKey='', sortDir=1, ruleFilter=null;
 
 function filtered() {
   let rows = D;
   if (currentTab !== 'all') rows = rows.filter(r => r.cat === currentTab);
+  if (ruleFilter) {
+    if (ruleFilter === 'prod') rows = rows.filter(r => r._rule && r._rule.status === 'prod');
+    else if (ruleFilter === 'proposed') rows = rows.filter(r => r._rule && (r._rule.status === 'proposed' || r._rule.status === 'prod-partial'));
+    else if (ruleFilter === 'gap') rows = rows.filter(r => r._rule && r._rule.status === 'gap');
+  }
   if (query) {
     const q = query.toLowerCase();
     rows = rows.filter(r =>
@@ -288,6 +295,8 @@ function renderTable() {
       +'</div>'
       +'<div class="exp-actions"><a href="'+wsf+'" target="_blank" class="btn-sm">SFDC: '+esc(p._wname)+' &#x2197;</a>'
          +'<a href="'+lsf+'" target="_blank" class="btn-sm">SFDC: '+esc(p._lname)+' &#x2197;</a>'
+         +(XDM ? '<a href="'+XDM+p._wgolden+'" target="_blank" class="btn-sm">xDM: '+p._wgolden+' &#x2197;</a>' : '')
+         +(XDM ? '<a href="'+XDM+p._lgolden+'" target="_blank" class="btn-sm">xDM: '+p._lgolden+' &#x2197;</a>' : '')
          +(p._wcrd ? '<a href="https://brokercheck.finra.org/individual/summary/'+encodeURIComponent(p._wcrd)+'" target="_blank" class="btn-sm">BrokerCheck: '+esc(p._wcrd)+' &#x2197;</a>' : '')
          +(p._lcrd && p._lcrd !== p._wcrd ? '<a href="https://brokercheck.finra.org/individual/summary/'+encodeURIComponent(p._lcrd)+'" target="_blank" class="btn-sm">BrokerCheck: '+esc(p._lcrd)+' &#x2197;</a>' : '')
          +'</div>'
@@ -308,6 +317,11 @@ function toggleExp(i) {
 function sortBy(k){if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1;}renderTable();}
 function filterTable(){query=document.getElementById('searchInput').value.trim();renderTable();}
 function setTab(t){currentTab=t;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));renderTable();}
+function setRuleFilter(f){
+  ruleFilter = (ruleFilter === f) ? null : f;
+  document.querySelectorAll('.kpi-rf').forEach(el => el.classList.toggle('kpi-rf-active', el.dataset.rf === ruleFilter));
+  renderTable();
+}
 
 function initTabs(){
   const cnt={all:D.length};D.forEach(p=>{cnt[p.cat]=(cnt[p.cat]||0)+1;});
@@ -324,9 +338,9 @@ function initKPIs(){
   document.getElementById('kpiContainer').innerHTML=
     '<div class="kpi"><div class="kpi-value">'+D.length.toLocaleString()+'</div><div class="kpi-label">Duplicate Pairs</div><div class="kpi-sub">Contacts flagged for merge review</div></div>'
     +'<div class="kpi"><div class="kpi-value">'+(D.length*2).toLocaleString()+'</div><div class="kpi-label">Contacts Affected</div><div class="kpi-sub">Need deduplication in NextGen</div></div>'
-    +'<div class="kpi"><div class="kpi-value" style="color:var(--green)">'+nProd+'</div><div class="kpi-label">Covered — PROD</div><div class="kpi-sub">Existing rules already fire (or should)</div></div>'
-    +'<div class="kpi"><div class="kpi-value" style="color:var(--accent)">'+nProposed+'</div><div class="kpi-label">Covered — CM-2121</div><div class="kpi-sub">Newly caught by proposed rule changes</div></div>'
-    +'<div class="kpi"><div class="kpi-value" style="color:var(--red)">'+nGap+'</div><div class="kpi-label">Not Covered</div><div class="kpi-sub">No proposed rule catches these pairs</div></div>';
+    +'<div class="kpi kpi-rf" data-rf="prod" onclick="setRuleFilter(\'prod\')" title="Click to filter table"><div class="kpi-value" style="color:var(--green)">'+nProd+'</div><div class="kpi-label">Covered — PROD</div><div class="kpi-sub">Existing rules already fire (or should)</div></div>'
+    +'<div class="kpi kpi-rf" data-rf="proposed" onclick="setRuleFilter(\'proposed\')" title="Click to filter table"><div class="kpi-value" style="color:var(--accent)">'+nProposed+'</div><div class="kpi-label">Covered — CM-2121</div><div class="kpi-sub">Newly caught by proposed rule changes</div></div>'
+    +'<div class="kpi kpi-rf" data-rf="gap" onclick="setRuleFilter(\'gap\')" title="Click to filter table"><div class="kpi-value" style="color:var(--red)">'+nGap+'</div><div class="kpi-label">Not Covered</div><div class="kpi-sub">No proposed rule catches these pairs</div></div>';
   document.getElementById('cnt-email').textContent=bc['EMAIL']||0;
   document.getElementById('cnt-phone').textContent=bc['NAME_PHONE']||0;
   document.getElementById('cnt-zip').textContent=bc['NAME_ZIP']||0;
