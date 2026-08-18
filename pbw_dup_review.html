@@ -243,19 +243,19 @@ function ruleTag(p){
       if(hasPreqinBoth)return{rule:'FNLNSfxZip (PREQIN only)',tag:'R6',status:'prod-partial',score:95,outcome:'auto-merge',note:'Current PROD rule requires both masters to be PREQIN; these records qualify. R6 extends this same rule to all publisher combinations.'};
       return{rule:'FNLNSfxZip',tag:'R6',status:'proposed',score:95,outcome:'auto-merge',note:'R6 removes the PREQIN-only restriction from the name+ZIP rule. Same score (95), same auto-merge outcome — just opens it to all publishers.'};
     }
-    if(fuzzyFN){const ph1=PHONES[p.ga],ph2=PHONES[p.gb],pm=ph1&&ph2&&ph1===ph2;if(pm)return{rule:'Rule A (FuzzyFNExactLNPhone)',tag:'Rule A',status:'proposed',score:92,outcome:'auto-merge',note:'JW(first name)='+jwScore.toFixed(2)+' ≥0.75 + phones match ('+ph1+') → Proposed Rule A fires at score 92 → auto-merge.'};return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'JW(first name)='+jwScore.toFixed(2)+'; phones differ or unavailable — Rule A (FuzzyFNExactLNPhone) does not apply. No CM-2121 rule covers this pair.'};}
+    if(fuzzyFN){const ph1=PHONES[p.ga],ph2=PHONES[p.gb],pm=ph1&&ph2&&ph1===ph2;if(pm)return{rule:'Rule A (FuzzyFNExactLNPhone)',tag:'Rule A',status:'proposed',score:92,outcome:'auto-merge',note:'JW(first name)='+jwScore.toFixed(2)+' ≥0.75 + phones match ('+ph1+') → Rule A fires at score 92 → auto-merge.'};return{rule:'Rule C (FuzzyFNExactLNZip)',tag:'Rule C',status:'proposed',score:85,outcome:'suggestion queue',note:'JW(first name)='+jwScore.toFixed(2)+' ≥0.75 + same ZIP; no phone available for Rule A. Rule C: score 85 → suggestion queue for steward review.'};}
     return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'No CM-2121 rule covers this combination.'};
   }
   if(p.blk==='NAME_FIRMSTATE'){
     if(exactFN)return{rule:'FNLNSfxFirmState',tag:null,status:'prod',score:95,outcome:'auto-merge',note:'Covered by existing PROD rule. If still a duplicate, likely a firm-name standardization mismatch between SFDC and xDM, or a B_XGRP exclusion group preventing merge.'};
-    if(fuzzyFN){const ph1=PHONES[p.ga],ph2=PHONES[p.gb],pm=ph1&&ph2&&ph1===ph2;if(pm)return{rule:'Rule A (FuzzyFNExactLNPhone)',tag:'Rule A',status:'proposed',score:92,outcome:'auto-merge',note:'JW(first name)='+jwScore.toFixed(2)+' ≥0.75 + phones match ('+ph1+') → Proposed Rule A fires at score 92 → auto-merge.'};return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'JW(first name)='+jwScore.toFixed(2)+'; phones differ or unavailable — Rule A (FuzzyFNExactLNPhone) does not apply. No CM-2121 rule covers this pair.'};}
+    if(fuzzyFN){const ph1=PHONES[p.ga],ph2=PHONES[p.gb],pm=ph1&&ph2&&ph1===ph2;if(pm)return{rule:'Rule A (FuzzyFNExactLNPhone)',tag:'Rule A',status:'proposed',score:92,outcome:'auto-merge',note:'JW(first name)='+jwScore.toFixed(2)+' ≥0.75 + phones match ('+ph1+') → Rule A fires at score 92 → auto-merge.'};return{rule:'Rule D (FuzzyFNExactLNFirmState)',tag:'Rule D',status:'proposed',score:85,outcome:'suggestion queue',note:'JW(first name)='+jwScore.toFixed(2)+' ≥0.75 + same firm + same state; no phone available for Rule A. Rule D: score 85 → suggestion queue for steward review.'};}
     return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:'No CM-2121 rule covers this combination.'};
   }
   return{rule:null,tag:null,status:'gap',score:null,outcome:'none',note:''};
 }
 function ruleBadge(r){
   const cls={prod:'rule-prod',proposed:'rule-proposed','prod-partial':'rule-partial',gap:'rule-gap'}[r.status]||'rule-gap';
-  const lbl={prod:'PROD',proposed:'CM-2121 (new)','prod-partial':'PROD (partial)',gap:'No Rule'}[r.status]||'Gap';
+  const lbl={prod:'PROD',proposed:'CM-2121','prod-partial':'PROD (partial)',gap:'No Rule'}[r.status]||'Gap';
   const scoreStr=r.score?'score '+r.score+' → '+r.outcome:'—';
   const ruleName=r.rule||'Not covered by any proposed rule';
   const tagStr=r.tag?'<span style="font-size:10px;opacity:.75;margin-left:3px">('+esc(r.tag)+')</span>':'';
