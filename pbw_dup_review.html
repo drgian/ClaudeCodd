@@ -186,7 +186,7 @@ const D = PAIRS.map(p => {
     _rule:    ruleTag(p),
     _active12:(ACTIVITY[p.ga]&&ACTIVITY[p.ga]>=_cutoff)||(ACTIVITY[p.gb]&&ACTIVITY[p.gb]>=_cutoff),
   });
-});
+}).filter(p => !(p.cat === 'Nickname / Alt Name' && p._rule.status === 'gap'));
 
 const SFDC = 'https://apollonextgencrm.lightning.force.com/lightning/r/Contact/';
 const XDM = 'https://semarchy-prod-ng.apollo.com/semarchy/mdm-app/ClientMasterNGDL/ClientMaster/browsing/Contact/';
