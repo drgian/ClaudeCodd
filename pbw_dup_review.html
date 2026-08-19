@@ -41,6 +41,13 @@
     </div>
   </div>
   <div class="kpis" id="kpiContainer"></div>
+  <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:10px 0 18px 0">
+    <span style="color:var(--text3);font-size:12px">CRDs &middot; NextGen IDs &middot; Names &middot; Emails &middot; Coverage</span>
+    <button class="btn-download" onclick="downloadCSV()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download .xlsx
+    </button>
+  </div>
   <div class="section-header">Detection Methods</div>
   <div class="methods">
     <div class="method-card c-email">
@@ -382,8 +389,16 @@ function triggerXlDownload(data,filename){var blob=new Blob([data],{type:"applic
 // -----------------------------------------------------------------------------
 
 function downloadCSV(){
-  var cols=[['wn','Name 1'],['ln','Name 2'],['we','Email 1'],['le','Email 2'],['lg','nextGen Losing ID'],['wg','nextGen Winning ID']];
-  var rows=D.map(function(p){return{wn:p._wname||'',ln:p._lname||'',we:p._wemail||'',le:p._lemail||'',lg:String(p._lgolden),wg:String(p._wgolden)};});
+  var cols=[
+    ['wn','Winner Name'],['wc','Winner CRD'],['wg','Winner NextGen ID'],['we','Winner Email'],
+    ['ln','Loser Name'],['lc','Loser CRD'],['lg','Loser NextGen ID'],['le','Loser Email'],
+    ['cat','Category'],['cov','Coverage']
+  ];
+  var rows=D.map(function(p){return{
+    wn:p._wname||'',wc:p._wcrd||'',wg:String(p._wgolden),we:p._wemail||'',
+    ln:p._lname||'',lc:p._lcrd||'',lg:String(p._lgolden),le:p._lemail||'',
+    cat:p.cat||'',cov:p._rule?p._rule.rule:''
+  };});
   try{triggerXlDownload(xlWorkbook([xlSheet('PBW Duplicates',cols,rows)]),'pbw_duplicates.xlsx');}
   catch(e){navigator.clipboard.writeText(buildTSV()).then(function(){showToast("TSV copied \u2014 paste into Excel");}).catch(function(){showToast("Download failed");});}
 }
