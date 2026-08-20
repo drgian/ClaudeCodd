@@ -57,6 +57,8 @@
   .cell-label { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-3); margin-bottom:5px; }
   .cell-value { font-size:32px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1; margin-bottom:3px; letter-spacing:-0.02em; }
   .cell-sub { font-size:12.5px; color:var(--text-2); }
+  .tile-dl { background:none; border:1px solid var(--border); border-radius:3px; color:var(--text-2); cursor:pointer; font-size:10px; font-weight:600; letter-spacing:.04em; padding:2px 8px; margin-top:7px; display:inline-block; }
+  .tile-dl:hover { color:var(--navy); border-color:var(--navy); }
   .c-total .cell-value { color:var(--navy); }
   .c-fill  .cell-value { color:var(--blue); }
   .c-auto  .cell-value { color:var(--green); }
@@ -355,7 +357,7 @@
 
   <div class="pane active" id="summary">
     <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-      <button class="back dl" onclick="downloadAllCategories()">Download All Categories (.xls)</button>
+      <button class="back dl" onclick="downloadAllCategories()">Download Excel for Cleanup</button>
     </div>
     <div class="grid" id="cells"></div>
     <div class="tbl-wrap"><table><thead><tr><th>Override  -  why we accept</th><th class="d-bar"></th><th class="dn">Rows</th><th class="dp">%</th></tr></thead><tbody id="t-ov"></tbody></table></div>
@@ -1385,29 +1387,49 @@ var NR_COLS = [
   ["ru","Rule"],["rs","Reason"],["_guidance","Why flagged for steward review"]
 ];
 
-function downloadAllCategories() {
-  var ao = [], keep = [], nr = [], fill = [];
-  ROWS.forEach(function(r) {
-    var rt = r["rt"] || "";
-    if (rt === "ao")   { ao.push(r); }
-    else if (rt === "keep") { keep.push(r); }
-    else if (rt === "nr")   { nr.push(r); }
-    else if (rt === "fill") { fill.push(r); }
-  });
+function _nrGuidance(rows) {
   var ruleDesc = {};
   RULES.forEach(function(r) { if (r[5]) ruleDesc[r[0]] = r[5]; });
-  var nrAnnotated = nr.map(function(r) {
+  return rows.map(function(r) {
     var copy = Object.assign({}, r);
     copy._guidance = ruleDesc[r["ru"]] || "";
     return copy;
   });
+}
+var NR_FULL_COLS = [["_guidance","Why flagged for steward review"]].concat(EXPORT_COLS);
+
+function downloadAllCategories() {
+  var ao = [], keep = [], nr = [], fill = [];
+  ROWS.forEach(function(r) {
+    var rt = r["rt"] || "";
+    if (rt === "ao")        ao.push(r);
+    else if (rt === "keep") keep.push(r);
+    else if (rt === "nr")   nr.push(r);
+    else if (rt === "fill") fill.push(r);
+  });
   var sheets = [
-    xlSheet("Override",      OVERRIDE_COLS, ao),
-    xlSheet("Keep",          SUMMARY_COLS, keep),
-    xlSheet("Needs Review",  NR_COLS, nrAnnotated)
+    xlSheet("Override",     EXPORT_COLS,   ao),
+    xlSheet("Keep",         EXPORT_COLS,   keep),
+    xlSheet("Needs Review", NR_FULL_COLS,  _nrGuidance(nr))
   ];
-  if (fill.length) { sheets.push(xlSheet("Fill", SUMMARY_COLS, fill)); }
-  triggerXlDownload(xlWorkbook(sheets), "PBW Phone Cleanup - All Categories.xlsx");
+  if (fill.length) sheets.push(xlSheet("Fill", EXPORT_COLS, fill));
+  triggerXlDownload(xlWorkbook(sheets), "PBW Phone Cleanup.xlsx");
+}
+
+function downloadTile(route) {
+  var tileRows = [];
+  ROWS.forEach(function(r) {
+    var rt = r["rt"] || "";
+    if (route === "total" || rt === route) tileRows.push(r);
+  });
+  if (route === "nr") {
+    triggerXlDownload(xlWorkbook([xlSheet("Needs Review", NR_FULL_COLS, _nrGuidance(tileRows))]),
+      "PBW Phone - Needs Review.xlsx");
+  } else {
+    var label = route === "total" ? "All Records" : (ROUTE_LABEL[route] || route);
+    triggerXlDownload(xlWorkbook([xlSheet(label, EXPORT_COLS, tileRows)]),
+      "PBW Phone - " + label + ".xlsx");
+  }
 }
 
 // Header-level workbook: all three routes, full column set.
@@ -1580,7 +1602,8 @@ function render() {
     var filtered = pfCount("route", rt);
     var displayCount = filtered !== null ? fmt(filtered) : c[2];
     return '<div class="cell ' + c[0] + '"><div class="cell-label">' + c[1] + '</div>' +
-      '<div class="cell-value">' + displayCount + '</div><div class="cell-sub">' + c[3] + '</div></div>';
+      '<div class="cell-value">' + displayCount + '</div><div class="cell-sub">' + c[3] + '</div>' +
+      '<button class="tile-dl" onclick="event.stopPropagation();downloadTile(\'' + rt + '\')">↓ xlsx</button></div>';
   }).join("");
 
   // Category table: filter by phone type when active.
