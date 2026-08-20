@@ -1398,6 +1398,19 @@ function _nrGuidance(rows) {
 }
 var NR_FULL_COLS = [["_guidance","Why flagged for steward review"]].concat(EXPORT_COLS);
 
+// Remove columns with no values across the given rows; move Route + Category to end.
+function cleanCols(cols, rows) {
+  var TAIL = ["rt","f4"];
+  var active = cols.filter(function(col) {
+    return rows.some(function(r) {
+      var v = r[col[0]];
+      return v != null && v !== "" && v !== false && v !== 0;
+    });
+  });
+  return active.filter(function(c){ return TAIL.indexOf(c[0]) === -1; })
+    .concat(active.filter(function(c){ return TAIL.indexOf(c[0]) !== -1; }));
+}
+
 function downloadAllCategories() {
   var ao = [], keep = [], nr = [], fill = [];
   ROWS.forEach(function(r) {
@@ -1407,12 +1420,13 @@ function downloadAllCategories() {
     else if (rt === "nr")   nr.push(r);
     else if (rt === "fill") fill.push(r);
   });
+  var nrRows = _nrGuidance(nr);
   var sheets = [
-    xlSheet("Override",     EXPORT_COLS,   ao),
-    xlSheet("Keep",         EXPORT_COLS,   keep),
-    xlSheet("Needs Review", NR_FULL_COLS,  _nrGuidance(nr))
+    xlSheet("Override",     cleanCols(EXPORT_COLS,    ao),     ao),
+    xlSheet("Keep",         cleanCols(EXPORT_COLS,    keep),   keep),
+    xlSheet("Needs Review", cleanCols(NR_FULL_COLS,   nrRows), nrRows)
   ];
-  if (fill.length) sheets.push(xlSheet("Fill", EXPORT_COLS, fill));
+  if (fill.length) sheets.push(xlSheet("Fill", cleanCols(EXPORT_COLS, fill), fill));
   triggerXlDownload(xlWorkbook(sheets), "PBW Phone Cleanup.xlsx");
 }
 
