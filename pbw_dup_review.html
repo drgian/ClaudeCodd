@@ -46,6 +46,8 @@ body{background:var(--bg);color:var(--text1);font-family:-apple-system,BlinkMacS
 .tab-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;white-space:nowrap}
 .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .tab-count{margin-left:4px;opacity:.7;font-size:11px}
+.rb{display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;font-weight:700;letter-spacing:.3px;vertical-align:middle;margin-left:5px;text-transform:uppercase}
+.rb-existing{background:#dcfce7;color:#166534}.rb-proposed{background:#fef3c7;color:#92400e}.rb-mixed{background:#ede9fe;color:#5b21b6}.rb-gap{background:#fee2e2;color:#991b1b}
 .verdict-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:11.5px;cursor:pointer}
 .verdict-btn.active{font-weight:600}
 .verdict-btn.v-match.active{border-color:var(--green);color:var(--green);background:#f0fdf4}
@@ -112,31 +114,6 @@ a:hover{text-decoration:underline}
   <p class="header-meta">LLM-reviewed · August 2026 · <span id="totalCount"></span> actionable pairs from 235,869 PB/Wires contacts · Wide-net blocking + AI judgment · Names link to Salesforce</p>
 </div>
 <div class="kpis" id="kpiContainer"></div>
-<div class="section-label">DETECTION SIGNALS <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:10px;color:var(--text3)">— how we found these pairs (our blocking logic, not xDM rules)</span></div>
-<div class="methods">
-  <div class="method-card mc-crd">
-    <div class="method-card-header"><span class="method-name">CRD Match</span><span class="method-count" id="cnt-crd">—</span></div>
-    <div class="method-desc">Same FINRA CRD number — definitively the same physical person appearing in two Salesforce records.</div>
-    <div class="signal-chip">same FINRA CRD</div>
-  </div>
-  <div class="method-card mc-email">
-    <div class="method-card-header"><span class="method-name">Email Match</span><span class="method-count" id="cnt-email">—</span></div>
-    <div class="method-desc">Same business email (exact or domain-normalized across known alias families: apollo.com = apollo-advisors.com, ms.com = morganstanley.com, etc.).</div>
-    <div class="signal-chip">normalized email match</div>
-  </div>
-  <div class="method-card mc-phone">
-    <div class="method-card-header"><span class="method-name">Name + Phone / ZIP</span><span class="method-count" id="cnt-phone">—</span></div>
-    <div class="method-desc">Same last name, JW ≥ 75 on full name, and same 10-digit phone or same 5-digit ZIP.</div>
-    <div class="signal-chip">JW ≥75 · same phone/ZIP</div>
-  </div>
-  <div class="method-card mc-firm">
-    <div class="method-card-header"><span class="method-name">Name + Firm + State</span><span class="method-count" id="cnt-firm">—</span></div>
-    <div class="method-desc">Same last name, JW ≥ 75 on full name, same firm (by first word) and same state. Finds advisors with duplicate records across branches of the same firm.</div>
-    <div class="signal-chip">JW ≥75 · same firm root · same state</div>
-  </div>
-</div>
-<div class="section-label" style="margin-top:4px">xDM RULE COVERAGE <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:10px;color:var(--text3)">— which Semarchy rules catch each pair (click to filter)</span></div>
-<div class="kpis" id="ruleKpiContainer" style="padding-top:0"></div>
 <div class="pairs-section">
   <div class="section-label" style="padding:0;margin-bottom:10px">DUPLICATE PAIRS</div>
   <div class="search-row">
@@ -345,6 +322,16 @@ function kpiClick(type){
   renderTable();
 }
 
+function catRuleBadge(cat){
+  if(cat==='all') return '';
+  const statuses=new Set(D.filter(p=>p.cat===cat).map(p=>ruleStatus(p.rule)));
+  if(statuses.size===1){
+    const s=[...statuses][0];
+    const labels={existing:'Existing',proposed:'Proposed',gap:'No Rule'};
+    return '<span class="rb rb-'+s+'">'+labels[s]+'</span>';
+  }
+  return '<span class="rb rb-mixed">Mixed</span>';
+}
 function initTabs(){
   const cats=[...(new Set(D.map(p=>p.cat)))].sort((a,b)=>{
     const order=['CRD Match','Email Match','Email Domain Match','Name + Firm + State','Name + Phone','Name + ZIP','Nickname + Firm','Nickname + Phone','Nickname + ZIP','Same Firm, Diff Record'];
@@ -354,7 +341,7 @@ function initTabs(){
   document.getElementById('tabsBar').innerHTML=
     [['all','All'],...cats.map(c=>[c,c])].map(([k,l])=>
       '<button class="tab-btn'+(k==='all'?' active':'')+'" data-tab="'+esc(k)+'" onclick="setTab(this.dataset.tab)">'+
-      esc(l)+'<span class="tab-count">'+(cnt[k]||0).toLocaleString()+'</span></button>'
+      esc(l)+'<span class="tab-count">'+(cnt[k]||0).toLocaleString()+'</span>'+catRuleBadge(k)+'</button>'
     ).join('');
 }
 
@@ -368,18 +355,6 @@ function initKPIs(){
     +'<div class="kpi" data-kpi="LIKELY_MATCH" onclick="kpiClick(\'LIKELY_MATCH\')" title="Filter to likely matches"><div class="kpi-value">'+(byV['LIKELY_MATCH']||0).toLocaleString()+'</div><div class="kpi-label">Likely Match</div><div class="kpi-sub">Click to filter</div></div>'
     +'<div class="kpi amber" data-kpi="REVIEW" onclick="kpiClick(\'REVIEW\')" title="Filter to needs-review pairs"><div class="kpi-value">'+(byV['REVIEW']||0).toLocaleString()+'</div><div class="kpi-label">Needs Review</div><div class="kpi-sub">Click to filter</div></div>'
     +'<div class="kpi red" data-kpi="gap" onclick="kpiClick(\'gap\')" title="Filter to rule-gap pairs (real dupes with no existing xDM rule)"><div class="kpi-value">'+ruleGap.toLocaleString()+'</div><div class="kpi-label">Rule Gaps</div><div class="kpi-sub">Click to filter</div></div>';
-  const cntExisting=D.filter(p=>ruleStatus(p.rule)==='existing').length;
-  const cntProposed=D.filter(p=>ruleStatus(p.rule)==='proposed').length;
-  const cntGapAll=D.filter(p=>ruleStatus(p.rule)==='gap').length;
-  document.getElementById('ruleKpiContainer').innerHTML=
-    '<div class="kpi green" data-kpi="existing" onclick="kpiClick(\'existing\')" title="Filter to pairs caught by an existing deployed xDM rule"><div class="kpi-value">'+cntExisting.toLocaleString()+'</div><div class="kpi-label">Existing xDM Rule</div><div class="kpi-sub">Already in Semarchy</div></div>'
-    +'<div class="kpi amber" data-kpi="proposed" onclick="kpiClick(\'proposed\')" title="Filter to pairs that require a proposed new xDM rule not yet deployed"><div class="kpi-value">'+cntProposed.toLocaleString()+'</div><div class="kpi-label">Proposed New Rule</div><div class="kpi-sub">Not yet in Semarchy</div></div>'
-    +'<div class="kpi red" data-kpi="gap-all" onclick="kpiClick(\'gap-all\')" title="Filter to pairs with no existing or proposed rule"><div class="kpi-value">'+cntGapAll.toLocaleString()+'</div><div class="kpi-label">No Rule — Gap</div><div class="kpi-sub">No coverage at all</div></div>';
-  const byBlk={};D.forEach(p=>{byBlk[p.blk]=(byBlk[p.blk]||0)+1;});
-  document.getElementById('cnt-crd').textContent  =(byBlk['CRD_MATCH']||0).toLocaleString();
-  document.getElementById('cnt-email').textContent=(byBlk['EMAIL_NORM']||0).toLocaleString();
-  document.getElementById('cnt-phone').textContent=((byBlk['NAME_PHONE']||0)+(byBlk['NAME_ZIP']||0)).toLocaleString();
-  document.getElementById('cnt-firm').textContent =(byBlk['NAME_FIRMSTATE']||0).toLocaleString();
 }
 
 function xlEsc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
