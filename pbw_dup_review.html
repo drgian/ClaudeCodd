@@ -188,7 +188,7 @@ const D = PAIRS.map(p => {
     _wcrd:    aw?p.ca:p.cb, _lcrd:    aw?p.cb:p.ca,
     _ws:      aw?p.sa:p.sb, _ls:      aw?p.sb:p.sa,
     _wz:      aw?p.za:p.zb, _lz:      aw?p.zb:p.za,
-    _verdict: p.verdict, _jw: p.jw
+    _verdict: p.blk==='CRD_MATCH' ? 'MATCH' : p.verdict, _jw: p.jw
   });
 });
 
