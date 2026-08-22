@@ -83,7 +83,7 @@ a:hover{text-decoration:underline}
 .exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:14px}
 .exp-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:3px}
 .exp-value{font-size:12.5px}
-.exp-rule{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 12px;margin-bottom:10px;font-size:12px}
+.exp-rule{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 12px;margin-bottom:10px;font-size:12px;word-break:break-word;overflow-wrap:break-word}
 .rule-covered{color:var(--green)}
 .rule-proposed{color:var(--amber)}
 .rule-gap{color:var(--red)}
@@ -142,7 +142,7 @@ a:hover{text-decoration:underline}
         <tr>
           <th onclick="sortBy('cat')">Category</th>
           <th onclick="sortBy('_verdict')">AI Verdict</th>
-          <th onclick="sortBy('_xdmCaught')">In xDM?</th>
+          <th onclick="sortBy('_xdmStatus')">Merged in xDM?</th>
           <th onclick="sortBy('_wname')">Name A (Primary)</th>
           <th onclick="sortBy('_lname')">Name B (Duplicate)</th>
           <th onclick="sortBy('_wemail')">Email A</th>
@@ -191,7 +191,7 @@ const D = PAIRS.map(p => {
     _ws:      aw?p.sa:p.sb, _ls:      aw?p.sb:p.sa,
     _wz:      aw?p.za:p.zb, _lz:      aw?p.zb:p.za,
     _verdict: p.blk==='CRD_MATCH' ? 'MATCH' : p.verdict, _jw: p.jw,
-    _xdmCaught: (function(ga,gb){var ia=XDM_MAP[ga],ib=XDM_MAP[gb];return !!(ia&&ib&&ia===ib);})(p.ga,p.gb)
+    _xdmStatus: (function(ga,gb){var ia=XDM_MAP[ga],ib=XDM_MAP[gb];if(ia&&ib&&ia===ib)return 'merged';if(ia&&ib&&ia!==ib)return 'unmatched';return 'new';})(p.ga,p.gb)
   });
 });
 
@@ -205,8 +205,9 @@ function filtered(){
   if(currentVerdict!=='all') rows=rows.filter(r=>r.verdict===currentVerdict);
   if(ruleGapOnly) rows=rows.filter(r=>(!r.rule||r.rule.startsWith('GAP'))&&(r.verdict==='MATCH'||r.verdict==='LIKELY_MATCH'));
   if(ruleStatusFilter!=='all') rows=rows.filter(r=>ruleStatus(r.rule)===ruleStatusFilter);
-  if(xdmFilter==='xdm-caught') rows=rows.filter(r=>r._xdmCaught);
-  if(xdmFilter==='xdm-new') rows=rows.filter(r=>!r._xdmCaught);
+  if(xdmFilter==='xdm-merged') rows=rows.filter(r=>r._xdmStatus==='merged');
+  if(xdmFilter==='xdm-unmatched') rows=rows.filter(r=>r._xdmStatus==='unmatched');
+  if(xdmFilter==='xdm-new') rows=rows.filter(r=>r._xdmStatus==='new');
   if(query){
     const q=query.toLowerCase();
     rows=rows.filter(r=>
@@ -260,7 +261,7 @@ function renderTable(){
     return '<tr onclick="toggleExp('+i+')" id="r'+i+'">'
       +'<td>'+catBadge(p.cat)+'</td>'
       +'<td>'+vBadge(p.verdict)+'</td>'
-      +'<td>'+(p._xdmCaught?'<span style="color:#7c3aed;font-size:11px;font-weight:600">&#10003; In xDM</span>':'<span style="color:var(--text3);font-size:11px">New</span>')+'</td>'
+      +'<td>'+(p._xdmStatus==='merged'?'<span style="color:#7c3aed;font-size:11px;font-weight:600">&#10003; Merged</span>':p._xdmStatus==='unmatched'?'<span style="color:var(--amber);font-size:11px;font-weight:500">In xDM</span>':'<span style="color:var(--text3);font-size:11px">New</span>')+'</td>'
       +'<td class="td-name">'+esc(p._wname)+'</td>'
       +'<td class="td-name">'+esc(p._lname)+'</td>'
       +'<td class="td-email" title="'+esc(p._wemail)+'">'+(esc(p._wemail)||'&mdash;')+'</td>'
@@ -277,8 +278,8 @@ function renderTable(){
          +'<div class="exp-value">'+(BLK_LBL[p.blk]||p.blk)+'</div>'
          +'<div style="font-size:10.5px;color:var(--text3);margin-top:3px">All blocks: '+esc(p.blocks||'')+'</div>'
          +'<div style="font-size:10.5px;color:var(--text3)">JW similarity: '+p.jw+'%'+(p.isNick?' &middot; Nickname variant':'')+'</div>'
-         +'<div style="margin-top:8px"><span style="'+(p._xdmCaught?'color:#7c3aed;font-weight:600':'color:var(--text2)')+';font-size:12px">'
-           +(p._xdmCaught?'&#10003; Already in same xDM golden record':'&#9675; Not yet grouped in xDM')+'</span></div></div>'
+         +'<div style="margin-top:8px"><span style="'+(p._xdmCaght==='merged'?'color:#7c3aed;font-weight:600':p._xdmStatus==='unmatched'?'color:var(--amber);font-weight:600':'color:var(--text2)')+';font-size:12px">'
+           +(p._xdmStatus==='merged'?'&#10003; Already merged in same xDM golden':p._xdmStatus==='unmatched'?'&#9679; Both in xDM — not yet merged':'&#9675; Not yet in xDM')+'</span></div></div>'
       +'<div><div class="exp-label">Rule Coverage</div>'
          +'<div class="exp-rule"><span class="'+ruleClass(p.rule)+'">'+ruleIcon(p.rule)+' '+esc(p.rule||'No rule — GAP')+'</span></div>'
          +'<div style="font-size:10.5px;color:var(--text3)">'+
@@ -314,7 +315,7 @@ function kpiClick(type){
     currentVerdict='all'; ruleGapOnly=true; ruleStatusFilter='all'; xdmFilter='all';
     document.querySelectorAll('.verdict-btn').forEach(b=>b.classList.toggle('active',b.dataset.verdict==='all'));
     document.querySelector('[data-kpi="gap"]').classList.add('kpi-active');
-  } else if(type==='xdm-caught'||type==='xdm-new'){
+  } else if(type==='xdm-merged'||type==='xdm-unmatched'||type==='xdm-new'){
     currentVerdict='all'; ruleGapOnly=false; ruleStatusFilter='all'; xdmFilter=type;
     document.querySelectorAll('.verdict-btn').forEach(b=>b.classList.toggle('active',b.dataset.verdict==='all'));
     document.querySelector('[data-kpi="'+type+'"]').classList.add('kpi-active');
@@ -367,8 +368,9 @@ function initKPIs(){
     +'<div class="kpi" data-kpi="LIKELY_MATCH" onclick="kpiClick(\'LIKELY_MATCH\')" title="Filter to likely matches"><div class="kpi-value">'+(byV['LIKELY_MATCH']||0).toLocaleString()+'</div><div class="kpi-label">Likely Match</div><div class="kpi-sub">Click to filter</div></div>'
     +'<div class="kpi amber" data-kpi="REVIEW" onclick="kpiClick(\'REVIEW\')" title="Filter to needs-review pairs"><div class="kpi-value">'+(byV['REVIEW']||0).toLocaleString()+'</div><div class="kpi-label">Needs Review</div><div class="kpi-sub">Click to filter</div></div>'
     +'<div class="kpi red" data-kpi="gap" onclick="kpiClick(\'gap\')" title="Filter to rule-gap pairs (real dupes with no existing xDM rule)"><div class="kpi-value">'+ruleGap.toLocaleString()+'</div><div class="kpi-label">Rule Gaps</div><div class="kpi-sub">Click to filter</div></div>'
-    +'<div class="kpi" data-kpi="xdm-caught" onclick="kpiClick(\'xdm-caught\')" title="Filter to pairs already in the same xDM golden record" style="border-color:#7c3aed"><div class="kpi-value" style="color:#7c3aed">'+D.filter(p=>p._xdmCaught).length.toLocaleString()+'</div><div class="kpi-label">Already in xDM</div><div class="kpi-sub">Same golden record</div></div>'
-    +'<div class="kpi" data-kpi="xdm-new" onclick="kpiClick(\'xdm-new\')" title="Filter to pairs not yet in the same xDM golden record"><div class="kpi-value">'+D.filter(p=>!p._xdmCaught).length.toLocaleString()+'</div><div class="kpi-label">New to xDM</div><div class="kpi-sub">Not yet grouped</div></div>';
+    +'<div class="kpi" data-kpi="xdm-merged" onclick="kpiClick(\'xdm-merged\')" title="Filter to pairs already merged in the same xDM golden record" style="border-color:#7c3aed"><div class="kpi-value" style="color:#7c3aed">'+D.filter(p=>p._xdmStatus==='merged').length.toLocaleString()+'</div><div class="kpi-label">Merged in xDM</div><div class="kpi-sub">Same golden record</div></div>'
+    +'<div class="kpi" data-kpi="xdm-unmatched" onclick="kpiClick(\'xdm-unmatched\')" title="Both contacts in xDM but in separate golden records" style="border-color:var(--amber)"><div class="kpi-value" style="color:var(--amber)">'+D.filter(p=>p._xdmStatus==='unmatched').length.toLocaleString()+'</div><div class="kpi-label">In xDM, Unmatched</div><div class="kpi-sub">Separate golden records</div></div>'
+    +'<div class="kpi" data-kpi="xdm-new" onclick="kpiClick(\'xdm-new\')" title="At least one contact not yet in xDM"><div class="kpi-value">'+D.filter(p=>p._xdmStatus==='new').length.toLocaleString()+'</div><div class="kpi-label">New to xDM</div><div class="kpi-sub">Not yet in xDM</div></div>';
 }
 
 function xlEsc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
@@ -412,7 +414,7 @@ function richRowsToXlData(rows){
     var wxdm=XDM_MAP[p._wgolden]||'',lxdm=XDM_MAP[p._lgolden]||'';
     return {
       verdict:p._verdict||p.verdict, cat:p.cat,
-      xdm_status:p._xdmCaught?'Already in same xDM golden':'Not yet in xDM',
+      xdm_status:p._xdmStatus==='merged'?'Merged in xDM':p._xdmStatus==='unmatched'?'In xDM - Not Merged':'New to xDM',
       jw_pct:p._jw?Math.round(p._jw*100)+'%':'N/A',
       rule_status:{'existing':'Existing Rule','proposed':'Proposed New Rule','gap':'No Rule — Gap'}[ruleStatus(p.rule)]||'',
       rule:p.rule||'', narrative:dupNarrative(p), action:'Merge duplicate into primary',
