@@ -261,7 +261,7 @@ function renderTable(){
     return '<tr onclick="toggleExp('+i+')" id="r'+i+'">'
       +'<td>'+catBadge(p.cat)+'</td>'
       +'<td>'+vBadge(p.verdict)+'</td>'
-      +'<td>'+(p._xdmStatus==='merged'?'<span style="color:#7c3aed;font-size:11px;font-weight:600">&#10003; Merged</span>':p._xdmStatus==='unmatched'?'<span style="color:var(--amber);font-size:11px;font-weight:500">In xDM</span>':'<span style="color:var(--text3);font-size:11px">New</span>')+'</td>'
+      +'<td>'+(p._xdmStatus==='merged'?'<span style="color:#7c3aed;font-size:11px;font-weight:600">&#10003; Merged</span>':p._xdmStatus==='unmatched'?'<span style="color:var(--amber);font-size:11px;font-weight:500">In xDM</span>':'<span style="color:var(--text3);font-size:11px">Missing</span>')+'</td>'
       +'<td class="td-name">'+esc(p._wname)+'</td>'
       +'<td class="td-name">'+esc(p._lname)+'</td>'
       +'<td class="td-email" title="'+esc(p._wemail)+'">'+(esc(p._wemail)||'&mdash;')+'</td>'
@@ -279,7 +279,7 @@ function renderTable(){
          +'<div style="font-size:10.5px;color:var(--text3);margin-top:3px">All blocks: '+esc(p.blocks||'')+'</div>'
          +'<div style="font-size:10.5px;color:var(--text3)">JW similarity: '+p.jw+'%'+(p.isNick?' &middot; Nickname variant':'')+'</div>'
          +'<div style="margin-top:8px"><span style="'+(p._xdmCaght==='merged'?'color:#7c3aed;font-weight:600':p._xdmStatus==='unmatched'?'color:var(--amber);font-weight:600':'color:var(--text2)')+';font-size:12px">'
-           +(p._xdmStatus==='merged'?'&#10003; Already merged in same xDM golden':p._xdmStatus==='unmatched'?'&#9679; Both in xDM — not yet merged':'&#9675; Not yet in xDM')+'</span></div></div>'
+           +(p._xdmStatus==='merged'?'&#10003; Already merged in same xDM golden':p._xdmStatus==='unmatched'?'&#9679; Both in xDM — not yet merged':'&#9675; Missing from xDM')+'</span></div></div>'
       +'<div><div class="exp-label">Rule Coverage</div>'
          +'<div class="exp-rule"><span class="'+ruleClass(p.rule)+'">'+ruleIcon(p.rule)+' '+esc(p.rule||'No rule — GAP')+'</span></div>'
          +'<div style="font-size:10.5px;color:var(--text3)">'+
@@ -370,7 +370,7 @@ function initKPIs(){
     +'<div class="kpi red" data-kpi="gap" onclick="kpiClick(\'gap\')" title="Filter to rule-gap pairs (real dupes with no existing xDM rule)"><div class="kpi-value">'+ruleGap.toLocaleString()+'</div><div class="kpi-label">Rule Gaps</div><div class="kpi-sub">Click to filter</div></div>'
     +'<div class="kpi" data-kpi="xdm-merged" onclick="kpiClick(\'xdm-merged\')" title="Filter to pairs already merged in the same xDM golden record" style="border-color:#7c3aed"><div class="kpi-value" style="color:#7c3aed">'+D.filter(p=>p._xdmStatus==='merged').length.toLocaleString()+'</div><div class="kpi-label">Merged in xDM</div><div class="kpi-sub">Same golden record</div></div>'
     +'<div class="kpi" data-kpi="xdm-unmatched" onclick="kpiClick(\'xdm-unmatched\')" title="Both contacts in xDM but in separate golden records" style="border-color:var(--amber)"><div class="kpi-value" style="color:var(--amber)">'+D.filter(p=>p._xdmStatus==='unmatched').length.toLocaleString()+'</div><div class="kpi-label">In xDM, Unmatched</div><div class="kpi-sub">Separate golden records</div></div>'
-    +'<div class="kpi" data-kpi="xdm-new" onclick="kpiClick(\'xdm-new\')" title="At least one contact not yet in xDM"><div class="kpi-value">'+D.filter(p=>p._xdmStatus==='new').length.toLocaleString()+'</div><div class="kpi-label">New to xDM</div><div class="kpi-sub">Not yet in xDM</div></div>';
+    +'<div class="kpi" data-kpi="xdm-new" onclick="kpiClick(\'xdm-new\')" title="At least one contact not in xDM at all"><div class="kpi-value">'+D.filter(p=>p._xdmStatus==='new').length.toLocaleString()+'</div><div class="kpi-label">Missing from xDM</div><div class="kpi-sub">Not in xDM at all</div></div>';
 }
 
 function xlEsc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
@@ -414,7 +414,7 @@ function richRowsToXlData(rows){
     var wxdm=XDM_MAP[p._wgolden]||'',lxdm=XDM_MAP[p._lgolden]||'';
     return {
       verdict:p._verdict||p.verdict, cat:p.cat,
-      xdm_status:p._xdmStatus==='merged'?'Merged in xDM':p._xdmStatus==='unmatched'?'In xDM - Not Merged':'New to xDM',
+      xdm_status:p._xdmStatus==='merged'?'Merged in xDM':p._xdmStatus==='unmatched'?'In xDM - Not Merged':'Missing from xDM',
       jw_pct:p._jw?Math.round(p._jw*100)+'%':'N/A',
       rule_status:{'existing':'Existing Rule','proposed':'Proposed New Rule','gap':'No Rule — Gap'}[ruleStatus(p.rule)]||'',
       rule:p.rule||'', narrative:dupNarrative(p), action:'Merge duplicate into primary',
