@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NextGen Contact Duplicate Analysis</title>
+<style>
+:root{--bg:#f4f5f7;--surface:#fff;--border:#e2e5ea;--text1:#1a1d23;--text2:#4a5568;--text3:#8a93a0;--accent:#2563eb;--accent2:#7c3aed;--green:#16a34a;--amber:#d97706;--red:#dc2626;--teal:#0891b2;--badge-r:#fee2e2;--badge-rtext:#991b1b;--radius:10px;--shadow:0 1px 4px rgba(0,0,0,.08)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1117;--surface:#1c1f28;--border:#2d3141;--text1:#e8eaf0;--text2:#9aa0b0;--text3:#5c6275;--badge-r:#3b1a1a;--badge-rtext:#f87171;--shadow:0 1px 4px rgba(0,0,0,.4)}}
+[data-theme="dark"]{--bg:#0f1117;--surface:#1c1f28;--border:#2d3141;--text1:#e8eaf0;--text2:#9aa0b0;--text3:#5c6275;--badge-r:#3b1a1a;--badge-rtext:#f87171;--shadow:0 1px 4px rgba(0,0,0,.4)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;line-height:1.5}
+.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 28px}
+.page-header h1{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.header-meta{color:var(--text3);font-size:11.5px;margin-top:3px}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;padding:18px 28px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;min-width:140px;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.kpi:hover{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent)}
+.kpi.kpi-active{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent);background:var(--bg)}
+.kpi.green:hover,.kpi.green.kpi-active{box-shadow:0 0 0 2px var(--green);border-color:var(--green)}
+.kpi.amber:hover,.kpi.amber.kpi-active{box-shadow:0 0 0 2px var(--amber);border-color:var(--amber)}
+.kpi-value{font-size:22px;font-weight:700;color:var(--accent);line-height:1}
+.kpi-label{font-size:11px;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.kpi.green .kpi-value{color:var(--green)}
+.kpi.amber .kpi-value{color:var(--amber)}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);padding:0 28px;margin-bottom:10px}
+.methods{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;padding:0 28px 18px}
+.method-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.method-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.method-name{font-size:12.5px;font-weight:600}
+.method-count{font-size:18px;font-weight:700}
+.method-desc{font-size:11px;color:var(--text2);margin-bottom:8px}
+.signal-chip{background:var(--bg);border-radius:5px;padding:3px 7px;font-size:10px;color:var(--text3);font-family:monospace}
+.mc-crd .method-count{color:#7c3aed}
+.mc-email .method-count{color:#16a34a}
+.mc-phone .method-count{color:#2563eb}
+.mc-firm .method-count{color:#d97706}
+.mc-zip .method-count{color:#be185d}
+.pairs-section{padding:0 28px 28px}
+.search-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.search-box{position:relative;flex:1;min-width:200px;max-width:380px}
+.search-box input{width:100%;padding:7px 10px 7px 32px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text1);font-size:12.5px;outline:none}
+.search-box input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px}
+.result-count{font-size:12px;color:var(--text3);margin-left:auto}
+.filter-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
+.filter-label{font-size:11px;color:var(--text3);margin-right:4px}
+.tabs-bar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.tab-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;white-space:nowrap}
+.tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tab-count{margin-left:4px;opacity:.7;font-size:11px}
+.rb{display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;font-weight:700;letter-spacing:.3px;vertical-align:middle;margin-left:5px;text-transform:uppercase}
+.rb-existing{background:#dcfce7;color:#166534}
+.rb-proposed{background:#fef3c7;color:#92400e}
+.rb-mixed{background:#ede9fe;color:#5b21b6}
+.verdict-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:11.5px;cursor:pointer}
+.verdict-btn.active{font-weight:600}
+.verdict-btn.v-match.active{border-color:var(--green);color:var(--green);background:#f0fdf4}
+.verdict-btn.v-likely.active{border-color:var(--accent);color:var(--accent);background:#eff6ff}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{text-align:left;padding:7px 10px;border-bottom:2px solid var(--border);color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;white-space:nowrap;background:var(--surface)}
+thead th:hover{color:var(--text1)}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer}
+tbody tr:hover{background:var(--bg)}
+tbody tr.expanded-parent{background:var(--bg)}
+td{padding:7px 10px;vertical-align:middle}
+.td-name{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-email{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;color:var(--text2)}
+.td-id{font-size:10px;color:var(--text3);font-family:monospace}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.cat-badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.cat-crd{background:#f3e8ff;color:#6d28d9}
+.cat-email{background:#dcfce7;color:#166534}
+.cat-phone{background:#dbeafe;color:#1e40af}
+.cat-firm{background:#fef3c7;color:#92400e}
+.cat-zip{background:#fce7f3;color:#9d174d}
+.verdict-badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:10px;font-weight:700;white-space:nowrap;margin-left:4px}
+.v-MATCH{background:#dcfce7;color:#166534}
+.v-LIKELY_MATCH{background:#dbeafe;color:#1e40af}
+.expanded-row td{padding:0;background:var(--bg)}
+.expanded-content{padding:14px 18px 18px;border-top:1px solid var(--border)}
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+.exp-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:3px}
+.exp-value{font-size:12.5px;word-break:break-all}
+.exp-rule{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 12px;margin-bottom:10px;font-size:12px}
+.exp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.btn-sm{display:inline-block;padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:11.5px;color:var(--text2);background:var(--surface);cursor:pointer;text-decoration:none}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+.table-wrap{overflow-x:auto}
+.empty-state{text-align:center;padding:48px;color:var(--text3)}
+.export-bar{display:flex;align-items:center;gap:10px;padding:12px 0;flex-wrap:wrap}
+.export-label{font-size:12px;font-weight:600;margin-right:4px}
+.export-sub{font-size:11px;color:var(--text3)}
+.btn-download{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer}
+.btn-download:hover{opacity:.9}
+.toast{position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <h1>NextGen &#8212; Duplicate Contact Analysis</h1>
+  <p class="header-meta">xDM rules &#183; August 2026 &#183; <span id="totalCount">8</span> candidate pairs from ~1.5M SFDC_NG contacts &#183; Proposed rule set applied in Snowflake &#183; Names link to Salesforce</p>
+</div>
+<div class="kpis" id="kpiContainer"></div>
+<div class="section-label" style="padding:18px 28px 0">RULE COVERAGE</div>
+<div class="methods" id="methodsContainer" style="padding:12px 28px 18px"></div>
+<div class="pairs-section">
+  <div class="section-label" style="padding:0;margin-bottom:10px">DUPLICATE PAIRS</div>
+  <div class="search-row">
+    <div class="search-box">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Search name, email, CRD, SFDC ID…" oninput="renderTable()">
+    </div>
+    <div class="result-count" id="resultCount"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Verdict:</span>
+    <button class="verdict-btn v-match" data-verdict="MATCH" onclick="setVerdict(this.dataset.verdict)">&#10003; Match</button>
+    <button class="verdict-btn v-likely" data-verdict="LIKELY_MATCH" onclick="setVerdict(this.dataset.verdict)">Likely Match</button>
+  </div>
+  <div class="tabs-bar" id="tabsBar"></div>
+  <div class="export-bar">
+    <span class="export-label">Export:</span>
+    <button class="btn-download" onclick="downloadAll()">&#8659; Download Pairs (.tsv)</button>
+    <span class="export-sub">Respects current tab / verdict / search filter</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortBy('cat')">Category</th>
+          <th onclick="sortBy('_verdict')">Rule Verdict</th>
+          <th onclick="sortBy('_xdmStatus')">In xDM?</th>
+          <th onclick="sortBy('_wname')">Name A</th>
+          <th onclick="sortBy('_lname')">Name B</th>
+          <th onclick="sortBy('ea')">Email A</th>
+          <th onclick="sortBy('eb')">Email B</th>
+          <th onclick="sortBy('rule')">xDM Rule</th>
+          <th onclick="sortBy('score')">Score</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none">No matching pairs.</div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PAIRS_RAW=[{"rule":"ExactCRD","score":100,"blk":"CRD_MATCH","cat":"crd","verdict":"MATCH","ga":"0031R00003AAA001","xdm_a":"100001","ca":"1234567","fna":"John","lna":"Smith","na":"John Smith","ea":"jsmith@firm.com","ea2":"","pa":"2125550100","sa":"NY","za":"10001","city_a":"New York","addr_a":"100 Park Ave","ja":"Financial Advisor","type_a":"Individual Advisor BD","fa":"Goldman Sachs","gb":"0031R00003BBB002","xdm_b":"100002","cb":"1234567","fnb":"John","lnb":"Smith","nb":"John A. Smith","eb":"john.smith@gs.com","eb2":"","pb":"2125550100","sb":"NY","zb":"10001","city_b":"New York","addr_b":"200 West St","jb":"VP Wealth Mgmt","type_b":"Individual Advisor BD","fb":"Goldman Sachs"},{"rule":"ExactEmail","score":95,"blk":"EMAIL_EXACT","cat":"email","verdict":"MATCH","ga":"0031R00003CCC003","xdm_a":"100003","ca":"","fna":"Sarah","lna":"Johnson","na":"Sarah Johnson","ea":"sarah.j@company.com","ea2":"","pa":"3125550200","sa":"IL","za":"60601","city_a":"Chicago","addr_a":"","ja":"RIA Associate","type_a":"Individual Advisor RIA","fa":"Fidelity Investments","gb":"0031R00003DDD004","xdm_b":"100004","cb":"","fnb":"Sarah","lnb":"Johnson-Park","nb":"Sarah Johnson-Park","eb":"sarah.j@company.com","eb2":"","pb":"","sb":"IL","zb":"60601","city_b":"Chicago","addr_b":"","jb":"Investment Advisor","type_b":"Individual Advisor RIA","fb":"Fidelity Investments"},{"rule":"ExactFNLNMNSfxZip","score":95,"blk":"NAME_ZIP","cat":"zip","verdict":"MATCH","ga":"0031R00003EEE005","xdm_a":"100005","ca":"9876543","fna":"Michael","lna":"Brown","na":"Michael Brown","ea":"mbrown@abc.com","ea2":"","pa":"2125550300","sa":"NY","za":"10022","city_a":"New York","addr_a":"520 Madison Ave","ja":"Managing Director","type_a":"Individual Advisor BD","fa":"Morgan Stanley","gb":"0031R00003FFF006","xdm_b":"100006","cb":"9876543","fnb":"Mike","lnb":"Brown","nb":"Mike Brown","eb":"mikeb@abc.com","eb2":"mbrown@gmail.com","pb":"2125550300","sb":"NY","zb":"10022","city_b":"New York","addr_b":"522 Madison Ave","jb":"Director","type_b":"Individual Advisor BD","fb":"Morgan Stanley"},{"rule":"ExactFNLNMNSfxPhone","score":92,"blk":"NAME_PHONE","cat":"phone","verdict":"LIKELY_MATCH","ga":"0031R00003GGG007","xdm_a":"100007","ca":"","fna":"Emily","lna":"Davis","na":"Emily Davis","ea":"emily.d@email1.com","ea2":"","pa":"4155550400","sa":"CA","za":"94105","city_a":"San Francisco","addr_a":"","ja":"Wealth Manager","type_a":"Individual Advisor RIA","fa":"Schwab","gb":"0031R00003HHH008","xdm_b":"100008","cb":"","fnb":"Emily","lnb":"Davis","nb":"Emily M. Davis","eb":"emily.m.davis@email2.com","eb2":"","pb":"4155550400","sb":"CA","zb":"94102","city_b":"San Francisco","addr_b":"","jb":"Sr. Wealth Manager","type_b":"Individual Advisor RIA","fb":"Schwab"},{"rule":"CrossFieldEmail","score":92,"blk":"EMAIL_CROSS","cat":"email","verdict":"LIKELY_MATCH","ga":"0031R00003III009","xdm_a":"100009","ca":"2345678","fna":"Robert","lna":"Wilson","na":"Robert Wilson","ea":"rwilson@main.com","ea2":"rwilson@old.com","pa":"2025550500","sa":"DC","za":"20001","city_a":"Washington","addr_a":"","ja":"Portfolio Manager","type_a":"Individual Advisor BD","fa":"JP Morgan","gb":"0031R00003JJJ010","xdm_b":"100010","cb":"2345678","fnb":"Robert","lnb":"Wilson","nb":"Robert Wilson Jr","eb":"rwilson@old.com","eb2":"","pb":"2025550500","sb":"DC","zb":"20001","city_b":"Washington","addr_b":"","jb":"Investment Manager","type_b":"Individual Advisor BD","fb":"JP Morgan"},{"rule":"ExactFNLNZipPhone","score":92,"blk":"NAME_ZIP_PHONE","cat":"zip","verdict":"LIKELY_MATCH","ga":"0031R00003KKK011","xdm_a":"100011","ca":"","fna":"Lisa","lna":"Martinez","na":"Lisa Martinez","ea":"lmartinez@co1.com","ea2":"","pa":"3055550600","sa":"FL","za":"33101","city_a":"Miami","addr_a":"","ja":"Financial Planner","type_a":"Individual Advisor BD","fa":"Raymond James","gb":"0031R00003LLL012","xdm_b":"100012","cb":"","fnb":"Lisa","lnb":"Martinez","nb":"Lisa C. Martinez","eb":"lmartinez@co2.com","eb2":"","pb":"3055550600","sb":"FL","zb":"33101","city_b":"Miami","addr_b":"","jb":"Sr. Financial Planner","type_b":"Individual Advisor BD","fb":"Raymond James"},{"rule":"ExactFNLNMNSfxFirmState","score":95,"blk":"NAME_FIRMSTATE","cat":"firm","verdict":"MATCH","ga":"0031R00003MMM013","xdm_a":"100013","ca":"5678901","fna":"David","lna":"Lee","na":"David Lee","ea":"dlee@ubs.com","ea2":"","pa":"","sa":"TX","za":"77002","city_a":"Houston","addr_a":"","ja":"VP","type_a":"Individual Advisor BD","fa":"UBS Financial Services","gb":"0031R00003NNN014","xdm_b":"100014","cb":"5678901","fnb":"David","lnb":"Lee","nb":"Dave Lee","eb":"david.l@ubs.com","eb2":"dlee@personal.com","pb":"7135550700","sb":"TX","zb":"77019","city_b":"Houston","addr_b":"","jb":"Vice President","type_b":"Individual Advisor BD","fb":"UBS Financial Services"},{"rule":"ExactLastNameEmail","score":95,"blk":"LAST_NAME_EMAIL","cat":"email","verdict":"MATCH","ga":"0031R00003OOO015","xdm_a":"100015","ca":"","fna":"Jennifer","lna":"Taylor","na":"Jennifer Taylor","ea":"jtaylor@advisor.net","ea2":"","pa":"6175550800","sa":"MA","za":"02101","city_a":"Boston","addr_a":"","ja":"Advisor","type_a":"Individual Advisor RIA","fa":"Vanguard","gb":"0031R00003PPP016","xdm_b":"100016","cb":"","fnb":"Jenny","lnb":"Taylor","nb":"Jenny Taylor","eb":"jtaylor@advisor.net","eb2":"","pb":"6175550800","sb":"MA","zb":"02101","city_b":"Boston","addr_b":"","jb":"Sr. Advisor","type_b":"Individual Advisor RIA","fb":"Vanguard"}];
+const XDM_MAP={"0031R00003AAA001":"100001","0031R00003BBB002":"100002","0031R00003CCC003":"100003","0031R00003DDD004":"100004","0031R00003EEE005":"100005","0031R00003FFF006":"100006","0031R00003GGG007":"100007","0031R00003HHH008":"100008","0031R00003III009":"100009","0031R00003JJJ010":"100010","0031R00003KKK011":"100011","0031R00003LLL012":"100012","0031R00003MMM013":"100013","0031R00003NNN014":"100014","0031R00003OOO015":"100015","0031R00003PPP016":"100016"};
+const SFDC='https://apollonextgencrm.lightning.force.com/lightning/r/Contact/';
+
+const RULES=[
+  {rule:'ExactCRD',            score:100,blk:'CRD_MATCH',      cat:'crd',  label:'Exact CRD',              status:'existing',desc:'Same FINRA CRD number (definitive — same individual)'},
+  {rule:'ExactEmail',          score:95, blk:'EMAIL_EXACT',     cat:'email',label:'Exact Email',            status:'modified',desc:'Same primary email — R5: SFDC_NG no longer excluded'},
+  {rule:'ExactLastNameEmail',  score:95, blk:'LAST_NAME_EMAIL', cat:'email',label:'Last Name + Email',      status:'existing',desc:'Matching last name and primary email'},
+  {rule:'ExactFNLNMNSfxZip',  score:95, blk:'NAME_ZIP',        cat:'zip',  label:'Full Name + ZIP',        status:'modified',desc:'First+Last+Middle+Suffix+ZIP — R6: open to all publishers'},
+  {rule:'ExactFNLNMNSfxFirmState',score:95,blk:'NAME_FIRMSTATE',cat:'firm',label:'Full Name + Firm+State', status:'existing',desc:'First+Last+Middle+Suffix, same firm and state'},
+  {rule:'ExactFNLNMNSfxPhone', score:92, blk:'NAME_PHONE',      cat:'phone',label:'Full Name + Phone',      status:'modified',desc:'First+Last+Middle+Suffix+Phone — R8: score raised 85\u219292'},
+  {rule:'ExactFNLNZipPhone',   score:92, blk:'NAME_ZIP_PHONE',  cat:'zip',  label:'Name + ZIP + Phone',     status:'new',     desc:'First+Last+ZIP+Phone, no middle/suffix required (R9 new)'},
+  {rule:'CrossFieldEmail',     score:92, blk:'EMAIL_CROSS',     cat:'email',label:'Cross-Field Email',       status:'new',     desc:'Primary email of one = secondary email of other (R18 new)'},
+];
+
+const VERDICT_CLS={'MATCH':'v-MATCH','LIKELY_MATCH':'v-LIKELY_MATCH'};
+const VERDICT_LBL={'MATCH':'Match','LIKELY_MATCH':'Likely Match'};
+const CAT_CSS={crd:'cat-crd',email:'cat-email',phone:'cat-phone',firm:'cat-firm',zip:'cat-zip'};
+const CAT_LBL={crd:'CRD',email:'Email',phone:'Phone',firm:'Firm+State',zip:'ZIP'};
+const STATUS_RB={existing:'rb-existing',modified:'rb-mixed',new:'rb-proposed'};
+const STATUS_LBL={existing:'EXISTING',modified:'MODIFIED',new:'NEW'};
+
+const D=PAIRS_RAW.map(p=>({...p,
+  _verdict:p.verdict,
+  _wname:p.na||(p.fna+' '+p.lna).trim(),
+  _lname:p.nb||(p.fnb+' '+p.lnb).trim(),
+  _xdmStatus:(function(ga,gb){var ia=XDM_MAP[ga],ib=XDM_MAP[gb];if(ia&&ib&&ia===ib)return 'merged';if(ia&&ib&&ia!==ib)return 'unmatched';return 'new';})(p.ga,p.gb)
+}));
+
+let sortKey='score',sortDir=-1,verdictFilter=null,tabFilter=null,kpiFilter=null,xdmFilter=null,expandedId=null;
+
+function filteredRows(){
+  let rows=D.slice();
+  const q=(document.getElementById('searchInput')||{value:''}).value.trim().toLowerCase();
+  if(q) rows=rows.filter(r=>((r._wname+' '+r._lname+' '+r.ea+' '+r.eb+' '+r.ca+' '+r.cb+' '+r.ga+' '+r.gb).toLowerCase()).includes(q));
+  if(verdictFilter) rows=rows.filter(r=>r._verdict===verdictFilter);
+  if(tabFilter) rows=rows.filter(r=>r.rule===tabFilter);
+  if(kpiFilter==='MATCH') rows=rows.filter(r=>r._verdict==='MATCH');
+  else if(kpiFilter==='LIKELY_MATCH') rows=rows.filter(r=>r._verdict==='LIKELY_MATCH');
+  if(xdmFilter==='xdm-merged') rows=rows.filter(r=>r._xdmStatus==='merged');
+  else if(xdmFilter==='xdm-unmatched') rows=rows.filter(r=>r._xdmStatus==='unmatched');
+  if(sortKey){
+    rows.sort((a,b)=>{let av=a[sortKey]??'',bv=b[sortKey]??'';return typeof av==='number'?((av-bv)*sortDir):(String(av).localeCompare(String(bv))*sortDir);});
+  }
+  return rows;
+}
+
+function renderTable(){
+  const rows=filteredRows();
+  document.getElementById('resultCount').textContent=rows.length.toLocaleString()+' of '+D.length.toLocaleString()+' pairs';
+  const tb=document.getElementById('tbody');
+  if(!rows.length){tb.innerHTML='';document.getElementById('emptyState').style.display='';return;}
+  document.getElementById('emptyState').style.display='none';
+  let html='';
+  rows.forEach((p,i)=>{
+    const wn=p._wname||'\u2014',ln=p._lname||'\u2014';
+    const vc=VERDICT_CLS[p._verdict]||'';
+    const vl=VERDICT_LBL[p._verdict]||p._verdict;
+    const cc=CAT_CSS[p.cat]||'cat-zip';
+    const cl=CAT_LBL[p.cat]||p.cat;
+    const xs=p._xdmStatus==='merged'
+      ?'<span style="color:#7c3aed;font-size:11px;font-weight:600">&#10003; Merged</span>'
+      :p._xdmStatus==='unmatched'
+        ?'<span style="color:var(--amber);font-size:11px;font-weight:500">In xDM</span>'
+        :'<span style="color:var(--text3);font-size:11px">Missing</span>';
+    const key=p.ga+'|'+p.gb;
+    const isExp=(expandedId===key);
+    html+='<tr class="'+(isExp?'expanded-parent':'')+'" data-key="'+esc(key)+'">'
+      +'<td><span class="cat-badge '+cc+'">'+cl+'</span></td>'
+      +'<td>'+(vc?'<span class="verdict-badge '+vc+'">'+vl+'</span>':vl)+'</td>'
+      +'<td>'+xs+'</td>'
+      +'<td class="td-name">'+esc(wn)+'</td>'
+      +'<td class="td-name">'+esc(ln)+'</td>'
+      +'<td class="td-email">'+(p.ea?esc(p.ea):'\u2014')+'</td>'
+      +'<td class="td-email">'+(p.eb?esc(p.eb):'\u2014')+'</td>'
+      +'<td style="font-size:11px;white-space:nowrap">'+esc(p.rule)+'</td>'
+      +'<td style="font-size:11px">'+p.score+'</td>'
+      +'</tr>';
+    if(isExp) html+='<tr class="expanded-row"><td colspan="9"><div class="expanded-content">'+card(p)+'</div></td></tr>';
+  });
+  tb.innerHTML=html;
+  tb.querySelectorAll('tr[data-key]').forEach(tr=>{
+    tr.onclick=()=>{const k=tr.dataset.key;expandedId=(expandedId===k?null:k);renderTable();};
+  });
+}
+
+function card(p){
+  function fld(lbl,val){return '<div style="margin-bottom:8px"><div class="exp-label">'+lbl+'</div><div class="exp-value">'+esc(val||'\u2014')+'</div></div>';}
+  const addrA=[p.addr_a,p.city_a,p.sa,p.za].filter(Boolean).join(', ');
+  const addrB=[p.addr_b,p.city_b,p.sb,p.zb].filter(Boolean).join(', ');
+  const rInfo=RULES.find(r=>r.rule===p.rule)||{};
+  let h='<div class="exp-rule"><strong>'+esc(p.rule)+'</strong> (score '+p.score+')';
+  if(rInfo.status) h+=' <span class="rb '+STATUS_RB[rInfo.status]+'">'+STATUS_LBL[rInfo.status]+'</span>';
+  if(rInfo.desc) h+='<br><span style="color:var(--text2);font-size:11.5px">'+esc(rInfo.desc)+'</span>';
+  h+='</div>';
+  h+='<div class="exp-grid">';
+  h+='<div><div style="font-weight:700;margin-bottom:10px;font-size:12.5px">Contact A</div>'
+    +fld('Name',p._wname)+fld('CRD',p.ca)+fld('Contact Type',p.type_a)
+    +fld('Primary Email',p.ea)+fld('Secondary Email',p.ea2)+fld('Phone',p.pa)
+    +fld('Address',addrA)+fld('Firm',p.fa)+fld('Job Title',p.ja)
+    +fld('SFDC ID',p.ga)+fld('xDM Contact ID',p.xdm_a)+fld('FINRA / IAPD','')
+    +'</div>';
+  h+='<div><div style="font-weight:700;margin-bottom:10px;font-size:12.5px">Contact B</div>'
+    +fld('Name',p._lname)+fld('CRD',p.cb)+fld('Contact Type',p.type_b)
+    +fld('Primary Email',p.eb)+fld('Secondary Email',p.eb2)+fld('Phone',p.pb)
+    +fld('Address',addrB)+fld('Firm',p.fb)+fld('Job Title',p.jb)
+    +fld('SFDC ID',p.gb)+fld('xDM Contact ID',p.xdm_b)+fld('FINRA / IAPD','')
+    +'</div>';
+  h+='</div>';
+  const xc=p._xdmStatus==='merged'?'#7c3aed':p._xdmStatus==='unmatched'?'var(--amber)':'var(--text2)';
+  const xm=p._xdmStatus==='merged'?'&#10003; Already merged in same xDM golden'
+    :p._xdmStatus==='unmatched'?'&#9679; Both in xDM &#8212; not yet merged in same golden'
+    :'&#9675; One or both contacts missing from xDM';
+  h+='<div style="margin-bottom:10px;font-size:12px;color:'+xc+';font-weight:600">'+xm+'</div>';
+  h+='<div class="exp-actions">'
+    +'<a class="btn-sm" href="'+SFDC+p.ga+'/view" target="_blank">Open A in SFDC</a>'
+    +'<a class="btn-sm" href="'+SFDC+p.gb+'/view" target="_blank">Open B in SFDC</a>'
+    +'<button class="btn-sm" data-ids="'+esc(p.ga+','+p.gb)+'" onclick="copy2(this.dataset.ids)">&#128203; Copy IDs</button>'
+    +'</div>';
+  return h;
+}
+
+function renderKPIs(){
+  const byV={};
+  D.forEach(p=>{byV[p._verdict]=(byV[p._verdict]||0)+1;});
+  const merged=D.filter(p=>p._xdmStatus==='merged').length;
+  const unmatched=D.filter(p=>p._xdmStatus==='unmatched').length;
+  document.getElementById('kpiContainer').innerHTML=
+    '<div class="kpi" data-kpi="ALL" onclick="kpiClick(this.dataset.kpi)"><div class="kpi-value">'+D.length.toLocaleString()+'</div><div class="kpi-label">Total Pairs</div><div class="kpi-sub">Click to reset filter</div></div>'
+   +'<div class="kpi green" data-kpi="MATCH" onclick="kpiClick(this.dataset.kpi)"><div class="kpi-value">'+(byV['MATCH']||0).toLocaleString()+'</div><div class="kpi-label">Confirmed Match</div><div class="kpi-sub">Score 95–100</div></div>'
+   +'<div class="kpi" data-kpi="LIKELY_MATCH" onclick="kpiClick(this.dataset.kpi)"><div class="kpi-value">'+(byV['LIKELY_MATCH']||0).toLocaleString()+'</div><div class="kpi-label">Likely Match</div><div class="kpi-sub">Score 92</div></div>'
+   +'<div class="kpi amber" data-kpi="xdm-unmatched" onclick="kpiClick(this.dataset.kpi)" style="border-color:var(--amber)"><div class="kpi-value">'+unmatched.toLocaleString()+'</div><div class="kpi-label">In xDM, Unmatched</div><div class="kpi-sub">Separate golden records</div></div>'
+   +(merged?'<div class="kpi" data-kpi="xdm-merged" onclick="kpiClick(this.dataset.kpi)" style="border-color:#7c3aed"><div class="kpi-value" style="color:#7c3aed">'+merged.toLocaleString()+'</div><div class="kpi-label">Merged in xDM</div><div class="kpi-sub">Same golden record</div></div>':'');
+}
+
+function renderMethods(){
+  const byRule={};
+  D.forEach(p=>{byRule[p.rule]=(byRule[p.rule]||0)+1;});
+  let h='';
+  RULES.forEach(r=>{
+    const cnt=byRule[r.rule]||0;
+    const cc=CAT_CSS[r.cat]||'cat-zip';
+    h+='<div class="method-card">'
+      +'<div class="method-card-header">'
+      +'<span class="method-name">'+esc(r.label)+' <span class="rb '+STATUS_RB[r.status]+'">'+STATUS_LBL[r.status]+'</span></span>'
+      +'<span class="method-count mc-'+r.cat+'">'+cnt.toLocaleString()+'</span>'
+      +'</div>'
+      +'<div class="method-desc">'+esc(r.desc)+'</div>'
+      +'<div><span class="signal-chip">score: '+r.score+'</span> <span class="cat-badge '+cc+'" style="font-size:9px">'+r.cat.toUpperCase()+'</span></div>'
+      +'</div>';
+  });
+  document.getElementById('methodsContainer').innerHTML=h;
+}
+
+function renderTabs(){
+  const byRule={};
+  D.forEach(p=>{byRule[p.rule]=(byRule[p.rule]||0)+1;});
+  let h='<button class="tab-btn '+(tabFilter===null?'active':'')+'" onclick="setTab(null)">All Rules</button>';
+  RULES.forEach(r=>{
+    const cnt=byRule[r.rule]||0;
+    if(!cnt) return;
+    h+='<button class="tab-btn '+(tabFilter===r.rule?'active':'')+'" data-rule="'+esc(r.rule)+'" onclick="setTab(this.dataset.rule)">'+esc(r.label)+'<span class="tab-count">'+cnt.toLocaleString()+'</span></button>';
+  });
+  document.getElementById('tabsBar').innerHTML=h;
+}
+
+function setTab(t){tabFilter=t;kpiFilter=null;xdmFilter=null;expandedId=null;renderTabs();renderTable();}
+function setVerdict(v){verdictFilter=(verdictFilter===v?null:v);expandedId=null;
+  document.querySelectorAll('.verdict-btn').forEach(b=>b.classList.toggle('active',b.dataset.verdict===verdictFilter));
+  renderTable();}
+function kpiClick(k){
+  if(k==='ALL'){kpiFilter=null;xdmFilter=null;}
+  else if(k.startsWith('xdm-')){xdmFilter=(xdmFilter===k?null:k);kpiFilter=null;}
+  else{kpiFilter=(kpiFilter===k?null:k);xdmFilter=null;}
+  document.querySelectorAll('.kpi').forEach(el=>el.classList.toggle('kpi-active',el.dataset.kpi===(kpiFilter||xdmFilter||'ALL')));
+  expandedId=null;renderTable();
+}
+function sortBy(k){if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1;}renderTable();}
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function copy2(txt){navigator.clipboard&&navigator.clipboard.writeText(txt).catch(()=>{const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});showToast('Copied!');}
+function showToast(msg,ms=2000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
+
+function downloadAll(){
+  const rows=filteredRows();
+  const cols=['rule','score','ga','xdm_a','ca','fna','lna','ea','ea2','pa','sa','za','city_a','fa','ja','type_a','gb','xdm_b','cb','fnb','lnb','eb','eb2','pb','sb','zb','city_b','fb','jb','type_b','_verdict','_xdmStatus'];
+  const lines=[cols.join('\t'),...rows.map(r=>cols.map(c=>String(r[c]??'').replace(/\t/g,' ').replace(/\n/g,' ')).join('\t'))];
+  const blob=new Blob([lines.join('\n')],{type:'text/tab-separated-values'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='contact_dup_pairs.tsv';a.click();
+}
+
+renderKPIs();
+renderMethods();
+renderTabs();
+renderTable();
+</script>
+</body>
+</html>
