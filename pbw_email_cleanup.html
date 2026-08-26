@@ -623,6 +623,15 @@ function buildCard(row, ruleKey) {
     + '<div><div class="k">SFDC Touch Date</div><div class="v muted">'  + (esc(v(row.NG_LAST_MODIFIED_BY_USER_DATE)) || "&mdash;") + "</div></div>"
     + "</div></div>";
 
+  var grpHumanEdit = (v(row.EMAIL_LAST_UPDATE_BY_USER) === 'Y')
+    ? '<div class="grp"><h4>Human Edit History</h4><div class="kv">'
+      + '<div><div class="k">Before</div><div class="v">'             + (esc(v(row.EMAIL_OLD_VALUE))       || "&mdash;") + "</div></div>"
+      + '<div><div class="k">After</div><div class="v">'              + (esc(v(row.EMAIL_NEW_VALUE))       || "&mdash;") + "</div></div>"
+      + '<div><div class="k">Changed By</div><div class="v muted">'  + (esc(v(row.EMAIL_LAST_CHANGED_BY)) || "&mdash;") + "</div></div>"
+      + '<div><div class="k">Changed On</div><div class="v muted">'  + (esc(v(row.EMAIL_LAST_CHG_DATE))   || "&mdash;") + "</div></div>"
+      + "</div></div>"
+    : "";
+
   var webScrape   = v(row.WEB_SCRAPE_EMAIL), webPageUrl = v(row.WEB_SCRAPE_PAGE_URL), webSite = v(row.WEB_SCRAPE_SITE);
   var emailScrape = v(row.EMAIL_SCRAPE_EMAIL), emailSrcEmail = v(row.EMAIL_SCRAPE_SOURCE), emailDataset = v(row.EMAIL_SCRAPE_DATASET);
   var webSrcUrl   = webPageUrl || webSite;
@@ -670,7 +679,7 @@ function buildCard(row, ruleKey) {
     + '<div class="ids">' + xdmA + ' <span class="sep">&middot;</span> ' + ngA + " " + crdBit + sigBadges + "</div>"
     + '<div class="verdict"><span class="chip ' + chipClass + '">' + chipText + "</span></div>"
     + "</div>"
-    + brief + cmp + grpContact + grpAct + grpScrape + grpFinra + grpReview + actions
+    + brief + cmp + grpContact + grpAct + grpHumanEdit + grpScrape + grpFinra + grpReview + actions
     + "</div>";
 }
 
