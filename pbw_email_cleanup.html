@@ -626,11 +626,11 @@ function buildCard(row, ruleKey) {
     + '<div><div class="k">SFDC Touch Date</div><div class="v muted">'  + (esc(v(row.NG_LAST_MODIFIED_BY_USER_DATE)) || "&mdash;") + "</div></div>"
     + "</div></div>";
 
-  var grpHumanEdit = (v(row.EMAIL_LAST_UPDATE_BY_USER) === 'Y')
+  var _heOld = v(row.EMAIL_OLD_VALUE), _heNew = v(row.EMAIL_NEW_VALUE);
+  var grpHumanEdit = (v(row.EMAIL_LAST_UPDATE_BY_USER) === 'Y' && (_heOld || _heNew))
     ? '<div class="grp"><h4>Human Edit History</h4><div class="kv">'
-      + '<div><div class="k">Field</div><div class="v muted">'        + (esc(v(row.EMAIL_LAST_FIELD))      || "&mdash;") + "</div></div>"
-      + '<div><div class="k">Before</div><div class="v">'             + (esc(v(row.EMAIL_OLD_VALUE))       || "&mdash;") + "</div></div>"
-      + '<div><div class="k">After</div><div class="v">'              + (esc(v(row.EMAIL_NEW_VALUE))       || "&mdash;") + "</div></div>"
+      + '<div><div class="k">Before</div><div class="v">'             + (esc(_heOld) || "&mdash;")                      + "</div></div>"
+      + '<div><div class="k">After</div><div class="v">'              + (esc(_heNew) || "&mdash;")                      + "</div></div>"
       + '<div><div class="k">Changed By</div><div class="v muted">'  + (esc(v(row.EMAIL_LAST_CHANGED_BY)) || "&mdash;") + "</div></div>"
       + '<div><div class="k">Changed On</div><div class="v muted">'  + (esc(v(row.EMAIL_LAST_CHG_DATE))   || "&mdash;") + "</div></div>"
       + "</div></div>"
