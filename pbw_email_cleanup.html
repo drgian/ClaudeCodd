@@ -548,7 +548,7 @@ function buildCard(row, ruleKey) {
   var ngUrl  = "https://apollonextgencrm.lightning.force.com/lightning/r/Contact/__ID__/view".replace("__ID__", ngId);
   var xdmA   = xdmId ? '<a href="' + xdmUrl + '" target="_blank">xDM ' + esc(xdmId) + '</a>' : "xDM &mdash;";
   var ngA    = ngId  ? '<a href="' + ngUrl  + '" target="_blank">SFDC '+ esc(ngId)  + '</a>' : "SFDC &mdash;";
-  var crdBit = crd ? '<span class="sep">&middot;</span> CRD ' + esc(crd) : "";
+  var crdBit = crd ? '<span class="sep">&middot;</span> <a href="https://brokercheck.finra.org/individual/summary/' + esc(crd) + '" target="_blank" style="color:inherit;text-decoration:none;" title="BrokerCheck">CRD ' + esc(crd) + '</a>' : "";
   var isRelevant  = (v(row.IS_RELEVANT) === "Y");
   var isActive12  = (v(row.HAS_EMAIL_12MO) === "Y" || v(row.HAS_CALL_12MO) === "Y" || v(row.HAS_ACTIVITY) === "Y");
   var sigBadges = '<span class="sig sig-rel' + (isRelevant ? '' : ' sig-ghost') + '">Relevant</span>'
