@@ -275,10 +275,8 @@ function goPage(dir){currentPage+=dir;expandedId=null;renderTable();window.scrol
 
 function regBadge(finra,iapd,hasCrd){
   if(!hasCrd) return '\u2014';
-  const parts=[];
-  if(finra) parts.push('<span style="background:#dbeafe;color:#1d4ed8;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:600" title="CRD appears in FINRA BrokerCheck (broker-dealer registered)">FINRA registered (BD)</span>');
-  if(iapd)  parts.push('<span style="background:#dcfce7;color:#15803d;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:600" title="CRD appears in IAPD (investment adviser registered)">IAPD registered (RIA)</span>');
-  return parts.length?parts.join(' '):'<span style="color:var(--text3);font-size:11px">CRD not found in FINRA or IAPD</span>';
+  if(finra) return '<span style="background:#dbeafe;color:#1d4ed8;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:600" title="CRD appears in FINRA BrokerCheck (broker-dealer registered)">FINRA registered (BD)</span>';
+  return '<span style="color:var(--text3);font-size:11px">CRD not found in FINRA</span>';
 }
 function fldX(lbl,val,link){
   const display=esc(val||'\u2014');
@@ -300,7 +298,7 @@ function card(p){
   const xdmLinkA=p.xdm_a?(XDM+p.xdm_a+'?fromAction=BrowseContact&tab=Details'):null;
   const xdmLinkB=p.xdm_b?(XDM+p.xdm_b+'?fromAction=BrowseContact&tab=Details'):null;
   h+='<div><div style="font-weight:700;margin-bottom:6px;font-size:12.5px">Contact A</div>'
-    +fldX('Name',p._wname)+fldX('CRD',p.ca)+fldX('Type',p.type_a)
+    +fldX('Name',p._wname)+fldX('CRD',p.ca,p.ca?'https://brokercheck.finra.org/individual/summary/'+p.ca:null)+fldX('Type',p.type_a)
     +fldX('Email',p.ea)+fldX('Email 2',p.ea2)+fldX('Phone',p.pa)
     +fldX('Address',addrA)+fldX('Firm',p.fa)+fldX('Title',p.ja)
     +fldX('SFDC ID',p.ga,SFDC+p.ga+'/view')
@@ -308,7 +306,7 @@ function card(p){
     +fldXH('Registration',regBadge(p.finra_a,p.iapd_a,!!p.ca))
     +'</div>';
   h+='<div><div style="font-weight:700;margin-bottom:6px;font-size:12.5px">Contact B</div>'
-    +fldX('Name',p._lname)+fldX('CRD',p.cb)+fldX('Type',p.type_b)
+    +fldX('Name',p._lname)+fldX('CRD',p.cb,p.cb?'https://brokercheck.finra.org/individual/summary/'+p.cb:null)+fldX('Type',p.type_b)
     +fldX('Email',p.eb)+fldX('Email 2',p.eb2)+fldX('Phone',p.pb)
     +fldX('Address',addrB)+fldX('Firm',p.fb)+fldX('Title',p.jb)
     +fldX('SFDC ID',p.gb,SFDC+p.gb+'/view')
