@@ -274,6 +274,32 @@
       <button class="back" id="samp-dl" onclick="downloadXLSX()">&#8615; Download to Excel</button>
     </div>
     <div id="samp-body"></div>
+    <div id="mi-section">
+      <div style="margin:28px 0 10px;border-top:1px solid var(--border);padding-top:22px;">
+        <h4 style="margin:0 0 4px;font-size:15px;font-weight:660;color:var(--text);">Middle-Initial Disagreements — SSC vs FINTRX</h4>
+        <p style="margin:0 0 14px;font-size:13px;color:var(--text-2);max-width:80ch;">
+          1,637 contacts where SSC and FINTRX have the same domain but one source includes a middle initial the other drops.
+          In 1,532 cases SSC has the longer format &mdash; in 105 FINTRX does (examples below). Both reach the same inbox; the question is which format the email server enforces.
+          NG email shown for reference; bold = source NG agrees with.
+        </p>
+        <div style="overflow-x:auto;">
+          <table id="mi-table" style="font-size:12.5px;width:100%;">
+            <thead>
+              <tr>
+                <th style="white-space:nowrap;">Name</th>
+                <th>Firm</th>
+                <th style="white-space:nowrap;">CRD</th>
+                <th style="white-space:nowrap;">SSC Email</th>
+                <th style="white-space:nowrap;">FINTRX Email</th>
+                <th style="white-space:nowrap;">NG Email</th>
+                <th style="white-space:nowrap;">NG agrees with</th>
+              </tr>
+            </thead>
+            <tbody id="mi-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -288,6 +314,7 @@ function setRanking(r) {
   currentRanking = r;
   DATA = r === "ssc" ? DATA_SSC : DATA_STANDARD;
   _SAMPLES = null; _SAMPLES_SSC = null;
+  showMISection(true);
   var btnStd = document.getElementById("rk-standard");
   var btnSsc = document.getElementById("rk-ssc");
   if (btnStd) btnStd.setAttribute("aria-pressed", r === "standard" ? "true" : "false");
@@ -704,6 +731,7 @@ function openSamples(ruleKey) {
   document.getElementById("samp-body").innerHTML = s.rows.slice(0, 10).map(function(r) {
     return buildCard(r, ruleKey);
   }).join("");
+  showMISection(false);
   setTab("samples");
 }
 
@@ -809,6 +837,7 @@ function setScope(s) {
   document.getElementById("samp-body").innerHTML = "";
   document.getElementById("samp-count").textContent = "";
   document.getElementById("samp-title").textContent = "Examples";
+  showMISection(true);
   if (document.querySelector(".tab.active").id === "tb-samples") {
     setTab(lastTab || "summary");
   }
@@ -822,6 +851,76 @@ function setTab(id) {
   });
 }
 
+var MI_EXAMPLES = [
+  {n:"Stephen Pierce",f:"Goldman Sachs",crd:"1874025",ng:"003Dp00000J3d4rIAB",ssc:"stephen.pierce@gs.com",fintrx:"stephen.x.pierce@gs.com",ng_email:"stephen.pierce@gs.com"},
+  {n:"Meghan Thornton",f:"J.P. Morgan Securities",crd:"4046915",ng:"003Dp00000K5gyAIAR",ssc:"meghan.thornton@jpmorgan.com",fintrx:"meghan.e.thornton@jpmorgan.com",ng_email:"meghan.e.thornton@jpmorgan.com"},
+  {n:"Pablo Moreno",f:"J.P. Morgan Securities",crd:"6878700",ng:"003Dp00000IQM3ZIAX",ssc:"pablo.moreno@jpmorgan.com",fintrx:"pablo.r.moreno@jpmorgan.com",ng_email:"pablo.r.moreno@jpmorgan.com"},
+  {n:"Emily Horan",f:"J.P. Morgan Securities",crd:"4843276",ng:"003Dp00000J3NraIAF",ssc:"emily.horan@jpmorgan.com",fintrx:"emily.t.horan@jpmorgan.com",ng_email:"emily.t.horan@jpmorgan.com"},
+  {n:"David Hughes",f:"J.P. Morgan Securities",crd:"6560180",ng:"003Dp00000J455wIAB",ssc:"david.hughes@jpmorgan.com",fintrx:"david.h.hughes@jpmorgan.com",ng_email:"david.hughes@jpmorgan.com"},
+  {n:"James Wilkes",f:"J.P. Morgan Securities",crd:"6237255",ng:"003Dp00000J45gDIAR",ssc:"james.wilkes@jpmorgan.com",fintrx:"james.c.wilkes@jpmorgan.com",ng_email:"james.wilkes@jpmorgan.com"},
+  {n:"Gerard Delannoy",f:"J.P. Morgan Securities",crd:"6361929",ng:"003Dp00000J3mBMIAZ",ssc:"gerard.delannoy@jpmorgan.com",fintrx:"gerard.x.delannoy@jpmorgan.com",ng_email:"gerard.delannoy@jpmorgan.com"},
+  {n:"Natalie Barraza",f:"J.P. Morgan Securities",crd:"6126502",ng:"003Dp00000J3OZQIA3",ssc:"natalie.barraza@jpmorgan.com",fintrx:"natalie.m.barraza@jpmorgan.com",ng_email:"natalie.m.barraza@jpmorgan.com"},
+  {n:"Brandon Estrada",f:"J.P. Morgan Securities",crd:"6015465",ng:"003Dp00000J3IiCIAV",ssc:"brandon.estrada@jpmorgan.com",fintrx:"brandon.r.estrada@jpmorgan.com",ng_email:"brandon.r.estrada@jpmorgan.com"},
+  {n:"Justin Beerman",f:"J.P. Morgan Securities",crd:"6272624",ng:"003Dp00000J3eRYIAZ",ssc:"justin.beerman@jpmorgan.com",fintrx:"justin.j.beerman@jpmorgan.com",ng_email:"justin.j.beerman@jpmorgan.com"},
+  {n:"Catherine Bradley O'Connell",f:"J.P. Morgan Securities",crd:"6235412",ng:"003Dp00000J3ZhqIAF",ssc:"catherine.oconnell@jpmorgan.com",fintrx:"catherine.b.oconnell@jpmorgan.com",ng_email:"catherine.oconnell@jpmorgan.com"},
+  {n:"Jillian Polanco",f:"J.P. Morgan Securities",crd:"5956588",ng:"003Dp00000J4MmRIAV",ssc:"jillian.polanco@jpmorgan.com",fintrx:"jillian.x.polanco@jpmorgan.com",ng_email:"jillian.lastra@chase.com"},
+  {n:"Raymond McLean",f:"J.P. Morgan Securities",crd:"1938880",ng:"003Dp00000IRI6yIAH",ssc:"raymond.mclean@jpmorgan.com",fintrx:"raymond.f.mclean@jpmorgan.com",ng_email:"raymond.f.mclean@jpmorgan.com"},
+  {n:"Robert O'Brien",f:"Merrill Lynch",crd:"1102675",ng:"003Dp00000IRAMkIAP",ssc:"robert.obrien@ml.com",fintrx:"robert.d.obrien@ml.com",ng_email:"robert.obrien@ml.com"},
+  {n:"Kyle Baker",f:"Merrill Lynch",crd:"6490909",ng:"003Dp00000J4PrVIAV",ssc:"kyle.baker@ml.com",fintrx:"kyle.d.baker@ml.com",ng_email:"kyle.baker@ml.com"},
+  {n:"Garet Sakamoto",f:"Merrill Lynch",crd:"6190033",ng:"003Dp00000IQMDIIA5",ssc:"garet.sakamoto@ml.com",fintrx:"garet.a.sakamoto@ml.com",ng_email:"garet.a.sakamoto@ml.com"},
+  {n:"Tate Williamson",f:"Merrill Lynch",crd:"6582966",ng:"003Dp00000J4FxSIAV",ssc:"tate.williamson@ml.com",fintrx:"tate.d.williamson@ml.com",ng_email:"tate.d.williamson@ml.com"},
+  {n:"David Elias",f:"Morgan Stanley",crd:"5289319",ng:"003Dp00000J4AncIAF",ssc:"david.elias@morganstanley.com",fintrx:"david.f.elias@morganstanley.com",ng_email:"david.f.elias@morganstanley.com"},
+  {n:"Mark Kamakaris",f:"Morgan Stanley",crd:"5382677",ng:"003Dp00000J460fIAB",ssc:"mark.kamakaris@morganstanley.com",fintrx:"mark.a.kamakaris@morganstanley.com",ng_email:"mark.kamakaris@morganstanley.com"},
+  {n:"Amy Aadalen",f:"Morgan Stanley",crd:"1862011",ng:"003Dp00000IPr5hIAD",ssc:"amy.aadalen@morganstanley.com",fintrx:"amy.w.aadalen@morganstanley.com",ng_email:"amy.aadalen@morganstanley.com"},
+  {n:"Gary Wong",f:"Morgan Stanley",crd:"2380612",ng:"003Dp00000IPxxQIAT",ssc:"gary.wong@morganstanley.com",fintrx:"gary.g.wong@morganstanley.com",ng_email:"gary.g.wong@morganstanley.com"},
+  {n:"Daniel Brown",f:"Morgan Stanley",crd:"5654740",ng:"003Dp00000J3cHxIAJ",ssc:"daniel.brown@morganstanley.com",fintrx:"daniel.p.brown@morganstanley.com",ng_email:"daniel.brown@morganstanley.com"},
+  {n:"John Terry",f:"Morgan Stanley",crd:"2939531",ng:"003Dp00000J4N3VIAV",ssc:"john.terry@morganstanley.com",fintrx:"john.p.terry@morganstanley.com",ng_email:"john.terry@morganstanley.com"},
+  {n:"Norine Strazza",f:"Morgan Stanley",crd:"1423849",ng:"003Dp00000J3asrIAB",ssc:"norine.strazza@morganstanley.com",fintrx:"norine.m.strazza@morganstanley.com",ng_email:"norine.strazza@morganstanley.com"},
+  {n:"Jennifer Thompson",f:"Morgan Stanley",crd:"2649327",ng:"003Dp00000J3A7jIAF",ssc:"jenn.thompson@morganstanley.com",fintrx:"jenn.l.thompson@morganstanley.com",ng_email:"jenn.thompson@morganstanley.com"},
+  {n:"Angela Sprenkle",f:"Morgan Stanley",crd:"3117160",ng:"003Dp00000J43BkIAJ",ssc:"angela.sprenkle@morganstanley.com",fintrx:"angela.m.sprenkle@morganstanley.com",ng_email:"angela.sprenkle@morganstanley.com"},
+  {n:"Michael Hartary",f:"Morgan Stanley",crd:"2811929",ng:"003Dp00000J3nW8IAJ",ssc:"michael.hartary@morganstanley.com",fintrx:"michael.j.hartary@morganstanley.com",ng_email:"michael.hartary@morganstanley.com"},
+  {n:"Steven Lauterbach",f:"Oppenheimer & Co",crd:"1559348",ng:"003Dp00000J4JTYIA3",ssc:"kirk.lauterbach@opco.com",fintrx:"s.kirk.lauterbach@opco.com",ng_email:"kirk.lauterbach@opco.com"},
+  {n:"Gregory Smith",f:"Raymond James",crd:"3179835",ng:"003Dp00000J3MFJIA3",ssc:"gregory.smith@raymondjames.com",fintrx:"gregory.s.smith@raymondjames.com",ng_email:"gregory.s.smith@raymondjames.com"},
+  {n:"Michael Murray",f:"Raymond James Financial Services",crd:"7384580",ng:"003Dp00000IQu5oIAD",ssc:"michael.murray@raymondjames.com",fintrx:"michael.c.murray@raymondjames.com",ng_email:"michael.c.murray@raymondjames.com"},
+  {n:"Christopher Hebert",f:"RBC Capital Markets",crd:"5242541",ng:"003Dp00000J49ztIAB",ssc:"chris.hebert@rbc.com",fintrx:"chris.s.hebert@rbc.com",ng_email:"chris.s.hebert@rbc.com"},
+  {n:"Patrick Quigley",f:"RBC Capital Markets",crd:"7134398",ng:"003Dp00000IQTrXIAX",ssc:"patrick.quigley@rbc.com",fintrx:"patrick.d.quigley@rbc.com",ng_email:"patrick.d.quigley@rbc.com"},
+  {n:"Douglas Domian",f:"UBS Financial Services",crd:"5151950",ng:"003Dp00000IRB9YIAX",ssc:"douglas.domian@ubs.com",fintrx:"douglas.j.domian@ubs.com",ng_email:"douglas.domian@ubs.com"},
+  {n:"Toby Pullig",f:"UBS Financial Services",crd:"4213176",ng:"003Dp00000IPocxIAD",ssc:"toby.pullig@ubs.com",fintrx:"toby.d.pullig@ubs.com",ng_email:"toby.pullig@ubs.com"},
+  {n:"Chastity Hicks",f:"UBS Financial Services",crd:"5216980",ng:"003Dp00000IPoTVIA1",ssc:"chastity.hicks@ubs.com",fintrx:"chastity.r.hicks@ubs.com",ng_email:"chastity.r.hicks@ubs.com"},
+  {n:"William Jovanovich",f:"UBS Financial Services",crd:"4938061",ng:"003Dp00000J3TCuIAN",ssc:"william.jovanovich@ubs.com",fintrx:"william.s.jovanovich@ubs.com",ng_email:"william.jovanovich@ubs.com"},
+  {n:"Maribel Castillo",f:"UBS Financial Services",crd:"1287946",ng:"003Dp00000J3ZapIAF",ssc:"maribel.castillo@ubs.com",fintrx:"maribel.g.castillo@ubs.com",ng_email:"maribel.castillo@ubs.com"},
+  {n:"Carlos Arguello",f:"UBS Financial Services",crd:"4827373",ng:"003Dp00000J3SkGIAV",ssc:"carlos.arguello@ubs.com",fintrx:"carlos.e.arguello@ubs.com",ng_email:"carlos.arguello@ubs.com"},
+  {n:"Danielle Guerra",f:"UBS Financial Services",crd:"5307135",ng:"003Dp00000IPrxtIAD",ssc:"danielle.guerra@ubs.com",fintrx:"danielle.b.guerra@ubs.com",ng_email:"danielle.guerra@ubs.com"},
+  {n:"Martin Schwartz",f:"UBS Financial Services",crd:"6190076",ng:"003Dp00000J3wfZIAR",ssc:"martin.schwartz@ubs.com",fintrx:"martin.a.schwartz@ubs.com",ng_email:"martin.schwartz@ubs.com"}
+];
+
+function renderMISection() {
+  var sfBase = "https://apollonextgencrm.lightning.force.com/lightning/r/Contact/";
+  var bcBase = "https://brokercheck.finra.org/individual/summary/";
+  var rows = MI_EXAMPLES.map(function(r) {
+    var ngMatch = r.ng_email === r.ssc_email ? "SSC" : (r.ng_email === r.fintrx ? "FINTRX" : "Neither");
+    var matchColor = ngMatch === "SSC" ? "var(--blue)" : ngMatch === "FINTRX" ? "var(--green)" : "var(--text-3)";
+    var sscCell   = r.ng_email === r.ssc   ? "<b>" + esc(r.ssc)   + "</b>" : esc(r.ssc);
+    var fintrxCell = r.ng_email === r.fintrx ? "<b>" + esc(r.fintrx) + "</b>" : esc(r.fintrx);
+    return "<tr>"
+      + "<td>" + esc(r.n) + "</td>"
+      + "<td style='color:var(--text-2)'>" + esc(r.f) + "</td>"
+      + "<td><a href='" + bcBase + esc(r.crd) + "' target='_blank' style='color:var(--navy)'>" + esc(r.crd) + "</a></td>"
+      + "<td style='font-family:var(--mono);font-size:11.5px'>" + sscCell + "</td>"
+      + "<td style='font-family:var(--mono);font-size:11.5px'>" + fintrxCell + "</td>"
+      + "<td style='font-family:var(--mono);font-size:11.5px;color:var(--text-2)'>" + esc(r.ng_email) + "</td>"
+      + "<td><span style='font-size:12px;font-weight:600;color:" + matchColor + "'>" + ngMatch + "</span></td>"
+      + "</tr>";
+  }).join("");
+  document.getElementById("mi-tbody").innerHTML = rows;
+}
+
+function showMISection(visible) {
+  document.getElementById("mi-section").style.display = visible ? "" : "none";
+}
+
 render("all");
 wireRows();
+renderMISection();
+showMISection(true);
 </script>
