@@ -98,7 +98,7 @@ a:hover{text-decoration:underline}
 .btn-download:hover{opacity:.9}
 .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
-.search-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--accent);color:#fff;font-size:12px;cursor:pointer;white-space:nowrap;margin-left:6px}
+.search-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--accent);color:#fff;font-size:12px;cursor:pointer;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -131,8 +131,9 @@ a:hover{text-decoration:underline}
   <div class="search-row">
     <div class="search-box">
       <span class="search-icon">&#128269;</span>
-      <input type="text" id="searchInput" placeholder="Search name, email, CRD, SFDC ID…" onkeydown="if(event.key==='Enter')doSearch()"><button class="search-btn" onclick="doSearch()">Search</button>
+      <input type="text" id="searchInput" placeholder="Search name, email, CRD, SFDC ID…" onkeydown="if(event.key==='Enter')doSearch()">
     </div>
+    <button class="search-btn" onclick="doSearch()">Search</button>
     <div class="result-count" id="resultCount"></div>
   </div>
   <div class="filter-row">
@@ -232,8 +233,9 @@ function renderTable(){
   if(currentPage>=totalPages) currentPage=totalPages-1;
   const rows=allRows.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE);
   const from=allRows.length?currentPage*PAGE_SIZE+1:0, to=Math.min((currentPage+1)*PAGE_SIZE,allRows.length);
-  document.getElementById('resultCount').textContent=allRows.length.toLocaleString()+' of '+D.length.toLocaleString()+' pairs'
-    +(allRows.length>PAGE_SIZE?' · showing '+from+'–'+to:'');
+  const rc=document.getElementById('resultCount');
+  if(!allRows.length&&activeQuery){rc.textContent='\u26a0 No results found for "'+activeQuery+'"';rc.style.color='#dc2626';rc.style.fontWeight='600';}
+  else{rc.style.color='';rc.style.fontWeight='';rc.textContent=allRows.length.toLocaleString()+' of '+D.length.toLocaleString()+' pairs'+(allRows.length>PAGE_SIZE?' · showing '+from+'–'+to:'');}
   const tb=document.getElementById('tbody');
   if(!allRows.length){tb.innerHTML='';const es=document.getElementById('emptyState');es.textContent=activeQuery?'Pattern not found: "'+activeQuery+'"':'No matching pairs.';es.style.display='';renderPager(0,0);return;}
   document.getElementById('emptyState').style.display='none';
