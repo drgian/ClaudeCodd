@@ -1,10 +1,10 @@
-<title>Flight Price Tracker</title>
+﻿<title>Flight Price Tracker</title><!-- v2 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 
 <style>
-  /* ── Tokens ─────────────────────────────────────────── */
+  /* â”€â”€ Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   :root {
     --bg:          #f5f3ee;
     --surface:     #ffffff;
@@ -74,7 +74,7 @@
     --chart-dot:   #5b8fe8;
   }
 
-  /* ── Reset ──────────────────────────────────────────── */
+  /* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg);
@@ -86,10 +86,10 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ── Layout shell ───────────────────────────────────── */
+  /* â”€â”€ Layout shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .page { max-width: 860px; margin: 0 auto; padding: 40px 20px 60px; }
 
-  /* ── Header ─────────────────────────────────────────── */
+  /* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .header {
     display: flex;
     align-items: flex-start;
@@ -168,7 +168,7 @@
     margin-top: 3px;
   }
 
-  /* ── Stats row ──────────────────────────────────────── */
+  /* â”€â”€ Stats row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -206,7 +206,7 @@
     margin-top: 3px;
   }
 
-  /* ── Chart ───────────────────────────────────────────── */
+  /* â”€â”€ Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .chart-section {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -223,7 +223,7 @@
   }
   .chart-container { position: relative; height: 220px; }
 
-  /* ── Table ───────────────────────────────────────────── */
+  /* â”€â”€ Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .table-section {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -276,7 +276,7 @@
   .badge-mid  { background: var(--mid-bg);  color: var(--mid); }
   .td-muted { color: var(--muted); }
 
-  /* ── Footer ─────────────────────────────────────────── */
+  /* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .footer {
     margin-top: 24px;
     font-size: 11px;
@@ -300,7 +300,7 @@
       <div class="route-label">Tracking fare</div>
       <div class="route-display">
         GRR
-        <span class="route-arrow">→</span>
+        <span class="route-arrow">â†’</span>
         BON
       </div>
       <div class="route-meta">
@@ -308,10 +308,10 @@
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
           </svg>
-          Nov 28 – Dec 5, 2026
+          Nov 28 â€“ Dec 5, 2026
         </span>
         <span class="chip">Delta Air Lines</span>
-        <span class="chip">Main Classic · Round trip</span>
+        <span class="chip">Main Classic Â· Round trip</span>
       </div>
     </div>
     <div class="header-right">
@@ -372,7 +372,7 @@
   </div>
 
   <div class="footer">
-    <span>Source: Google Flights · Round-trip fare · Updated daily at 8:00 AM</span>
+    <span>Source: Google Flights Â· Round-trip fare Â· Updated daily at 8:00 AM</span>
     <span>Last run: Sep 2, 2026 08:04 UTC</span>
   </div>
 
@@ -389,7 +389,7 @@ const hasData = prices.length > 0;
 const minP = hasData ? Math.min(...prices) : null;
 const maxP = hasData ? Math.max(...prices) : null;
 const avgP = hasData ? Math.round(prices.reduce((a,b)=>a+b,0)/prices.length) : null;
-const fmt = v => v != null ? `$${v.toLocaleString()}` : '—';
+const fmt = v => v != null ? `$${v.toLocaleString()}` : 'â€”';
 
 // Chart
 const canvas = document.getElementById('priceChart');
@@ -488,11 +488,12 @@ tbody.innerHTML = sorted.map(d => {
   return `<tr>
     <td>${dateStr} <span class="td-muted" style="font-size:11px">${timeStr}</span></td>
     <td class="td-price">$${d.price}</td>
-    <td class="td-muted">${d.airline ?? '—'}</td>
-    <td class="td-muted">${d.depart_time ?? '—'}</td>
-    <td class="td-muted">${d.arrive_time ?? '—'}</td>
-    <td class="td-muted">${d.stops ?? '—'}</td>
+    <td class="td-muted">${d.airline ?? 'â€”'}</td>
+    <td class="td-muted">${d.depart_time ?? 'â€”'}</td>
+    <td class="td-muted">${d.arrive_time ?? 'â€”'}</td>
+    <td class="td-muted">${d.stops ?? 'â€”'}</td>
     <td>${badge}</td>
   </tr>`;
 }).join('');
 </script>
+
