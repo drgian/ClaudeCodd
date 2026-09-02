@@ -14,8 +14,8 @@ body{background:var(--bg);color:var(--text1);font-family:-apple-system,BlinkMacS
 .page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 28px}
 .page-header h1{font-size:18px;font-weight:700;letter-spacing:-.3px}
 .header-meta{color:var(--text3);font-size:11.5px;margin-top:3px}
-.kpis{display:flex;flex-wrap:wrap;gap:12px;padding:18px 28px}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;min-width:140px;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.kpis{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:10px;padding:14px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;min-width:0;flex:1;cursor:pointer;transition:box-shadow .15s,border-color .15s;text-align:center}
 .kpi:hover{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent)}
 .kpi.kpi-active{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent);background:var(--bg)}
 .kpi.green:hover,.kpi.green.kpi-active{box-shadow:0 0 0 2px var(--green);border-color:var(--green)}
@@ -98,6 +98,7 @@ a:hover{text-decoration:underline}
 .btn-download:hover{opacity:.9}
 .toast{position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
+.search-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--accent);color:#fff;font-size:12px;cursor:pointer;white-space:nowrap;margin-left:6px}
 </style>
 </head>
 <body>
@@ -130,7 +131,7 @@ a:hover{text-decoration:underline}
   <div class="search-row">
     <div class="search-box">
       <span class="search-icon">&#128269;</span>
-      <input type="text" id="searchInput" placeholder="Search name, email, CRD, SFDC ID…" oninput="currentPage=0;renderTable()">
+      <input type="text" id="searchInput" placeholder="Search name, email, CRD, SFDC ID…" onkeydown="if(event.key==='Enter')doSearch()"><button class="search-btn" onclick="doSearch()">Search</button>
     </div>
     <div class="result-count" id="resultCount"></div>
   </div>
@@ -203,9 +204,15 @@ const D=PAIRS_RAW.map(p=>({...p,
 const PAGE_SIZE=500;
 let sortKey='score',sortDir=-1,verdictFilter=null,tabFilter=null,kpiFilter=null,xdmFilter=null,expandedId=null,currentPage=0;
 
+let activeQuery='';
+function doSearch(){
+  activeQuery=(document.getElementById('searchInput')||{value:''}).value.trim().toLowerCase();
+  currentPage=0;
+  renderTable();
+}
 function filteredRows(){
   let rows=D.slice();
-  const q=(document.getElementById('searchInput')||{value:''}).value.trim().toLowerCase();
+  const q=activeQuery;
   if(q) rows=rows.filter(r=>((r._wname+' '+r._lname+' '+r.ea+' '+r.eb+' '+r.ca+' '+r.cb+' '+r.ga+' '+r.gb).toLowerCase()).includes(q));
   if(verdictFilter) rows=rows.filter(r=>r._verdict===verdictFilter);
   if(tabFilter) rows=rows.filter(r=>r.rule===tabFilter);
@@ -228,7 +235,7 @@ function renderTable(){
   document.getElementById('resultCount').textContent=allRows.length.toLocaleString()+' of '+D.length.toLocaleString()+' pairs'
     +(allRows.length>PAGE_SIZE?' · showing '+from+'–'+to:'');
   const tb=document.getElementById('tbody');
-  if(!allRows.length){tb.innerHTML='';document.getElementById('emptyState').style.display='';renderPager(0,0);return;}
+  if(!allRows.length){tb.innerHTML='';const es=document.getElementById('emptyState');es.textContent=activeQuery?'Pattern not found: "'+activeQuery+'"':'No matching pairs.';es.style.display='';renderPager(0,0);return;}
   document.getElementById('emptyState').style.display='none';
   let html='';
   rows.forEach((p,i)=>{
