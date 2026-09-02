@@ -1,0 +1,498 @@
+<title>Flight Price Tracker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ── Tokens ─────────────────────────────────────────── */
+  :root {
+    --bg:          #f5f3ee;
+    --surface:     #ffffff;
+    --surface-alt: #efede7;
+    --border:      #dbd8d0;
+    --border-faint:#ece9e2;
+    --text:        #1c1917;
+    --muted:       #78716c;
+    --subtle:      #a8a29e;
+    --accent:      #1850c7;
+    --accent-dim:  #dbeafe;
+    --low:         #16a34a;
+    --low-bg:      #dcfce7;
+    --low-text:    #14532d;
+    --high:        #dc2626;
+    --high-bg:     #fee2e2;
+    --high-text:   #7f1d1d;
+    --mid:         #92400e;
+    --mid-bg:      #fef3c7;
+    --chart-line:  #1850c7;
+    --chart-dot:   #1850c7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:          #0e1420;
+      --surface:     #151d2e;
+      --surface-alt: #1c2540;
+      --border:      #2a3554;
+      --border-faint:#1f2c47;
+      --text:        #dde4f0;
+      --muted:       #7d8fb5;
+      --subtle:      #4a5880;
+      --accent:      #5b8fe8;
+      --accent-dim:  #1a2d5a;
+      --low:         #4ade80;
+      --low-bg:      #14532d44;
+      --low-text:    #4ade80;
+      --high:        #f87171;
+      --high-bg:     #7f1d1d44;
+      --high-text:   #f87171;
+      --mid:         #fcd34d;
+      --mid-bg:      #78350f44;
+      --chart-line:  #5b8fe8;
+      --chart-dot:   #5b8fe8;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:          #0e1420;
+    --surface:     #151d2e;
+    --surface-alt: #1c2540;
+    --border:      #2a3554;
+    --border-faint:#1f2c47;
+    --text:        #dde4f0;
+    --muted:       #7d8fb5;
+    --subtle:      #4a5880;
+    --accent:      #5b8fe8;
+    --accent-dim:  #1a2d5a;
+    --low:         #4ade80;
+    --low-bg:      #14532d44;
+    --low-text:    #4ade80;
+    --high:        #f87171;
+    --high-bg:     #7f1d1d44;
+    --high-text:   #f87171;
+    --mid:         #fcd34d;
+    --mid-bg:      #78350f44;
+    --chart-line:  #5b8fe8;
+    --chart-dot:   #5b8fe8;
+  }
+
+  /* ── Reset ──────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout shell ───────────────────────────────────── */
+  .page { max-width: 860px; margin: 0 auto; padding: 40px 20px 60px; }
+
+  /* ── Header ─────────────────────────────────────────── */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .route-block {}
+  .route-label {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .route-display {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -.02em;
+  }
+  .route-arrow {
+    color: var(--accent);
+    font-size: .75em;
+    margin: 0 4px;
+  }
+  .route-meta {
+    margin-top: 10px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--muted);
+    background: var(--surface-alt);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 3px 9px;
+    letter-spacing: .01em;
+  }
+  .chip svg { flex-shrink: 0; }
+  .header-right {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .current-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .current-price {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .current-date {
+    font-size: 11px;
+    color: var(--subtle);
+    margin-top: 3px;
+  }
+
+  /* ── Stats row ──────────────────────────────────────── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+  .stat-tile-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .stat-tile-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.45rem;
+    font-weight: 500;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
+    line-height: 1.1;
+  }
+  .stat-tile-value.low  { color: var(--low); }
+  .stat-tile-value.high { color: var(--high); }
+  .stat-tile-sub {
+    font-size: 10.5px;
+    color: var(--subtle);
+    margin-top: 3px;
+  }
+
+  /* ── Chart ───────────────────────────────────────────── */
+  .chart-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 20px 16px;
+    margin-bottom: 12px;
+  }
+  .section-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .chart-container { position: relative; height: 220px; }
+
+  /* ── Table ───────────────────────────────────────────── */
+  .table-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .table-header {
+    padding: 14px 20px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border-faint); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-alt); }
+  tbody td {
+    padding: 10px 20px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .td-price {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .badge {
+    display: inline-block;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+  .badge-low  { background: var(--low-bg);  color: var(--low-text); }
+  .badge-high { background: var(--high-bg); color: var(--high-text); }
+  .badge-mid  { background: var(--mid-bg);  color: var(--mid); }
+  .td-muted { color: var(--muted); }
+
+  /* ── Footer ─────────────────────────────────────────── */
+  .footer {
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--subtle);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="route-block">
+      <div class="route-label">Tracking fare</div>
+      <div class="route-display">
+        GRR
+        <span class="route-arrow">→</span>
+        BON
+      </div>
+      <div class="route-meta">
+        <span class="chip">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          Nov 28 – Dec 5, 2026
+        </span>
+        <span class="chip">Delta Air Lines</span>
+        <span class="chip">Main Classic · Round trip</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="current-label">Today's price</div>
+      <div class="current-price" id="current-price">$1,148</div>
+      <div class="current-date" id="current-date">Sep 2, 2026</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-tile">
+      <div class="stat-tile-label">Lowest seen</div>
+      <div class="stat-tile-value low" id="stat-min">$1,148</div>
+      <div class="stat-tile-sub" id="stat-min-date">Sep 2</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-label">Highest seen</div>
+      <div class="stat-tile-value high" id="stat-max">$1,148</div>
+      <div class="stat-tile-sub" id="stat-max-date">Sep 2</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-label">Average</div>
+      <div class="stat-tile-value" id="stat-avg">$1,148</div>
+      <div class="stat-tile-sub">1 observation</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-label">Days tracked</div>
+      <div class="stat-tile-value" id="stat-days">1</div>
+      <div class="stat-tile-sub">since Sep 2</div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-section">
+    <div class="section-eyebrow">Price history (USD)</div>
+    <div class="chart-container">
+      <canvas id="priceChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-section">
+    <table>
+      <thead>
+        <tr>
+          <th>Date checked</th>
+          <th>Price</th>
+          <th>Airline</th>
+          <th>Departs</th>
+          <th>Arrives</th>
+          <th>Stops</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="history-body"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span>Source: Google Flights · Round-trip fare · Updated daily at 8:00 AM</span>
+    <span>Last run: Sep 2, 2026 08:04 UTC</span>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const DATA = [
+  { scraped_at: "2026-09-02T08:04:00", price: 1148, airline: "Delta", depart_time: "6:00 AM", arrive_time: "2:51 PM", stops: "1 stop" },
+];
+
+const prices = DATA.map(d => d.price).filter(p => p != null && p > 0);
+const hasData = prices.length > 0;
+const minP = hasData ? Math.min(...prices) : null;
+const maxP = hasData ? Math.max(...prices) : null;
+const avgP = hasData ? Math.round(prices.reduce((a,b)=>a+b,0)/prices.length) : null;
+const fmt = v => v != null ? `$${v.toLocaleString()}` : '—';
+
+// Chart
+const canvas = document.getElementById('priceChart');
+const isDark = () =>
+  document.documentElement.dataset.theme === 'dark' ||
+  (!document.documentElement.dataset.theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+function buildChart() {
+  const dark = isDark();
+  const gridColor = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const tickColor = dark ? '#7d8fb5' : '#78716c';
+  const accentColor = dark ? '#5b8fe8' : '#1850c7';
+
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 220);
+  grad.addColorStop(0, dark ? 'rgba(91,143,232,0.22)' : 'rgba(24,80,199,0.14)');
+  grad.addColorStop(1, dark ? 'rgba(91,143,232,0)' : 'rgba(24,80,199,0)');
+
+  return new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: DATA.map(d => {
+        const dt = new Date(d.scraped_at + 'Z');
+        return dt.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+      }),
+      datasets: [{
+        data: prices,
+        borderColor: accentColor,
+        backgroundColor: grad,
+        borderWidth: 2,
+        pointRadius: prices.map(p => 5),
+        pointBackgroundColor: prices.map(p =>
+          p === minP ? (dark ? '#4ade80' : '#16a34a') :
+          p === maxP ? (dark ? '#f87171' : '#dc2626') :
+          accentColor
+        ),
+        pointBorderColor: dark ? '#0e1420' : '#fff',
+        pointBorderWidth: 2,
+        tension: 0.35,
+        fill: true,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: dark ? '#1c2540' : '#fff',
+          borderColor: dark ? '#2a3554' : '#dbd8d0',
+          borderWidth: 1,
+          titleColor: dark ? '#dde4f0' : '#1c1917',
+          bodyColor: dark ? '#7d8fb5' : '#78716c',
+          padding: 10,
+          callbacks: {
+            label: ctx => ` $${ctx.parsed.y}`,
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: gridColor },
+          ticks: { color: tickColor, font: { family: "'IBM Plex Sans'", size: 11 }, maxTicksLimit: 10 },
+          border: { color: gridColor }
+        },
+        y: {
+          grid: { color: gridColor },
+          ticks: {
+            color: tickColor,
+            font: { family: "'IBM Plex Mono'", size: 11 },
+            callback: v => `$${v}`,
+          },
+          border: { color: gridColor },
+          suggestedMin: minP - 20,
+          suggestedMax: maxP + 20,
+        }
+      }
+    }
+  });
+}
+
+buildChart();
+
+// Table (newest first)
+const tbody = document.getElementById('history-body');
+const sorted = [...DATA].reverse();
+tbody.innerHTML = sorted.map(d => {
+  const dt = new Date(d.scraped_at + 'Z');
+  const dateStr = dt.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  const timeStr = dt.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+  const badge =
+    d.price === minP  ? '<span class="badge badge-low">Low</span>'  :
+    d.price === maxP  ? '<span class="badge badge-high">High</span>' :
+    d.price > avgP    ? '<span class="badge badge-mid">Above avg</span>' : '';
+  return `<tr>
+    <td>${dateStr} <span class="td-muted" style="font-size:11px">${timeStr}</span></td>
+    <td class="td-price">$${d.price}</td>
+    <td class="td-muted">${d.airline ?? '—'}</td>
+    <td class="td-muted">${d.depart_time ?? '—'}</td>
+    <td class="td-muted">${d.arrive_time ?? '—'}</td>
+    <td class="td-muted">${d.stops ?? '—'}</td>
+    <td>${badge}</td>
+  </tr>`;
+}).join('');
+</script>
