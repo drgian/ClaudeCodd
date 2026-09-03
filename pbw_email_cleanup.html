@@ -898,7 +898,7 @@ function renderMISection() {
   var sfBase = "https://apollonextgencrm.lightning.force.com/lightning/r/Contact/";
   var bcBase = "https://brokercheck.finra.org/individual/summary/";
   var rows = MI_EXAMPLES.map(function(r) {
-    var ngMatch = r.ng_email === r.ssc_email ? "SSC" : (r.ng_email === r.fintrx ? "FINTRX" : "Neither");
+    var ngMatch = r.ng_email === r.ssc ? "SSC" : (r.ng_email === r.fintrx ? "FINTRX" : "Neither");
     var matchColor = ngMatch === "SSC" ? "var(--blue)" : ngMatch === "FINTRX" ? "var(--green)" : "var(--text-3)";
     var sscCell   = r.ng_email === r.ssc   ? "<b>" + esc(r.ssc)   + "</b>" : esc(r.ssc);
     var fintrxCell = r.ng_email === r.fintrx ? "<b>" + esc(r.fintrx) + "</b>" : esc(r.fintrx);
