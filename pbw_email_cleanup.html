@@ -446,12 +446,13 @@ function buildXlsXml(sheets) {
   return xml;
 }
 
-function doDownload(sheets, fname, ext) {
+function doDownload(sheets, fname) {
   try {
-    var xml = buildXlsXml(sheets);
-    var finalName = fname.replace(/\.[a-z]+$/i, "") + (ext || ".xml");
+    var s = sheets[0];
+    var b64 = _buildXlsx(s.name, s.cols, s.rows);
+    var finalName = fname.replace(/\.[a-z]+$/i, "") + ".xlsx";
     var a = document.createElement("a");
-    a.href = "data:application/vnd.ms-excel;charset=utf-8," + encodeURIComponent(xml);
+    a.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + b64;
     a.download = finalName;
     document.body.appendChild(a);
     a.click();
@@ -468,7 +469,7 @@ function downloadXLSX() {
   if (currentRule && pop[currentRule]) {
     var s = pop[currentRule];
     var label = (RULE_TO_LABEL[currentRule] || currentRule).substring(0, 31);
-    var fname = "email_cleanup_" + currentRule.replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").substring(0,40) + "_" + scope + ".xml";
+    var fname = "email_cleanup_" + currentRule.replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").substring(0,40) + "_" + scope + ".xlsx";
     doDownload([{name: label, cols: s.cols, rows: s.rows}], fname);
   } else if (currentCat) {
     var cats = DATA[currentScope].aoCatRows;
@@ -483,7 +484,7 @@ function downloadXLSX() {
       }
     });
     if (!cols) return;
-    var fname2 = "email_cleanup_" + currentCat.replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").substring(0,40) + "_" + scope + ".xml";
+    var fname2 = "email_cleanup_" + currentCat.replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").substring(0,40) + "_" + scope + ".xlsx";
     doDownload([{name: currentCat.substring(0,31), cols: cols, rows: allRows}], fname2);
   }
 }
