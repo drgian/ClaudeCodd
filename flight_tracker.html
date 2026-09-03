@@ -1,499 +1,242 @@
-﻿<title>Flight Price Tracker</title><!-- v2 -->
+<title>Flight Price Tracker</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-
 <style>
-  /* â”€â”€ Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   :root {
-    --bg:          #f5f3ee;
-    --surface:     #ffffff;
-    --surface-alt: #efede7;
-    --border:      #dbd8d0;
-    --border-faint:#ece9e2;
-    --text:        #1c1917;
-    --muted:       #78716c;
-    --subtle:      #a8a29e;
-    --accent:      #1850c7;
-    --accent-dim:  #dbeafe;
-    --low:         #16a34a;
-    --low-bg:      #dcfce7;
-    --low-text:    #14532d;
-    --high:        #dc2626;
-    --high-bg:     #fee2e2;
-    --high-text:   #7f1d1d;
-    --mid:         #92400e;
-    --mid-bg:      #fef3c7;
-    --chart-line:  #1850c7;
-    --chart-dot:   #1850c7;
+    --bg: #f8f9fa; --card: #fff; --border: #dee2e6;
+    --text: #212529; --muted: #6c757d;
+    --blue: #0d6efd; --green: #198754; --red: #dc3545; --orange: #fd7e14;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg:          #0e1420;
-      --surface:     #151d2e;
-      --surface-alt: #1c2540;
-      --border:      #2a3554;
-      --border-faint:#1f2c47;
-      --text:        #dde4f0;
-      --muted:       #7d8fb5;
-      --subtle:      #4a5880;
-      --accent:      #5b8fe8;
-      --accent-dim:  #1a2d5a;
-      --low:         #4ade80;
-      --low-bg:      #14532d44;
-      --low-text:    #4ade80;
-      --high:        #f87171;
-      --high-bg:     #7f1d1d44;
-      --high-text:   #f87171;
-      --mid:         #fcd34d;
-      --mid-bg:      #78350f44;
-      --chart-line:  #5b8fe8;
-      --chart-dot:   #5b8fe8;
+      --bg: #111827; --card: #1f2937; --border: #374151;
+      --text: #f3f4f6; --muted: #9ca3af;
     }
   }
-  :root[data-theme="dark"] {
-    --bg:          #0e1420;
-    --surface:     #151d2e;
-    --surface-alt: #1c2540;
-    --border:      #2a3554;
-    --border-faint:#1f2c47;
-    --text:        #dde4f0;
-    --muted:       #7d8fb5;
-    --subtle:      #4a5880;
-    --accent:      #5b8fe8;
-    --accent-dim:  #1a2d5a;
-    --low:         #4ade80;
-    --low-bg:      #14532d44;
-    --low-text:    #4ade80;
-    --high:        #f87171;
-    --high-bg:     #7f1d1d44;
-    --high-text:   #f87171;
-    --mid:         #fcd34d;
-    --mid-bg:      #78350f44;
-    --chart-line:  #5b8fe8;
-    --chart-dot:   #5b8fe8;
-  }
-
-  /* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* â”€â”€ Layout shell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  .page { max-width: 860px; margin: 0 auto; padding: 40px 20px 60px; }
-
-  /* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  .header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 36px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid var(--border);
-  }
-  .route-block {}
-  .route-label {
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .route-display {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2.4rem, 6vw, 3.6rem);
-    font-weight: 800;
-    line-height: 1;
-    color: var(--text);
-    letter-spacing: -.02em;
-  }
-  .route-arrow {
-    color: var(--accent);
-    font-size: .75em;
-    margin: 0 4px;
-  }
-  .route-meta {
-    margin-top: 10px;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11.5px;
-    font-weight: 500;
-    color: var(--muted);
-    background: var(--surface-alt);
-    border: 1px solid var(--border-faint);
-    border-radius: 4px;
-    padding: 3px 9px;
-    letter-spacing: .01em;
-  }
-  .chip svg { flex-shrink: 0; }
-  .header-right {
-    text-align: right;
-    flex-shrink: 0;
-  }
-  .current-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
-  .current-price {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
-    font-weight: 500;
-    color: var(--accent);
-    letter-spacing: -.02em;
-    font-variant-numeric: tabular-nums;
-  }
-  .current-date {
-    font-size: 11px;
-    color: var(--subtle);
-    margin-top: 3px;
-  }
-
-  /* â”€â”€ Stats row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 28px;
-  }
-  @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, 1fr); } }
-  .stat-tile {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 14px 16px;
-  }
-  .stat-tile-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 5px;
-  }
-  .stat-tile-value {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 1.45rem;
-    font-weight: 500;
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -.01em;
-    line-height: 1.1;
-  }
-  .stat-tile-value.low  { color: var(--low); }
-  .stat-tile-value.high { color: var(--high); }
-  .stat-tile-sub {
-    font-size: 10.5px;
-    color: var(--subtle);
-    margin-top: 3px;
-  }
-
-  /* â”€â”€ Chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  .chart-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 20px 20px 16px;
-    margin-bottom: 12px;
-  }
-  .section-eyebrow {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
-  .chart-container { position: relative; height: 220px; }
-
-  /* â”€â”€ Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  .table-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    overflow-x: auto;
-  }
-  .table-header {
-    padding: 14px 20px 0;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  thead th {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-align: left;
-    padding: 10px 20px;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  tbody tr { border-bottom: 1px solid var(--border-faint); }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--surface-alt); }
-  tbody td {
-    padding: 10px 20px;
-    font-size: 13px;
-    white-space: nowrap;
-  }
-  .td-price {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 500;
-    font-size: 13.5px;
-    font-variant-numeric: tabular-nums;
-    color: var(--text);
-  }
-  .badge {
-    display: inline-block;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: .03em;
-    padding: 2px 7px;
-    border-radius: 3px;
-  }
-  .badge-low  { background: var(--low-bg);  color: var(--low-text); }
-  .badge-high { background: var(--high-bg); color: var(--high-text); }
-  .badge-mid  { background: var(--mid-bg);  color: var(--mid); }
-  .td-muted { color: var(--muted); }
-
-  /* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  .footer {
-    margin-top: 24px;
-    font-size: 11px;
-    color: var(--subtle);
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; transition: none !important; }
-  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 24px 16px; }
+  h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+          padding: 14px 20px; min-width: 120px; }
+  .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .stat-value { font-size: 1.6rem; font-weight: 700; margin-top: 2px; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red   { color: var(--red); }
+  .stat-value.blue  { color: var(--blue); }
+  .chart-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+                padding: 20px; margin-bottom: 24px; overflow-x: auto; }
+  .chart-title { font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 12px; }
+  canvas { display: block; width: 100% !important; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; padding: 8px 12px; background: var(--bg); color: var(--muted);
+       font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: .04em;
+       border-bottom: 2px solid var(--border); }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  .price-cell { font-weight: 700; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+  .badge-low  { background: #d1fae5; color: #065f46; }
+  .badge-high { background: #fee2e2; color: #991b1b; }
+  .badge-mid  { background: #fef3c7; color: #92400e; }
+  .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+                overflow: hidden; }
+  .no-data { color: var(--muted); text-align: center; padding: 40px; }
+  .updated { font-size: 0.78rem; color: var(--muted); margin-top: 16px; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
-<div class="page">
+<h1>✈ GRR → BON</h1>
+<p class="subtitle">Travel date: 2026-11-28 &nbsp;·&nbsp; Airline: Delta &nbsp;·&nbsp; Cabin: Main Classic</p>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="route-block">
-      <div class="route-label">Tracking fare</div>
-      <div class="route-display">
-        GRR
-        <span class="route-arrow">â†’</span>
-        BON
-      </div>
-      <div class="route-meta">
-        <span class="chip">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
-          </svg>
-          Nov 28 â€“ Dec 5, 2026
-        </span>
-        <span class="chip">Delta Air Lines</span>
-        <span class="chip">Main Classic Â· Round trip</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="current-label">Today's price</div>
-      <div class="current-price" id="current-price">$1,148</div>
-      <div class="current-date" id="current-date">Sep 2, 2026</div>
-    </div>
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">Latest Price</div>
+    <div class="stat-value blue" id="stat-latest">—</div>
   </div>
-
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat-tile">
-      <div class="stat-tile-label">Lowest seen</div>
-      <div class="stat-tile-value low" id="stat-min">$1,148</div>
-      <div class="stat-tile-sub" id="stat-min-date">Sep 2</div>
-    </div>
-    <div class="stat-tile">
-      <div class="stat-tile-label">Highest seen</div>
-      <div class="stat-tile-value high" id="stat-max">$1,148</div>
-      <div class="stat-tile-sub" id="stat-max-date">Sep 2</div>
-    </div>
-    <div class="stat-tile">
-      <div class="stat-tile-label">Average</div>
-      <div class="stat-tile-value" id="stat-avg">$1,148</div>
-      <div class="stat-tile-sub">1 observation</div>
-    </div>
-    <div class="stat-tile">
-      <div class="stat-tile-label">Days tracked</div>
-      <div class="stat-tile-value" id="stat-days">1</div>
-      <div class="stat-tile-sub">since Sep 2</div>
-    </div>
+  <div class="stat">
+    <div class="stat-label">Lowest Seen</div>
+    <div class="stat-value green" id="stat-min">—</div>
   </div>
-
-  <!-- Chart -->
-  <div class="chart-section">
-    <div class="section-eyebrow">Price history (USD)</div>
-    <div class="chart-container">
-      <canvas id="priceChart"></canvas>
-    </div>
+  <div class="stat">
+    <div class="stat-label">Highest Seen</div>
+    <div class="stat-value red" id="stat-max">—</div>
   </div>
-
-  <!-- Table -->
-  <div class="table-section">
-    <table>
-      <thead>
-        <tr>
-          <th>Date checked</th>
-          <th>Price</th>
-          <th>Airline</th>
-          <th>Departs</th>
-          <th>Arrives</th>
-          <th>Stops</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="history-body"></tbody>
-    </table>
+  <div class="stat">
+    <div class="stat-label">Average</div>
+    <div class="stat-value" id="stat-avg">—</div>
   </div>
-
-  <div class="footer">
-    <span>Source: Google Flights Â· Round-trip fare Â· Updated daily at 8:00 AM</span>
-    <span>Last run: Sep 2, 2026 08:04 UTC</span>
+  <div class="stat">
+    <div class="stat-label">Observations</div>
+    <div class="stat-value" id="stat-count">—</div>
   </div>
-
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<div class="chart-wrap">
+  <div class="chart-title">PRICE OVER TIME (USD)</div>
+  <canvas id="priceChart" height="260"></canvas>
+</div>
+
+<div class="table-wrap" id="dow-section" style="display:none;margin-bottom:12px">
+  <table>
+    <thead>
+      <tr>
+        <th>Day of week</th>
+        <th>Avg price</th>
+        <th>vs overall avg</th>
+        <th>Observations</th>
+      </tr>
+    </thead>
+    <tbody id="dow-body"></tbody>
+  </table>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Date Checked</th>
+        <th>Price</th>
+        <th>Airline</th>
+        <th>Departs</th>
+        <th>Arrives</th>
+        <th>Stops</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="history-body"></tbody>
+  </table>
+</div>
+
+<p class="updated">Last updated: 2026-09-03 12:05 UTC</p>
+
 <script>
-const DATA = [
-  { scraped_at: "2026-09-02T08:04:00", price: 1148, airline: "Delta", depart_time: "6:00 AM", arrive_time: "2:51 PM", stops: "1 stop" },
-];
+const DATA = [{"scraped_at": "2026-09-02T19:45:59.128249", "price": null, "airline": null, "stops": null, "depart_time": null, "arrive_time": null}, {"scraped_at": "2026-09-03T12:05:57.036178", "price": null, "airline": null, "stops": null, "depart_time": null, "arrive_time": null}];
 
-const prices = DATA.map(d => d.price).filter(p => p != null && p > 0);
-const hasData = prices.length > 0;
-const minP = hasData ? Math.min(...prices) : null;
-const maxP = hasData ? Math.max(...prices) : null;
-const avgP = hasData ? Math.round(prices.reduce((a,b)=>a+b,0)/prices.length) : null;
-const fmt = v => v != null ? `$${v.toLocaleString()}` : 'â€”';
+if (!DATA.length) {
+  document.getElementById('history-body').innerHTML =
+    '<tr><td colspan="7" class="no-data">No data yet — run tracker.py to record the first price.</td></tr>';
+} else {
+  const prices = DATA.map(d => d.price).filter(p => p != null && p > 0);
+  const hasData = prices.length > 0;
+  const minP = hasData ? Math.min(...prices) : null;
+  const maxP = hasData ? Math.max(...prices) : null;
+  const avgP = hasData ? prices.reduce((a,b)=>a+b,0) / prices.length : null;
+  const latest = DATA[DATA.length - 1];
 
-// Chart
-const canvas = document.getElementById('priceChart');
-const isDark = () =>
-  document.documentElement.dataset.theme === 'dark' ||
-  (!document.documentElement.dataset.theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const fmt = v => v != null ? `$${v.toLocaleString()}` : '—';
+  document.getElementById('stat-latest').textContent = latest.price ? fmt(latest.price) : '—';
+  document.getElementById('stat-min').textContent    = fmt(minP);
+  document.getElementById('stat-max').textContent    = fmt(maxP);
+  document.getElementById('stat-avg').textContent    = avgP != null ? `$${Math.round(avgP).toLocaleString()}` : '—';
+  document.getElementById('stat-count').textContent  = prices.length;
 
-function buildChart() {
-  const dark = isDark();
-  const gridColor = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-  const tickColor = dark ? '#7d8fb5' : '#78716c';
-  const accentColor = dark ? '#5b8fe8' : '#1850c7';
+  // Chart
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const labels = DATA.map(d => {
+    const dt = new Date(d.scraped_at + 'Z');
+    return DAYS[dt.getDay()] + ' ' + dt.toLocaleDateString('en-US', {month:'numeric', day:'numeric'});
+  });
+  const vals   = DATA.map(d => d.price);
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+  const textColor = isDark ? '#9ca3af' : '#6c757d';
 
-  const ctx = canvas.getContext('2d');
-  const grad = ctx.createLinearGradient(0, 0, 0, 220);
-  grad.addColorStop(0, dark ? 'rgba(91,143,232,0.22)' : 'rgba(24,80,199,0.14)');
-  grad.addColorStop(1, dark ? 'rgba(91,143,232,0)' : 'rgba(24,80,199,0)');
-
-  return new Chart(canvas, {
+  new Chart(document.getElementById('priceChart'), {
     type: 'line',
     data: {
-      labels: DATA.map(d => {
-        const dt = new Date(d.scraped_at + 'Z');
-        return dt.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-      }),
+      labels,
       datasets: [{
-        data: prices,
-        borderColor: accentColor,
-        backgroundColor: grad,
-        borderWidth: 2,
-        pointRadius: prices.map(p => 5),
-        pointBackgroundColor: prices.map(p =>
-          p === minP ? (dark ? '#4ade80' : '#16a34a') :
-          p === maxP ? (dark ? '#f87171' : '#dc2626') :
-          accentColor
+        label: 'Price (USD)',
+        data: vals,
+        borderColor: '#0d6efd',
+        backgroundColor: 'rgba(13,110,253,0.08)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointBackgroundColor: vals.map(v =>
+          v === minP ? '#198754' : v === maxP ? '#dc3545' : '#0d6efd'
         ),
-        pointBorderColor: dark ? '#0e1420' : '#fff',
-        pointBorderWidth: 2,
-        tension: 0.35,
+        tension: 0.3,
         fill: true,
       }]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: dark ? '#1c2540' : '#fff',
-          borderColor: dark ? '#2a3554' : '#dbd8d0',
-          borderWidth: 1,
-          titleColor: dark ? '#dde4f0' : '#1c1917',
-          bodyColor: dark ? '#7d8fb5' : '#78716c',
-          padding: 10,
           callbacks: {
-            label: ctx => ` $${ctx.parsed.y}`,
+            label: ctx => ` $${ctx.parsed.y}`
           }
         }
       },
       scales: {
-        x: {
-          grid: { color: gridColor },
-          ticks: { color: tickColor, font: { family: "'IBM Plex Sans'", size: 11 }, maxTicksLimit: 10 },
-          border: { color: gridColor }
-        },
+        x: { grid: { color: gridColor }, ticks: { color: textColor, maxTicksLimit: 12 } },
         y: {
           grid: { color: gridColor },
-          ticks: {
-            color: tickColor,
-            font: { family: "'IBM Plex Mono'", size: 11 },
-            callback: v => `$${v}`,
-          },
-          border: { color: gridColor },
-          suggestedMin: minP - 20,
-          suggestedMax: maxP + 20,
+          ticks: { color: textColor, callback: v => `$${v}` },
+          suggestedMin: minP * 0.9,
+          suggestedMax: maxP * 1.1,
         }
       }
     }
   });
+
+  // Day-of-week breakdown (show once we have 7+ priced observations)
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  if (prices.length >= 7) {
+    const byDay = {};
+    DATA.forEach(d => {
+      if (!d.price) return;
+      const day = DAYS[new Date(d.scraped_at + 'Z').getDay()];
+      if (!byDay[day]) byDay[day] = [];
+      byDay[day].push(d.price);
+    });
+    const dowRows = DAYS.filter(d => byDay[d]).map(d => {
+      const avg = Math.round(byDay[d].reduce((a,b)=>a+b,0)/byDay[d].length);
+      const rel = avg - Math.round(avgP);
+      const sign = rel > 0 ? '+' : '';
+      const color = rel > 20 ? 'var(--high)' : rel < -20 ? 'var(--low)' : 'var(--muted)';
+      return `<tr>
+        <td style="font-weight:600">${d}</td>
+        <td class="price-cell">$${avg.toLocaleString()}</td>
+        <td style="color:${color};font-family:'IBM Plex Mono',monospace;font-size:12px">${sign}$${Math.abs(rel)} vs avg</td>
+        <td style="color:var(--muted);font-size:12px">${byDay[d].length} obs</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('dow-section').style.display = '';
+    document.getElementById('dow-body').innerHTML = dowRows;
+  }
+
+  // Chart x-axis: show weekday name + date
+  const xLabels = DATA.map(d => {
+    const dt = new Date(d.scraped_at + 'Z');
+    return DAYS[dt.getDay()] + ' ' + dt.toLocaleDateString('en-US', {month:'numeric', day:'numeric'});
+  });
+
+  // Table (newest first)
+  const tbody = document.getElementById('history-body');
+  const sorted = [...DATA].reverse();
+  tbody.innerHTML = sorted.map(d => {
+    const badge =
+      d.price === minP  ? '<span class="badge badge-low">Low</span>' :
+      d.price === maxP  ? '<span class="badge badge-high">High</span>' :
+      d.price > avgP    ? '<span class="badge badge-mid">Above avg</span>' : '';
+    const dt = new Date(d.scraped_at + 'Z');
+    const dayName = DAYS[dt.getDay()];
+    const dateStr = dt.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+    const timeStr = dt.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+    const priceStr = d.price ? `$${d.price.toLocaleString()}` : '—';
+    return `<tr>
+      <td><span style="font-weight:600;margin-right:6px">${dayName}</span>${dateStr} <span style="color:var(--muted);font-size:.8em">${timeStr}</span></td>
+      <td class="price-cell">${priceStr}</td>
+      <td>${d.airline ?? '—'}</td>
+      <td>${d.depart_time ?? '—'}</td>
+      <td>${d.arrive_time ?? '—'}</td>
+      <td>${d.stops ?? '—'}</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
 }
-
-buildChart();
-
-// Table (newest first)
-const tbody = document.getElementById('history-body');
-const sorted = [...DATA].reverse();
-tbody.innerHTML = sorted.map(d => {
-  const dt = new Date(d.scraped_at + 'Z');
-  const dateStr = dt.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-  const timeStr = dt.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
-  const badge =
-    d.price === minP  ? '<span class="badge badge-low">Low</span>'  :
-    d.price === maxP  ? '<span class="badge badge-high">High</span>' :
-    d.price > avgP    ? '<span class="badge badge-mid">Above avg</span>' : '';
-  return `<tr>
-    <td>${dateStr} <span class="td-muted" style="font-size:11px">${timeStr}</span></td>
-    <td class="td-price">$${d.price}</td>
-    <td class="td-muted">${d.airline ?? 'â€”'}</td>
-    <td class="td-muted">${d.depart_time ?? 'â€”'}</td>
-    <td class="td-muted">${d.arrive_time ?? 'â€”'}</td>
-    <td class="td-muted">${d.stops ?? 'â€”'}</td>
-    <td>${badge}</td>
-  </tr>`;
-}).join('');
 </script>
-
