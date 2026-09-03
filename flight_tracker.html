@@ -109,10 +109,10 @@
   </table>
 </div>
 
-<p class="updated">Last updated: 2026-09-03 12:05 UTC</p>
+<p class="updated">Last updated: 2026-09-03 12:09 UTC</p>
 
 <script>
-const DATA = [{"scraped_at": "2026-09-02T19:45:59.128249", "price": null, "airline": null, "stops": null, "depart_time": null, "arrive_time": null}, {"scraped_at": "2026-09-03T12:05:57.036178", "price": null, "airline": null, "stops": null, "depart_time": null, "arrive_time": null}];
+const DATA = [{"scraped_at": "2026-09-02T19:45:59.128249", "price": null, "airline": null, "stops": null, "depart_time": null, "arrive_time": null}, {"scraped_at": "2026-09-03T12:05:57.036178", "price": null, "airline": null, "stops": null, "depart_time": null, "arrive_time": null}, {"scraped_at": "2026-09-03T12:09:20.721445", "price": 979.0, "airline": "Delta", "stops": "1 stop", "depart_time": "6:00 AM", "arrive_time": "2:51 PM"}];
 
 if (!DATA.length) {
   document.getElementById('history-body').innerHTML =
@@ -184,7 +184,6 @@ if (!DATA.length) {
   });
 
   // Day-of-week breakdown (show once we have 7+ priced observations)
-  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   if (prices.length >= 7) {
     const byDay = {};
     DATA.forEach(d => {
@@ -208,12 +207,6 @@ if (!DATA.length) {
     document.getElementById('dow-section').style.display = '';
     document.getElementById('dow-body').innerHTML = dowRows;
   }
-
-  // Chart x-axis: show weekday name + date
-  const xLabels = DATA.map(d => {
-    const dt = new Date(d.scraped_at + 'Z');
-    return DAYS[dt.getDay()] + ' ' + dt.toLocaleDateString('en-US', {month:'numeric', day:'numeric'});
-  });
 
   // Table (newest first)
   const tbody = document.getElementById('history-body');
