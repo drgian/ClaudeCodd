@@ -598,16 +598,9 @@ function buildCard(row, ruleKey) {
   var ngEmailLbl = isSec ? "NG Email 2 (secondary)" : "NG Email";
   var propEmailLbl = isSec ? "Proposed Email 2" : "Proposed Email";
 
+  // Market data (proposed) on the left, arrow flows into the current NextGen value on the right
   var cmp = '<div class="cmp">'
-    + '<div class="side"><div class="lbl">' + ngEmailLbl + '</div>'
-    + '<div class="addr' + (ngEmail ? "" : " none") + '">' + esc(ngEmail || "blank") + "</div>"
-    + '<div class="meta">' + (ngFirm ? '<span class="em">' + esc(ngFirm) + "</span>" : "")
-    + (ngParent && ngParent !== ngFirm ? '<br><span style="color:var(--text-3);font-size:11px">Org: ' + esc(ngParent) + "</span>" : "")
-    + (!isSec ? ((ngFirm || ngParent) ? "<br>" : "") + (nNg ? esc(nNg) + " source" + (nNg === "1" ? "" : "s") : "no sources")
-        + (srcNg ? '<br><span style="color:var(--text-3);font-size:11px">' + esc(srcNg) + "</span>" : "") : "")
-    + "</div></div>"
-    + '<div class="arrow">&rarr;</div>'
-    + '<div class="side pr"><div class="lbl">' + propEmailLbl + '</div>'
+    + '<div class="side pr"><div class="lbl">' + propEmailLbl + ' (market data)</div>'
     + '<div class="addr' + (propEmail ? "" : " none") + '">' + esc(propEmail || "—") + "</div>"
     + '<div class="meta">' + (!isSec && propFirm ? '<span class="em">' + esc(propFirm) + "</span>"
       + (propFirmCRD ? ' <span style="color:var(--text-3);font-size:11px">(CRD ' + esc(propFirmCRD) + ")</span>" : "")
@@ -616,6 +609,14 @@ function buildCard(row, ruleKey) {
     + (!isSec && nProp ? " &middot; " + esc(nProp) + " source" + (nProp === "1" ? "" : "s") : "")
     + (!isSec && effDate ? "<br>eff. " + esc(effDate) : "")
     + (!isSec && srcProp ? '<br><span style="color:var(--text-3);font-size:11px">' + esc(srcProp) + "</span>" : "")
+    + "</div></div>"
+    + '<div class="arrow">&rarr;</div>'
+    + '<div class="side"><div class="lbl">Current ' + ngEmailLbl + '</div>'
+    + '<div class="addr' + (ngEmail ? "" : " none") + '">' + esc(ngEmail || "blank") + "</div>"
+    + '<div class="meta">' + (ngFirm ? '<span class="em">' + esc(ngFirm) + "</span>" : "")
+    + (ngParent && ngParent !== ngFirm ? '<br><span style="color:var(--text-3);font-size:11px">Org: ' + esc(ngParent) + "</span>" : "")
+    + (!isSec ? ((ngFirm || ngParent) ? "<br>" : "") + (nNg ? esc(nNg) + " source" + (nNg === "1" ? "" : "s") : "no sources")
+        + (srcNg ? '<br><span style="color:var(--text-3);font-size:11px">' + esc(srcNg) + "</span>" : "") : "")
     + "</div></div></div>";
 
   var what  = RULE_WHAT[ruleKey] || ruleKey;
